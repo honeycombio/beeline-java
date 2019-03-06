@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>Beeline Java (Parent)</name>
+    <artifactId>beeline-parent</artifactId>
+    <groupId>io.honeycomb.beeline</groupId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <description>Parent POM for the Honeycomb Beeline for Java</description>
+    <url>https://github.com/honeycombio/beeline-java</url>
+    <inceptionYear>2019</inceptionYear>
+    <organization>
+        <name>Honeycomb</name>
+        <url>https://honeycomb.io</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <modules>
+        <module>beeline-core</module>
+        <module>beeline-spring-boot-starter</module>
+    </modules>
+
+    <scm>
+        <url>https://github.com/honeycombio/beeline-java</url>
+        <connection>scm:git:git@github.com:honeycombio/beeline-java.git</connection>
+        <developerConnection>scm:git:git@github.com:honeycombio/beeline-java.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/honeycombio/beeline-java/issues</url>
+    </issueManagement>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <developers>
+        <developer>
+            <name>Honeycomb</name>
+            <email>support@honeycomb.io</email>
+            <organization>Honeycomb</organization>
+            <organizationUrl>https://honeycomb.io</organizationUrl>
+        </developer>
+    </developers>
+
+    <properties>
+         <!-- Build properties -->
+        <dependency.locations.enabled>false</dependency.locations.enabled>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <jdkVersion>1.8</jdkVersion>
+
+        <!-- COMPILE dependency versions  -->
+        <libhoneyVersion>1.0.6</libhoneyVersion>
+        <springBootVersion>2.1.1.RELEASE</springBootVersion>
+
+        <!-- TEST dependency versions  -->
+        <junitVersion>4.12</junitVersion>
+        <mockitoVersion>2.18.0</mockitoVersion>
+        <assertjVersion>3.11.1</assertjVersion>
+        <wiremockVersion>2.21.0</wiremockVersion>
+        <restAssuredVersion>3.3.0</restAssuredVersion>
+
+        <!-- Maven plugin versions  -->
+        <compilerPluginVersion>3.7.0</compilerPluginVersion>
+        <reportsPluginVersion>2.9</reportsPluginVersion>
+        <mavenSourcePluginVersion>3.0.1</mavenSourcePluginVersion>
+        <javadocPluginVersion>3.0.0</javadocPluginVersion>
+        <xrefPluginVersion>2.5</xrefPluginVersion>
+        <mavenWrapperPluginVersion>0.6.0</mavenWrapperPluginVersion>
+        <pmdPluginVersion>3.9.0</pmdPluginVersion>
+        <pmdCoreVersion>6.3.0</pmdCoreVersion>
+        <spotbugsVersion>3.1.11</spotbugsVersion>
+        <shadeVersion>3.1.0</shadeVersion>
+    </properties>
+
+    <dependencies>
+       <!-- silence "[WARNING] warning: unknown enum constant When.MAYBE"  -->
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+            <optional>true</optional>
+        </dependency>
+
+
+        <!-- TEST Dependencies  -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junitVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockitoVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertjVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock</artifactId>
+            <version>${wiremockVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${restAssuredVersion}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${reportsPluginVersion}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <configuration>
+                    <rulesets>
+                        <ruleset>${project.basedir}/build-config/pmd-rules.xml</ruleset>
+                    </rulesets>
+                    <!-- enable incremental analysis  -->
+                    <analysisCache>true</analysisCache>
+                    <skipEmptyReport>false</skipEmptyReport>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${javadocPluginVersion}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>${xrefPluginVersion}</version>
+            </plugin>
+        </plugins>
+    </reporting>
+
+   <profiles>
+       <profile>
+           <id>release</id>
+           <activation>
+               <property>
+                   <name>release</name>
+               </property>
+           </activation>
+
+           <build>
+               <plugins>
+                   <plugin>
+                       <groupId>org.sonatype.plugins</groupId>
+                       <artifactId>nexus-staging-maven-plugin</artifactId>
+                       <version>1.6.7</version>
+                       <extensions>true</extensions>
+                       <configuration>
+                           <serverId>ossrh</serverId>
+                           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                           <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                       </configuration>
+                   </plugin>
+
+                   <plugin>
+                       <groupId>org.apache.maven.plugins</groupId>
+                       <artifactId>maven-gpg-plugin</artifactId>
+                       <version>1.5</version>
+                       <executions>
+                           <execution>
+                               <id>sign-artifacts</id>
+                               <phase>verify</phase>
+                               <goals>
+                                   <goal>sign</goal>
+                               </goals>
+                           </execution>
+                       </executions>
+                   </plugin>
+
+                   <plugin>
+                       <groupId>org.apache.maven.plugins</groupId>
+                       <artifactId>maven-javadoc-plugin</artifactId>
+                       <version>${javadocPluginVersion}</version>
+                       <executions>
+                           <execution>
+                               <id>attach-javadocs</id>
+                               <goals>
+                                   <goal>jar</goal>
+                               </goals>
+                           </execution>
+                       </executions>
+                   </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>${mavenSourcePluginVersion}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                   <goal>jar</goal>
+                               </goals>
+                           </execution>
+                       </executions>
+                   </plugin>
+
+               </plugins>
+           </build>
+        </profile>
+    </profiles>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${maven.multiModuleProjectDirectory}</directory>
+                <includes>
+                    <include>LICENCE</include>
+                    <include>NOTICE</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                           
+                            <!-- Add implementation/specification version to manifest file so we can read it out at runtime
+                            (e.g. [class].class.getPackage().getImplementationVersion()) -->
+                            
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${mavenSourcePluginVersion}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <configuration>
+                    <rulesets>
+                        <ruleset>${basedir}/build-config/pmd-rules.xml</ruleset>
+                    </rulesets>
+                    <!-- enable incremental analysis  -->
+                    <analysisCache>true</analysisCache>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${javadocPluginVersion}</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compilerPluginVersion}</version>
+                <configuration>
+                    <source>${jdkVersion}</source>
+                    <target>${jdkVersion}</target>
+                </configuration>
+            </plugin>
+
+            <!-- mvn -N io.takari:maven:wrapper -Dmaven=3.3.9  -->
+            <plugin>
+                <groupId>io.takari</groupId>
+                <artifactId>maven</artifactId>
+                <version>${mavenWrapperPluginVersion}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>${spotbugsVersion}</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Low</threshold>
+                </configuration>
+                <executions>
+                    <execution>
+                       <!-- Run spotbugs during test phase  -->
+                        <phase>test</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${pmdPluginVersion}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>net.sourceforge.pmd</groupId>
+                            <artifactId>pmd-core</artifactId>
+                            <version>${pmdCoreVersion}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>net.sourceforge.pmd</groupId>
+                            <artifactId>pmd-java</artifactId>
+                            <version>${pmdCoreVersion}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
