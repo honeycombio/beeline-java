@@ -1,0 +1,10 @@
+io.honeycomb.beeline.spring.autoconfig
+io.honeycomb.beeline.spring.beans
+io.honeycomb.beeline.spring.beans.aspects
+io.honeycomb.beeline.spring.utils
+io.honeycomb.beeline.tracing
+io.honeycomb.beeline.tracing.ids
+io.honeycomb.beeline.tracing.propagation
+io.honeycomb.beeline.tracing.sampling
+io.honeycomb.beeline.tracing.utils
+io.honeycomb.libhoney.transport.json
