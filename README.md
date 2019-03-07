@@ -1,13 +1,12 @@
 # Honeycomb Beeline for Java
-TODO build status and maven
+[![Build Status](https://travis-ci.org/honeycombio/beeline-java.svg?branch=master)](https://travis-ci.org/honeycombio/beeline-java) [![Maven Central](https://img.shields.io/maven-central/v/io.honeycomb.beeline.svg)](https://search.maven.org/search?q=g:io.honeycomb.beeline)
 
 This package makes it easy to instrument your Jav web application to send useful events to 
 [Honeycomb](https://www.honeycomb.io), a service for debugging your software in production.
 
 TODO links
 - [Usage and Examples](...)
-- [API Reference](...)
-- [Javadoc](...)
+- [Javadoc](https://honeycombio.github.io/beeline-java/overview-summary.html)
 
 ## Dependencies
 - Java 8+ for the `beeline-core` and `beeline-spring-boot-starter` modules.
