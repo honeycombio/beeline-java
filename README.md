@@ -5,7 +5,7 @@
 This package makes it easy to instrument your Jav web application to send useful events to
 [Honeycomb](https://www.honeycomb.io), a service for debugging your software in production.
 
-- [Usage and Examples](...)
+- [Usage and Examples](https://docs.honeycomb.io/beeline/java/)
 - [Javadoc](https://honeycombio.github.io/beeline-java/overview-summary.html)
 
 ## Dependencies
