@@ -28,6 +28,7 @@
     <modules>
         <module>beeline-core</module>
         <module>beeline-spring-boot-starter</module>
+        <module>beeline-examples</module>
     </modules>
 
     <scm>
@@ -89,6 +90,7 @@
         <mavenWrapperPluginVersion>0.6.0</mavenWrapperPluginVersion>
         <pmdPluginVersion>3.9.0</pmdPluginVersion>
         <pmdCoreVersion>6.3.0</pmdCoreVersion>
+        <scalaPluginVersion>4.0.1</scalaPluginVersion>
         <spotbugsVersion>3.1.11</spotbugsVersion>
         <shadeVersion>3.1.0</shadeVersion>
     </properties>
@@ -101,7 +103,11 @@
             <version>3.0.2</version>
             <optional>true</optional>
         </dependency>
-
+		    <dependency>
+			      <groupId>org.scala-lang</groupId>
+			      <artifactId>scala-library</artifactId>
+			      <version>2.12.8</version>
+		    </dependency>
 
         <!-- TEST Dependencies  -->
         <dependency>
@@ -169,6 +175,11 @@
                 <version>${javadocPluginVersion}</version>
             </plugin>
             <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>${scalaPluginVersion}</version>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>${xrefPluginVersion}</version>
@@ -218,6 +229,9 @@
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-javadoc-plugin</artifactId>
                        <version>${javadocPluginVersion}</version>
+                       <configuration>
+                           <source>8</source>
+                       </configuration>
                        <executions>
                            <execution>
                                <id>attach-javadocs</id>
@@ -227,21 +241,32 @@
                            </execution>
                        </executions>
                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>${mavenSourcePluginVersion}</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
+                   <plugin>
+                       <groupId>net.alchim31.maven</groupId>
+                       <artifactId>scala-maven-plugin</artifactId>
+                       <version>${scalaPluginVersion}</version>
+                       <executions>
+                           <execution>
+                               <id>attach-javadocs</id>
+                               <goals>
+                                   <goal>doc-jar</goal>
+                               </goals>
+                           </execution>
+                       </executions>
+                   </plugin>
+                   <plugin>
+                       <groupId>org.apache.maven.plugins</groupId>
+                       <artifactId>maven-source-plugin</artifactId>
+                       <version>${mavenSourcePluginVersion}</version>
+                       <executions>
+                           <execution>
+                               <id>attach-sources</id>
+                               <goals>
                                    <goal>jar</goal>
                                </goals>
                            </execution>
                        </executions>
                    </plugin>
-
                </plugins>
            </build>
         </profile>
@@ -306,6 +331,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${javadocPluginVersion}</version>
+                <configuration>
+                    <source>8</source>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -326,6 +354,21 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>${scalaPluginVersion}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>add-source</goal>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- mvn -N io.takari:maven:wrapper -Dmaven=3.3.9  -->
             <plugin>
                 <groupId>io.takari</groupId>
@@ -340,6 +383,7 @@
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Low</threshold>
+                    <omitVisitors>FindNullDeref</omitVisitors>
                 </configuration>
                 <executions>
                     <execution>
