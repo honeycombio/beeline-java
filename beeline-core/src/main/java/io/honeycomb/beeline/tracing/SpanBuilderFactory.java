@@ -258,11 +258,10 @@ public class SpanBuilderFactory {
             final String traceId = parentContext.isTraced() ? parentContext.getTraceId() : idProvider.generateId();
             final int sampleRate = traceSampler.sample(traceId);
             LOG.debug("Building span - sampling decision for traceId '{}' is '{}'", traceId, sampleRate);
-            return sampleRate > 0 ? createSendingSpan(sampleRate) : Span.getNoopInstance();
+            return sampleRate > 0 ? createSendingSpan(sampleRate, traceId) : Span.getNoopInstance();
         }
 
-        private Span createSendingSpan(final int sampleRate) {
-            final String traceId = parentContext.isTraced() ? parentContext.getTraceId() : idProvider.generateId();
+        private Span createSendingSpan(final int sampleRate, String traceId) {
             final PropagationContext context = new PropagationContext(
                 traceId,parentContext.getSpanId(), parentContext.getDataset(), parentContext.getTraceFields()
             );
