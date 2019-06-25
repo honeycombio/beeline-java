@@ -261,9 +261,9 @@ public class SpanBuilderFactory {
             return sampleRate > 0 ? createSendingSpan(sampleRate, traceId) : Span.getNoopInstance();
         }
 
-        private Span createSendingSpan(final int sampleRate, String traceId) {
+        private Span createSendingSpan(final int sampleRate, final String traceId) {
             final PropagationContext context = new PropagationContext(
-                traceId,parentContext.getSpanId(), parentContext.getDataset(), parentContext.getTraceFields()
+                traceId, parentContext.getSpanId(), parentContext.getDataset(), parentContext.getTraceFields()
             );
             final Span span = new SendingSpan(
                 spanName,
