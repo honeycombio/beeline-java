@@ -10,6 +10,7 @@ import io.honeycomb.beeline.tracing.Tracer;
 import io.honeycomb.beeline.tracing.Tracing;
 import io.honeycomb.beeline.tracing.sampling.Sampling;
 import io.honeycomb.libhoney.HoneyClient;
+import io.honeycomb.libhoney.TransportOptions;
 import io.honeycomb.libhoney.LibHoney;
 import io.honeycomb.libhoney.Options.Builder;
 
@@ -29,12 +30,16 @@ public class DefaultBeeline {
     private Beeline beeline;
     private String serviceName;
 
-    private DefaultBeeline(String dataset, String serviceName, String writeKey,  URI apiHost) {
+    private DefaultBeeline(String dataset, String serviceName, String writeKey,  URI apiHost, TransportOptions transportOptions) {
         Builder builder = LibHoney.options().setDataset(dataset).setWriteKey(writeKey);
         if (apiHost != null) {
             builder.setApiHost(apiHost);
         }
-        this.client = LibHoney.create(builder.build());
+        if (transportOptions != null) {
+            this.client = LibHoney.create(builder.build(), transportOptions);
+        } else {
+           this.client = LibHoney.create(builder.build());
+        }
         this.postProcessor = Tracing.createSpanProcessor(this.client, Sampling.alwaysSampler());
         this.factory = Tracing.createSpanBuilderFactory(this.postProcessor, Sampling.alwaysSampler());
         this.tracer = Tracing.createTracer(this.factory);
@@ -44,15 +49,15 @@ public class DefaultBeeline {
 
     public synchronized static DefaultBeeline getInstance(String dataset, String serviceName, String writeKey) {
         if (INSTANCE == null) {
-            INSTANCE = new DefaultBeeline(dataset, serviceName, writeKey, null);
+            INSTANCE = new DefaultBeeline(dataset, serviceName, writeKey, null, null);
         }
 
         return INSTANCE;
     }
 
-    public synchronized static DefaultBeeline getInstance(String dataset, String serviceName, String writeKey, URI apiHost) {
+    public synchronized static DefaultBeeline getInstance(String dataset, String serviceName, String writeKey, URI apiHost, TransportOptions transportOptions) {
         if (INSTANCE == null) {
-            INSTANCE = new DefaultBeeline(dataset, serviceName, writeKey, apiHost);
+            INSTANCE = new DefaultBeeline(dataset, serviceName, writeKey, apiHost, transportOptions);
         }
 
         return INSTANCE;
