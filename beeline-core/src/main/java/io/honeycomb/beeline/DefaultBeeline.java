@@ -21,6 +21,7 @@ import io.honeycomb.libhoney.Options.Builder;
 */ 
 public class DefaultBeeline {
     private static DefaultBeeline INSTANCE;
+
     private HoneyClient client;
     private SpanPostProcessor postProcessor;
     private SpanBuilderFactory factory;
@@ -138,6 +139,7 @@ public class DefaultBeeline {
     }
 
     public void close() {
+        this.tracer.endTrace();
         this.client.close();
     }
 }
