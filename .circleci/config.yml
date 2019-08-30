@@ -16,7 +16,7 @@ jobs:
 
       # Download and cache dependencies
       - restore_cache:
-          key: circleci-demo-java-spring-{{ checksum "pom.xml" }}
+          key: beeline-java-{{ checksum "pom.xml" }}
 
       - run: mvn dependency:go-offline # gets the project dependencies
 
