@@ -1,6 +1,6 @@
 # Honeycomb Beeline for Java
 
-[![Build Status](https://travis-ci.org/honeycombio/beeline-java.svg?branch=master)](https://travis-ci.org/honeycombio/beeline-java) [![Maven Central](https://img.shields.io/maven-central/v/io.honeycomb.beeline/beeline-core.svg)](https://search.maven.org/search?q=a:beeline-core) [![Maven Central](https://img.shields.io/maven-central/v/io.honeycomb.beeline/beeline-spring-boot-starter.svg)](https://search.maven.org/search?q=a:beeline-spring-boot-starter)
+[![CircleCI](https://circleci.com/gh/honeycombio/beeline-java.svg?style=shield)](https://circleci.com/gh/honeycombio/beeline-java) [![Beeline Core](https://img.shields.io/maven-central/v/io.honeycomb.beeline/beeline-core.svg)](https://search.maven.org/search?q=a:beeline-core) [![Beeline Spring Boot Starter](https://img.shields.io/maven-central/v/io.honeycomb.beeline/beeline-spring-boot-starter.svg)](https://search.maven.org/search?q=a:beeline-spring-boot-starter)
 
 This package makes it easy to instrument your Java web application to send useful events to
 [Honeycomb](https://www.honeycomb.io), a service for debugging your software in production.
