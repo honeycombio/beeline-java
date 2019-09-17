@@ -142,6 +142,13 @@ public class DefaultBeeline {
     public Beeline getBeeline() {
         return this.beeline;
     }
+    
+    /**
+     * endTrace ends the currently active trace.
+     */
+    public void endTrace() {
+        this.tracer.endTrace();
+    }
 
     public void close() {
         this.tracer.endTrace();
