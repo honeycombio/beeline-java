@@ -1,6 +1,7 @@
 package io.honeycomb.beeline.spring.utils;
 
 import io.honeycomb.beeline.tracing.utils.TraceFieldConstants;
+import org.springframework.http.client.ClientHttpResponse;
 
 /**
  * Class to keep the names of fields not (yet) defined in the Beeline specs or ones that are spring/java-specific.
@@ -21,33 +22,33 @@ public final class MoreTraceFieldConstants {
     public static final String JOIN_POINT_RESULT_FIELD       = "spring.method.result";
 
     // ========= http client fields =========
-    /** */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#CLIENT_REQUEST_PATH_FIELD} */
     public static final String CLIENT_REQUEST_PATH_FIELD            = "client.request.path";
-    /** */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#CLIENT_REQUEST_METHOD_FIELD} */
     public static final String CLIENT_REQUEST_METHOD_FIELD          = "client.request.method";
-    /** */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#CLIENT_REQUEST_CONTENT_LENGTH_FIELD} */
     public static final String CLIENT_REQUEST_CONTENT_LENGTH_FIELD  = "client.request.content_length";
-    /** */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#CLIENT_REQUEST_CONTENT_TYPE_FIELD} */
     public static final String CLIENT_REQUEST_CONTENT_TYPE_FIELD    = "client.request.content_type";
-    /** */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#CLIENT_REQUEST_ERROR_FIELD} */
     public static final String CLIENT_REQUEST_ERROR_FIELD           = "client.request.error";
-    /** */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#CLIENT_REQUEST_ERROR_DETAIL_FIELD} */
     public static final String CLIENT_REQUEST_ERROR_DETAIL_FIELD    = "client.request.error_detail";
-    /** */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#CLIENT_RESPONSE_CONTENT_TYPE_FIELD} */
     public static final String CLIENT_RESPONSE_CONTENT_TYPE_FIELD   = "client.response.content_type";
-    /** */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#CLIENT_RESPONSE_STATUS_CODE_FIELD} */
     public static final String CLIENT_RESPONSE_STATUS_CODE_FIELD    = "client.response.status_code";
-    /** */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#CLIENT_RESPONSE_CONTENT_LENGTH} */
     public static final String CLIENT_RESPONSE_CONTENT_LENGTH       = "client.response.content_length";
 
     // ========= request fields =========
-    /** The response content type - if available. */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#RESPONSE_CONTENT_TYPE_FIELD} */
     public static final String RESPONSE_CONTENT_TYPE_FIELD  = "response.header.content_type";
-    /** The request content type - if available. */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#REQUEST_CONTENT_TYPE_FIELD} */
     public static final String REQUEST_CONTENT_TYPE_FIELD   = "request.header.content_type";
-    /** The request accept header - if available. */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#REQUEST_ACCEPT_FIELD} */
     public static final String REQUEST_ACCEPT_FIELD         = "request.header.accept";
-    /** Any query parameters on the request URL. */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.utils.TraceFieldConstants#REQUEST_QUERY_PARAMS_FIELD} */
     public static final String REQUEST_QUERY_PARAMS_FIELD   = "request.query";
 
     // ========= spring-specific fields =========
@@ -61,6 +62,22 @@ public final class MoreTraceFieldConstants {
     public static final String SPRING_HANDLER_METHOD_FIELD  = "spring.request.handler_method";
     /** The URI pattern that was matched for the given request. */
     public static final String SPRING_MATCHED_PATTERN_FIELD = "spring.request.matched_pattern";
+    /**
+     * Spring may throw an exception when the {@link io.honeycomb.beeline.spring.beans.BeelineRestTemplateInterceptor}
+     * calls {@link ClientHttpResponse#getRawStatusCode()}. This exception is not propagated to the caller by the
+     * instrumentation.
+     * <p>
+     * This field shows the type of exception that was thrown.
+     */
+    public static final String REST_TEMPLATE_RESPONSE_STATUS_ERROR_FIELD = "spring.rest_template.status_error";
+    /**
+     * Spring may throw an exception when the {@link io.honeycomb.beeline.spring.beans.BeelineRestTemplateInterceptor}
+     * calls {@link ClientHttpResponse#getRawStatusCode()}. This exception is not propagated to the caller by the
+     * instrumentation.
+     * <p>
+     * This field show the any exception message.
+     */
+    public static final String REST_TEMPLATE_RESPONSE_STATUS_ERROR_DETAIL_FIELD = "spring.rest_template.status_error_detail";
     // @formatter:on
 
     private MoreTraceFieldConstants() {

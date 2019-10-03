@@ -1,34 +1,29 @@
 package io.honeycomb.beeline.spring.beans;
 
-import io.honeycomb.beeline.spring.utils.BeelineUtils;
 import io.honeycomb.beeline.tracing.Span;
 import io.honeycomb.beeline.tracing.Tracer;
-import io.honeycomb.beeline.tracing.propagation.HttpHeaderV1PropagationCodec;
-import io.honeycomb.beeline.tracing.propagation.Propagation;
+import io.honeycomb.beeline.tracing.propagation.HttpClientPropagator;
 import io.honeycomb.libhoney.utils.Assert;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static io.honeycomb.beeline.spring.utils.InstrumentationConstants.HTTP_CLIENT_SPAN_NAME;
-import static io.honeycomb.beeline.spring.utils.InstrumentationConstants.HTTP_CLIENT_SPAN_TYPE;
 import static io.honeycomb.beeline.spring.utils.InstrumentationConstants.REST_TEMPLATE_INSTRUMENTATION_NAME;
 import static io.honeycomb.beeline.spring.utils.MoreTraceFieldConstants.*;
-import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.TYPE_FIELD;
 
 public class BeelineRestTemplateInterceptor implements ClientHttpRequestInterceptor, BeelineInstrumentation {
 
-    private final Tracer tracer;
+    private final HttpClientPropagator httpClientPropagator;
 
     public BeelineRestTemplateInterceptor(final Tracer tracer) {
         Assert.notNull(tracer, "Validation failed: tracer must not be null");
-
-        this.tracer = tracer;
+        this.httpClientPropagator = new HttpClientPropagator(tracer, r -> HTTP_CLIENT_SPAN_NAME);
     }
 
     @Override
@@ -40,53 +35,85 @@ public class BeelineRestTemplateInterceptor implements ClientHttpRequestIntercep
     public ClientHttpResponse intercept(final HttpRequest request,
                                         final byte[] body,
                                         final ClientHttpRequestExecution execution) throws IOException {
-        final Span childSpan = tracer.startChildSpan(HTTP_CLIENT_SPAN_NAME);
+        final Span childSpan = httpClientPropagator.startPropagation(new HttpClientRequestAdapter(request, body));
+        HttpClientResponseAdapter responseAdaptor = null;
+        Throwable error = null;
         try {
-            addRequestFields(request, body, childSpan);
-
-            propagateTrace(request, childSpan);
-
             final ClientHttpResponse response = execution.execute(request, body);
-
-            addResponseFields(childSpan, response);
-
+            responseAdaptor = new HttpClientResponseAdapter(childSpan, response);
             return response;
         } catch (final Exception e) {
-            childSpan.addField(CLIENT_REQUEST_ERROR_FIELD, e.getClass().getSimpleName());
-            BeelineUtils.tryAddField(childSpan, CLIENT_REQUEST_ERROR_DETAIL_FIELD, e.getMessage());
+            error = e;
             throw e;
         } finally {
-            childSpan.close();
+            httpClientPropagator.endPropagation(responseAdaptor, error, childSpan);
         }
-    }
-
-    private void addRequestFields(final HttpRequest request, final byte[] body, final Span childSpan) {
-        final HttpHeaders headers = request.getHeaders();
-        BeelineUtils.tryAddHeader(headers, childSpan, HttpHeaders.CONTENT_TYPE, CLIENT_REQUEST_CONTENT_TYPE_FIELD);
-        BeelineUtils.tryAddField(childSpan, CLIENT_REQUEST_PATH_FIELD, request.getURI().getPath());
-        if (body.length > 0) {
-            childSpan.addField(CLIENT_REQUEST_CONTENT_LENGTH_FIELD, body.length);
-        }
-        childSpan
-            .addField(TYPE_FIELD, HTTP_CLIENT_SPAN_TYPE)
-            .addField(CLIENT_REQUEST_METHOD_FIELD, request.getMethodValue());
-    }
-
-    private void addResponseFields(final Span childSpan, final ClientHttpResponse response) throws IOException {
-        childSpan.addField(CLIENT_RESPONSE_STATUS_CODE_FIELD, response.getRawStatusCode());
-        final HttpHeaders headers = response.getHeaders();
-        BeelineUtils.tryAddHeader(headers, childSpan, HttpHeaders.CONTENT_LENGTH, CLIENT_RESPONSE_CONTENT_LENGTH);
-        BeelineUtils.tryAddHeader(headers, childSpan, HttpHeaders.CONTENT_TYPE, CLIENT_RESPONSE_CONTENT_TYPE_FIELD);
     }
 
     public RestTemplateCustomizer customizer() {
         return (template) -> template.getInterceptors().add(0, this);
     }
 
-    private void propagateTrace(final HttpRequest request, final Span childSpan) {
-        Propagation.honeycombHeaderV1().encode(childSpan.getTraceContext())
-            .ifPresent(headerValue ->
-                request.getHeaders().add(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, headerValue)
-            );
+    static final class HttpClientRequestAdapter implements io.honeycomb.beeline.tracing.propagation.HttpClientRequestAdapter {
+        private final HttpRequest request;
+        private final byte[] body;
+
+        public HttpClientRequestAdapter(final HttpRequest request, final byte[] body) {
+            this.request = request;
+            this.body = body;
+        }
+
+        @Override
+        public String getMethod() {
+            return request.getMethodValue();
+        }
+
+        @Override
+        public Optional<String> getPath() {
+            return Optional.ofNullable(request.getURI().getPath());
+        }
+
+        @Override
+        public int getContentLength() {
+            return body.length;
+        }
+
+        @Override
+        public void addHeader(String name, String value) {
+            request.getHeaders().add(name, value);
+        }
+
+        @Override
+        public Optional<String> getFirstHeader(String name) {
+            return Optional.ofNullable(request.getHeaders().getFirst(name));
+        }
+    }
+
+    static final class HttpClientResponseAdapter implements io.honeycomb.beeline.tracing.propagation.HttpClientResponseAdapter {
+        private final Span span;
+        private final ClientHttpResponse httpResponse;
+
+        public HttpClientResponseAdapter(final Span span, final ClientHttpResponse httpResponse) {
+            this.span = span;
+            this.httpResponse = httpResponse;
+        }
+
+        @Override
+        public int getStatus() {
+            try {
+                return httpResponse.getRawStatusCode();
+            } catch (final IOException ex) {
+                if (ex.getMessage() != null) {
+                    span.addField(REST_TEMPLATE_RESPONSE_STATUS_ERROR_DETAIL_FIELD, ex.getMessage());
+                }
+                span.addField(REST_TEMPLATE_RESPONSE_STATUS_ERROR_FIELD, ex.getClass().getSimpleName());
+                return -1;
+            }
+        }
+
+        @Override
+        public Optional<String> getFirstHeader(String name) {
+            return Optional.ofNullable(httpResponse.getHeaders().getFirst(name));
+        }
     }
 }

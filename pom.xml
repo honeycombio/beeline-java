@@ -75,7 +75,7 @@
 
         <!-- TEST dependency versions  -->
         <junitVersion>4.12</junitVersion>
-        <mockitoVersion>2.18.0</mockitoVersion>
+        <mockitoVersion>3.1.0</mockitoVersion>
         <assertjVersion>3.11.1</assertjVersion>
         <wiremockVersion>2.21.0</wiremockVersion>
         <restAssuredVersion>3.3.0</restAssuredVersion>
@@ -268,10 +268,10 @@
                 <configuration>
                     <archive>
                         <manifest>
-                           
+
                             <!-- Add implementation/specification version to manifest file so we can read it out at runtime
                             (e.g. [class].class.getPackage().getImplementationVersion()) -->
-                            
+
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
