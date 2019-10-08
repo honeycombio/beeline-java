@@ -1,5 +1,6 @@
 package io.honeycomb.beeline.tracing;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.honeycomb.beeline.tracing.utils.ThreadIdentifierObject;
 import io.honeycomb.beeline.tracing.utils.TraceFieldConstants;
 import io.honeycomb.libhoney.utils.Assert;
@@ -53,6 +54,7 @@ import java.util.function.Supplier;
  * See the javadoc of each of the mentioned methods for more details.
  */
 @SuppressWarnings("ThreadLocalNotStaticFinal") // thread locals are tied to an instance of Tracer
+@SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE") // JDK 11 issue https://github.com/spotbugs/spotbugs/issues/756
 public class Tracer {
     /*
     The design of this class is centered around the thread-local stack.

@@ -89,19 +89,32 @@
         <mavenWrapperPluginVersion>0.6.0</mavenWrapperPluginVersion>
         <pmdPluginVersion>3.9.0</pmdPluginVersion>
         <pmdCoreVersion>6.3.0</pmdCoreVersion>
-        <spotbugsVersion>3.1.11</spotbugsVersion>
+        <spotbugsVersion>4.0.0-beta4</spotbugsVersion>
         <shadeVersion>3.1.0</shadeVersion>
+        <surefireVersion>2.22.1</surefireVersion>
     </properties>
 
     <dependencies>
        <!-- silence "[WARNING] warning: unknown enum constant When.MAYBE"  -->
+        <!-- Start SpotBugs -->
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.2</version>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs</artifactId>
+            <version>${spotbugsVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+            <version>${spotbugsVersion}</version>
             <optional>true</optional>
         </dependency>
-
+        <dependency>
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
+            <version>1.0</version>
+            <optional>true</optional>
+        </dependency>
+        <!-- END SpotBugs -->
 
         <!-- TEST Dependencies  -->
         <dependency>
@@ -268,10 +281,10 @@
                 <configuration>
                     <archive>
                         <manifest>
-                           
+
                             <!-- Add implementation/specification version to manifest file so we can read it out at runtime
                             (e.g. [class].class.getPackage().getImplementationVersion()) -->
-                            
+
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
@@ -332,25 +345,6 @@
                 <artifactId>maven</artifactId>
                 <version>${mavenWrapperPluginVersion}</version>
             </plugin>
-
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugsVersion}</version>
-                <configuration>
-                    <effort>Max</effort>
-                    <threshold>Low</threshold>
-                </configuration>
-                <executions>
-                    <execution>
-                       <!-- Run spotbugs during test phase  -->
-                        <phase>test</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -368,6 +362,58 @@
                             <groupId>net.sourceforge.pmd</groupId>
                             <artifactId>pmd-java</artifactId>
                             <version>${pmdCoreVersion}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <!-- The following block is to fix JDK10 builds-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${surefireVersion}</version>
+                    <configuration>
+                        <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+                    </configuration>
+                </plugin>
+                <!-- End JDK10 fix-->
+                <!-- The following block is to fix JDK11-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${javadocPluginVersion}</version>
+                    <configuration>
+                        <source>8</source>
+                    </configuration>
+                </plugin>
+                <!-- End JDK11 fix-->
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>3.1.12.2</version>
+                    <configuration>
+                        <effort>Max</effort>
+                        <threshold>Low</threshold>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <!-- Run spotbugs during test phase  -->
+                            <phase>test</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
+                        <dependency>
+                            <groupId>com.github.spotbugs</groupId>
+                            <artifactId>spotbugs</artifactId>
+                            <version>${spotbugsVersion}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>com.github.spotbugs</groupId>
+                            <artifactId>spotbugs-annotations</artifactId>
+                            <version>${spotbugsVersion}</version>
+                            <optional>true</optional>
                         </dependency>
                     </dependencies>
                 </plugin>
