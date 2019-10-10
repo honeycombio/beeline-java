@@ -10,15 +10,15 @@ import java.util.Optional;
  */
 public interface HttpServerRequestAdapter {
     /**
-     * Returns the HTTP method of the request as a plain String.
+     * Returns the HTTP method of the request.
      * @return the HTTP method
      */
     String getMethod();
 
     /**
-     * Returns the path component of this URI.
+     * Returns the path requested.
      *
-     * @return  The path component of this URI,
+     * @return  The path,
      *          or {@code Optional.empty()} if the path is undefined
      */
     Optional<String> getPath();
@@ -31,7 +31,7 @@ public interface HttpServerRequestAdapter {
     Optional<String> getFirstHeader(String name);
 
     /**
-     * Return the URI scheme.
+     * Return the URI scheme used in the request.
      * @return the scheme. Can return {@code Optional.empty()} if not available.
      */
     Optional<String> getScheme();
@@ -43,14 +43,14 @@ public interface HttpServerRequestAdapter {
     Optional<String> getHost();
 
     /**
-     * Returns the name and version of the protocol. For instance, HTTP/1.1.
+     * Returns the name and version of the HTTP protocol. For instance, HTTP/1.1.
      *
      * @return the HTTP version
      */
     String getHttpVersion();
 
     /**
-     * Indicates whether this request was made using a secure channel, such as HTTPS.
+     * Indicates whether this request used a secure channel, e.g. HTTPS.
      *
      * @return whether the request is secure
      */

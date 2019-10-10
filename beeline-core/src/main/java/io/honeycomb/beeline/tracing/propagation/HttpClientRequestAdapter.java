@@ -8,14 +8,14 @@ import java.util.Optional;
  */
 public interface HttpClientRequestAdapter {
     /**
-     * Returns the HTTP method of the request as a plain String.
+     * Returns the HTTP method of the request.
      * @return the HTTP method
      */
     String getMethod();
     /**
-     * Returns the path component of this URI.
+     * Returns the path requested.
      *
-     * @return  The path component of this URI,
+     * @return  The path,
      *          or {@code Optional.empty()} if the path is undefined
      */
     Optional<String> getPath();

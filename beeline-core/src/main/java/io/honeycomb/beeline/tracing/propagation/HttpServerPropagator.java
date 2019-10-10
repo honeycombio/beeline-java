@@ -40,11 +40,13 @@ public class HttpServerPropagator {
     private final String serviceName;
     private final HttpServerRequestSpanCustomizer spanCustomizer;
     private final PropagationCodec<String> propagationCodec;
-    private final TraceStarter traceStarter;
+    private final Beeline beeline;
 
     /**
-     * Note that the {@code requestToSpanName} function should produce low cardinality span names; Honeycomb works
-     * best when this is the case.
+     * Create an HttpServerPropagator for tracing requests received by an HTTP server.
+     * <p>
+     * {@code requestToSpanName} allows you to dynamically name the HTTP server span such that the name
+     * reflects the operation, e.g. based on HTTP method or request path used.
      *
      * @param beeline the beeline
      * @param serviceName the service name
@@ -53,7 +55,7 @@ public class HttpServerPropagator {
     public HttpServerPropagator(final Beeline beeline,
                                 final String serviceName,
                                 final Function<HttpServerRequestAdapter, String> requestToSpanName) {
-        this(serviceName, requestToSpanName, new HttpServerRequestSpanCustomizer(), Propagation.honeycombHeaderV1(), new TraceStarter(beeline));
+        this(serviceName, requestToSpanName, new HttpServerRequestSpanCustomizer(), Propagation.honeycombHeaderV1(), beeline);
     }
 
     // Exposed for unit testing
@@ -61,12 +63,12 @@ public class HttpServerPropagator {
                                 final Function<HttpServerRequestAdapter, String> requestToSpanName,
                                 final HttpServerRequestSpanCustomizer spanCustomizer,
                                 final PropagationCodec<String> propagationCodec,
-                                final TraceStarter traceStarter) {
+                                final Beeline beeline) {
         this.requestToSpanName = requestToSpanName;
         this.serviceName = serviceName;
         this.spanCustomizer = spanCustomizer;
         this.propagationCodec = propagationCodec;
-        this.traceStarter = traceStarter;
+        this.beeline = beeline;
     }
 
     /**
@@ -82,7 +84,7 @@ public class HttpServerPropagator {
 
         final String spanName = requestToSpanName.apply(httpRequest);
 
-        final Span rootSpan = traceStarter.startTrace(spanName, decoded, serviceName);
+        final Span rootSpan = beeline.startTrace(spanName, decoded, serviceName);
 
         spanCustomizer.customize(rootSpan, httpRequest);
         return rootSpan;
@@ -115,30 +117,6 @@ public class HttpServerPropagator {
             }
         } finally {
             span.close();
-        }
-    }
-
-    /**
-     * Workaround until we have a decision on where to put this type of convenience method.
-     * At the moment, they are split between {@link io.honeycomb.beeline.tracing.Beeline}
-     * and {@link io.honeycomb.beeline.DefaultBeeline}.
-     * */
-    protected static class TraceStarter {
-        private final Beeline beeline;
-
-        protected TraceStarter(Beeline beeline) {
-            this.beeline = beeline;
-        }
-
-        protected Span startTrace(final String spanName, final PropagationContext parentContext, final String serviceName) {
-            return beeline.getTracer().startTrace(
-                beeline.getSpanBuilderFactory()
-                    .createBuilder()
-                    .setSpanName(spanName)
-                    .setServiceName(serviceName)
-                    .setParentContext(parentContext)
-                    .build()
-            );
         }
     }
 }

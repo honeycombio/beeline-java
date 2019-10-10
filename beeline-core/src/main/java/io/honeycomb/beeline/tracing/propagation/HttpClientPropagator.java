@@ -40,8 +40,10 @@ public class HttpClientPropagator {
     private final Function<HttpClientRequestAdapter, String> requestToSpanName;
 
     /**
-     * Note that the {@code requestToSpanName} function should produce low cardinality span names; Honeycomb works
-     * best when this is the case.
+     * Create an HttpClientPropagator for tracing HTTP client requests.
+     * <p>
+     * {@code requestToSpanName} allows you to dynamically name the HTTP client spans such that the name
+     * reflects the operation, e.g. based on HTTP method or request path used.
      *
      * @param tracer the tracer
      * @param requestToSpanName a function from request to span name

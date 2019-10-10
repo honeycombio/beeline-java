@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface HttpServerResponseAdapter {
     /**
-     * Return the HTTP status code as an integer.
+     * Return the HTTP status code.
      * @return the HTTP status code.
      */
     int getStatus();

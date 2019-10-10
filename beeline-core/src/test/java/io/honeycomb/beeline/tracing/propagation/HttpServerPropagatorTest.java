@@ -1,5 +1,6 @@
 package io.honeycomb.beeline.tracing.propagation;
  
+import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.tracing.Span;
 import io.honeycomb.libhoney.shaded.org.apache.http.HttpHeaders;
 import org.junit.Before;
@@ -28,7 +29,7 @@ public class HttpServerPropagatorTest {
     @Mock
     private PropagationCodec<String> mockPropagationCodec;
     @Mock
-    private HttpServerPropagator.TraceStarter mockTraceStarter;
+    private Beeline mockBeeline;
     @Mock
     private PropagationContext mockPropagationContext;
 
@@ -42,7 +43,7 @@ public class HttpServerPropagatorTest {
     public void setup() {
         stubFluentCalls(mockSpan);
         httpServerPropagator = new HttpServerPropagator(EXPECTED_SERVICE_NAME, REQUEST_TO_SPAN_NAME,
-                                                        mockSpanCustomizer, mockPropagationCodec, mockTraceStarter);
+                                                        mockSpanCustomizer, mockPropagationCodec, mockBeeline);
     }
 
     @Test
@@ -50,7 +51,7 @@ public class HttpServerPropagatorTest {
         final String expectedTraceHeader = "expectedTraceHeader";
         when(mockHttpRequest.getFirstHeader(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER)).thenReturn(Optional.of(expectedTraceHeader));
         when(mockPropagationCodec.decode(expectedTraceHeader)).thenReturn(mockPropagationContext);
-        when(mockTraceStarter.startTrace(EXPECTED_SPAN_NAME, mockPropagationContext, EXPECTED_SERVICE_NAME)).thenReturn(mockSpan);
+        when(mockBeeline.startTrace(EXPECTED_SPAN_NAME, mockPropagationContext, EXPECTED_SERVICE_NAME)).thenReturn(mockSpan);
 
         final Span span = httpServerPropagator.startPropagation(mockHttpRequest);
         verify(mockSpanCustomizer).customize(span, mockHttpRequest);
@@ -59,7 +60,7 @@ public class HttpServerPropagatorTest {
     @Test
     public void whenStartPropagation_andNoTraceHeaderIsPresent_traceIsStarted_andHttpFieldsAreApplied() {
         when(mockPropagationCodec.decode(null)).thenReturn(mockPropagationContext);
-        when(mockTraceStarter.startTrace(EXPECTED_SPAN_NAME, mockPropagationContext, EXPECTED_SERVICE_NAME)).thenReturn(mockSpan);
+        when(mockBeeline.startTrace(EXPECTED_SPAN_NAME, mockPropagationContext, EXPECTED_SERVICE_NAME)).thenReturn(mockSpan);
 
         final Span span = httpServerPropagator.startPropagation(mockHttpRequest);
         verify(mockSpanCustomizer).customize(span, mockHttpRequest);
