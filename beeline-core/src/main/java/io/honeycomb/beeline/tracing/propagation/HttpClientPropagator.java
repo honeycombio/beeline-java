@@ -17,7 +17,7 @@ import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.*;
  * HttpClientRequestAdapter adaptedHttpRequest = new HttpClientRequestAdapter(actualHttpRequest);
  * HttpClientResponseAdapter adaptedHttpResponse = null;
  * Throwable error = null;
- * Span span = clientPropagator.startPropagation(spanName, adaptedHttpRequest);
+ * Span span = clientPropagator.startPropagation(adaptedHttpRequest);
  * try {
  *   actualHttpResponse = makeClientCall(actualHttpRequest);
  *   adaptedHttpResponse = new HttpClientResponseAdapter(actualHttpResponse);
