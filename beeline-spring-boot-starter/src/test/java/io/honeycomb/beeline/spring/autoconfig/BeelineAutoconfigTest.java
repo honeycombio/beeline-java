@@ -226,7 +226,7 @@ public class BeelineAutoconfigTest {
     }
 
     @Test
-    public void GIVEN_aNormalWebApplicationContext_EXPECT_RestTemplateInterceptorToNotBeLoaded() {
+    public void GIVEN_restTemplateIsDisabled_EXPECT_RestTemplateInterceptorToNotBeLoaded() {
         webApplicationContextRunner
             .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
             .withPropertyValues(defaultProps)
@@ -239,15 +239,27 @@ public class BeelineAutoconfigTest {
     }
 
     @Test
-    public void GIVEN_aNormalWebApplicationContext_EXPECT_NoResponseObserverToBeLoaded() {
+    public void GIVEN_aNormalWebApplicationContext_EXPECT_DebugResponseObserverToBeLoaded() {
         webApplicationContextRunner
             .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
             .withPropertyValues(defaultProps)
+            .run(context -> {
+                assertThat(context).hasSingleBean(ResponseObserver.class);
+                assertThat(context).hasSingleBean(DebugResponseObserver.class);
+            });
+    }
 
+    @Test
+    public void GIVEN_defaultResponseObserverIsDisabled_EXPECT_DebugResponseObserverToNotBeLoaded() {
+        webApplicationContextRunner
+            .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
+            .withPropertyValues(defaultProps)
+            .withPropertyValues("honeycomb.beeline.log-honeycomb-responses=false")
             .run(context -> {
                 assertThat(context).doesNotHaveBean(ResponseObserver.class);
             });
     }
+
 
     @Configuration
     public static class ResponseObserverConfig {
@@ -263,7 +275,10 @@ public class BeelineAutoconfigTest {
             .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
             .withUserConfiguration(ResponseObserverConfig.class)
             .withPropertyValues(defaultProps)
-            .run(context -> assertThat(context).hasSingleBean(ResponseObserver.class));
+            .run(context -> {
+                assertThat(context).hasSingleBean(ResponseObserver.class);
+                assertThat(context).doesNotHaveBean(DebugResponseObserver.class);
+            });
     }
 
 
