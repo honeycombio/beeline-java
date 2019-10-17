@@ -314,7 +314,7 @@ public class MockMvcTest {
         checkMetaFields(eventFields);
         assertThat(eventFields).containsEntry("name", "BasicPost");
         assertThat(eventFields).containsEntry("request.header.content_type", "text/plain");
-        assertThat(eventFields).containsEntry("request.content_length", 5L);
+        assertThat(eventFields).containsEntry("request.content_length", 5);
         assertThat(eventFields).containsEntry("response.status_code", 200);
         assertThat(eventFields).doesNotContainKeys(problemFields);
     }

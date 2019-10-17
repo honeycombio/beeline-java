@@ -71,10 +71,38 @@ public final class TraceFieldConstants {
     public static final String REQUEST_ERROR_FIELD          = "request.error";
     /** Detail about the error (e.g. the exception's message). */
     public static final String REQUEST_ERROR_DETAIL_FIELD   = "request.error_detail";
+    /** The request content type - if available. */
+    public static final String REQUEST_CONTENT_TYPE_FIELD   = "request.header.content_type";
+    /** The request accept header - if available. */
+    public static final String REQUEST_ACCEPT_FIELD         = "request.header.accept";
+    /** Any query parameters on the request URL. */
+    public static final String REQUEST_QUERY_PARAMS_FIELD   = "request.query";
+
+    // ========= http client namespace =========
+    /** */
+    public static final String CLIENT_REQUEST_PATH_FIELD            = "client.request.path";
+    /** */
+    public static final String CLIENT_REQUEST_METHOD_FIELD          = "client.request.method";
+    /** */
+    public static final String CLIENT_REQUEST_CONTENT_LENGTH_FIELD  = "client.request.content_length";
+    /** */
+    public static final String CLIENT_REQUEST_CONTENT_TYPE_FIELD    = "client.request.content_type";
+    /** */
+    public static final String CLIENT_REQUEST_ERROR_FIELD           = "client.request.error";
+    /** */
+    public static final String CLIENT_REQUEST_ERROR_DETAIL_FIELD    = "client.request.error_detail";
+    /** */
+    public static final String CLIENT_RESPONSE_CONTENT_TYPE_FIELD   = "client.response.content_type";
+    /** */
+    public static final String CLIENT_RESPONSE_STATUS_CODE_FIELD    = "client.response.status_code";
+    /** */
+    public static final String CLIENT_RESPONSE_CONTENT_LENGTH       = "client.response.content_length";
 
     // ========= response namespace =========
     /** The response status code. */
     public static final String STATUS_CODE_FIELD            = "response.status_code";
+    /** The response content type - if available. */
+    public static final String RESPONSE_CONTENT_TYPE_FIELD  = "response.header.content_type";
 
     //// ========= indicators of problems =========
     /** A child span sent as result of its parent being closed before it was closed. */
