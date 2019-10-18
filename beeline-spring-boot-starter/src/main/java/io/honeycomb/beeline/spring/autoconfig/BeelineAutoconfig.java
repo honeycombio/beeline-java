@@ -109,7 +109,7 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "honeycomb.beeline.log-honeycomb-responses")
+    @ConditionalOnProperty(name = "honeycomb.beeline.log-honeycomb-responses", matchIfMissing = true)
     @ConditionalOnMissingBean
     public ResponseObserver defaultBeelineResponseObserver() {
         return new DebugResponseObserver();
