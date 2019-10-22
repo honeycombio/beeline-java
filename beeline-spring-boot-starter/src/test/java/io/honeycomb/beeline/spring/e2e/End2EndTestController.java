@@ -1,16 +1,15 @@
 package io.honeycomb.beeline.spring.e2e;
 
-import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.spring.beans.aspects.ChildSpan;
 import io.honeycomb.beeline.spring.beans.aspects.SpanField;
+import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.libhoney.utils.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.CompletableFuture;
@@ -130,4 +129,39 @@ public class End2EndTestController {
         beeline.getActiveSpan().addField("user-field", "insects");
         return "bacteria";
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Endpoint that throws exception which is handled and mapped to a response status
+    ///////////////////////////////////////////////////////////////////////////
+    @GetMapping("/handled-exception")
+    public String handleException() {
+        throw new HandledException();
+    }
+
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED)
+    public void handleTestException(final HandledException handleException) {
+        //Note that in this scenario the httpStatus code will be available to the Servlet tracer.
+        //However, Spring will not throw the handled exception up the Servlet chain. Therefore,
+        //you should annotate the span with error details here if you wish to add more detail.
+        beeline.getActiveSpan().addField("custom_error_field",handleException.getClass().getSimpleName());
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    // Endpoint that throws exception which is not handled
+    ///////////////////////////////////////////////////////////////////////////
+    @GetMapping("/unhandled-exception")
+    public String unhandledException() {
+        throw new UnhandledException();
+    }
+
+
+    private static class HandledException extends RuntimeException {
+    }
+
+    private static class UnhandledException extends RuntimeException {
+    }
+
 }

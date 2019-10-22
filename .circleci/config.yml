@@ -1,0 +1,58 @@
+version: 2.1
+commands:
+  build:
+    parameters:
+      javaversion:
+        type: string
+        default: "8"
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
+      - run: ./mvnw dependency:go-offline # gets the project dependencies
+      - save_cache: # saves the project dependencies
+          paths:
+            - ~/.m2
+          key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
+      - run: ./mvnw package # run the actual tests
+executors:
+  java:
+    parameters:
+      javaversion:
+        type: string
+        default: "8"
+    working_directory: ~/beeline-java
+    environment:
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    docker:
+      - image: circleci/openjdk:<< parameters.javaversion >>-jdk
+jobs:
+  java:
+    parameters:
+      javaversion:
+        type: string
+        default: "8"
+    executor:
+      name: java
+      javaversion: "<< parameters.javaversion >>"
+    steps:
+      - build
+workflows:
+  version: 2
+  build:
+    jobs:
+      - java:
+          javaversion: "8"
+          name: JDK-8
+      - java:
+          javaversion: "9"
+          name: JDK-9
+      - java:
+          javaversion: "10"
+          name: JDK-10
+      - java:
+          javaversion: "11"
+          name: JDK-11

@@ -10,7 +10,7 @@ public final class InstrumentationConstants {
 
     // @formatter:off
     // ========= Instrumentation constants =========
-    /** Value given to the type field in the webmvc instrumentation. */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.propagation.HttpServerPropagator#OPERATION_TYPE_HTTP_SERVER}*/
     public static final String OPERATION_TYPE_HTTP_SERVER       = "http_server";
     /** Prefix added to span names generated in the webmvc filter. */
     public static final String FILTER_SPAN_NAME_PREFIX          = "http_";
@@ -22,7 +22,7 @@ public final class InstrumentationConstants {
     public static final String AOP_INSTRUMENTATION_NAME           = "spring_aop";
     /** Name of the http client span created by the rest template instrumentation. */
     public static final String HTTP_CLIENT_SPAN_NAME            = "http_client_request";
-    /** Value given to the type field in the rest template instrumentation. */
+    /** @deprecated Use {@link io.honeycomb.beeline.tracing.propagation.HttpClientPropagator#HTTP_CLIENT_SPAN_TYPE} */
     public static final String HTTP_CLIENT_SPAN_TYPE            = "http_client";
     /** Value given to the type field in the annotation-drive instrumentation. */
     public static final String ANNOTATED_METHOD_TYPE            = "annotated_method";

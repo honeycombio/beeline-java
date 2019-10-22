@@ -1,11 +1,14 @@
 package io.honeycomb.beeline.tracing;
 
+import io.honeycomb.beeline.tracing.propagation.HttpServerRequestAdapter;
 import io.honeycomb.beeline.tracing.propagation.Propagation;
 import io.honeycomb.beeline.tracing.propagation.PropagationContext;
 import io.honeycomb.beeline.tracing.sampling.DeterministicTraceSampler;
 import io.honeycomb.beeline.tracing.sampling.Sampling;
 import io.honeycomb.beeline.tracing.utils.TraceFieldConstants;
 import io.honeycomb.libhoney.utils.Assert;
+
+import java.util.ArrayList;
 
 /**
  * The Beeline class is the main/most-convenient point of interaction with traces in a Beeline-instrumented application.
@@ -144,6 +147,41 @@ public class Beeline {
      */
     public void addField(final String key, final Object value) {
         tracer.getActiveSpan().addField(TraceFieldConstants.USER_FIELD_NAMESPACE + key, value);
+    }
+
+    /**
+     * A convenience method that starts a trace.
+     * <p>
+     * Typically this would be invoked when a service receives an external request, but before the request is
+     * processed by the service. For example in an HTTP Servlet filter before
+     * {@code javax.servlet.FilterChain#doFilter(ServletRequest, ServletResponse)}} is invoked.
+     * <p>
+     * The {@code parentContext} contains information that is needed to continue traces across process boundaries, e.g.
+     * whether the external service making the request was also traced. If the external service was also traced, the
+     * span returned by this method will:
+     * <p>
+     * - share the same trace ID <br>
+     * - be the child of the span that represents the call to this service
+     * <p>
+     * The returned span is also accessible via {@link #getActiveSpan()} because it becomes the current span.
+     *
+     * @param spanName the name of the span to create
+     * @param parentContext the parent context containing inter-process tracing information
+     * @param serviceName the name of the service using this method
+     * @return the new current span
+     * @see Tracer#startTrace(Span)
+     * @see io.honeycomb.beeline.tracing.propagation.HttpServerPropagator#startPropagation(HttpServerRequestAdapter) for
+     * an existing solution for starting (and closing) traces for incoming requests to an HTTP server.
+     */
+    public Span startTrace(final String spanName, final PropagationContext parentContext, final String serviceName) {
+        return tracer.startTrace(
+            factory
+                .createBuilder()
+                .setSpanName(spanName)
+                .setServiceName(serviceName)
+                .setParentContext(parentContext)
+                .build()
+        );
     }
 
     public Tracer getTracer() {

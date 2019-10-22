@@ -1,10 +1,6 @@
 package io.honeycomb.beeline.spring.autoconfig;
 
-import io.honeycomb.beeline.spring.beans.BeelineHandlerInterceptor;
-import io.honeycomb.beeline.spring.beans.BeelineInstrumentation;
-import io.honeycomb.beeline.spring.beans.BeelineRestTemplateInterceptor;
-import io.honeycomb.beeline.spring.beans.BeelineServletFilter;
-import io.honeycomb.beeline.spring.beans.DebugResponseObserver;
+import io.honeycomb.beeline.spring.beans.*;
 import io.honeycomb.beeline.spring.beans.aspects.SpanAspect;
 import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.tracing.Span;
@@ -113,7 +109,7 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "honeycomb.beeline.log-honeycomb-responses")
+    @ConditionalOnProperty(name = "honeycomb.beeline.log-honeycomb-responses", matchIfMissing = true)
     @ConditionalOnMissingBean
     public ResponseObserver defaultBeelineResponseObserver() {
         return new DebugResponseObserver();
@@ -132,15 +128,13 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
 
     @Bean
     @ConditionalOnMissingBean
-    public BeelineServletFilter defaultBeelineFilter(final BeelineProperties beelineProperties,
-                                                     final Tracer tracer,
-                                                     final SpanBuilderFactory factory) {
-        return new BeelineServletFilter(
-            beelineProperties,
-            tracer,
-            factory,
+    public SpringServletFilter defaultBeelineFilter(final BeelineProperties beelineProperties,
+                                                    final Beeline beeline) {
+        return new SpringServletFilter(
+            beelineProperties.getServiceName(),
             beelineProperties.getIncludePathPatterns(),
-            beelineProperties.getExcludePathPatterns()
+            beelineProperties.getExcludePathPatterns(),
+            beeline
         );
     }
 
@@ -186,12 +180,12 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public FilterRegistrationBean<BeelineServletFilter> beelineFilterRegistration(
-        final BeelineServletFilter filter,
+    public FilterRegistrationBean<SpringServletFilter> beelineFilterRegistration(
+        final SpringServletFilter filter,
         final BeelineProperties properties
     ) {
         // SpringServletContainerInitializer
-        final FilterRegistrationBean<BeelineServletFilter> registration = new FilterRegistrationBean<>(filter);
+        final FilterRegistrationBean<SpringServletFilter> registration = new FilterRegistrationBean<>(filter);
         registration.setDispatcherTypes(
             DispatcherType.REQUEST,
             DispatcherType.ASYNC,
