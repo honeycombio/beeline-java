@@ -1,3 +1,4 @@
+io.honeycomb.beeline
 io.honeycomb.beeline.spring.autoconfig
 io.honeycomb.beeline.spring.beans
 io.honeycomb.beeline.spring.beans.aspects
