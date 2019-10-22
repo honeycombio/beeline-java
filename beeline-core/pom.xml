@@ -45,6 +45,12 @@
             <artifactId>libhoney-java</artifactId>
             <version>${libhoneyVersion}</version>
         </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- TEST dependencies -->
         <dependency>
             <!-- Allows us to configure logging within test execution, see resources/simplelogger.properties file -->
