@@ -144,14 +144,13 @@ public class DefaultBeeline {
     }
     
     /**
-     * endTrace ends the currently active trace.
+     * endTrace ends the currently active trace on the thread it is called from
      */
     public void endTrace() {
         this.tracer.endTrace();
     }
 
     public void close() {
-        this.tracer.endTrace();
         this.client.close();
     }
 }
