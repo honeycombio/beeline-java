@@ -5,6 +5,12 @@ import io.honeycomb.beeline.tracing.TracerSpan;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+/**
+ * This {@link TracingContext} uses a non-static {@link ThreadLocal} to store the current tracing stack, which will work
+ * under ordinary circumstances to isolate spans associated with a single request from other concurrent requests. Using
+ * a non-static ThreadLocal allows for the possibility of having multiple {@link io.honeycomb.beeline.tracing.Tracer}
+ * instances working in the service at the same time, using the same threads, but working on different requests.
+ */
 public class ThreadLocalTracingContext
     implements TracingContext
 {

@@ -56,6 +56,7 @@ public final class Tracing {
      * See the Tracer's javadoc for details.
      *
      * @param factory used to create Builders of Spans.
+     * @param context {@link TracingContext} instance to use to tracking spans associated with a request
      * @return an instance of Tracer.
      * @see #createSpanBuilderFactory(SpanPostProcessor, TraceSampler)
      */
