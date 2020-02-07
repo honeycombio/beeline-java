@@ -85,4 +85,5 @@ public class SendingSpan extends Span {
     protected SpanPostProcessor getProcessor() {
         return processor;
     }
+
 }

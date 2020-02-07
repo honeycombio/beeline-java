@@ -1,14 +1,14 @@
 package io.honeycomb.beeline.tracing;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.honeycomb.beeline.tracing.context.ThreadLocalTracingContext;
+import io.honeycomb.beeline.tracing.context.TracingContext;
 import io.honeycomb.beeline.tracing.utils.ThreadIdentifierObject;
 import io.honeycomb.beeline.tracing.utils.TraceFieldConstants;
 import io.honeycomb.libhoney.utils.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -69,16 +69,7 @@ public class Tracer {
     */
     private static final Logger LOG = LoggerFactory.getLogger(Tracer.class);
 
-    /*
-    Usually, thread-locals are made static to make data globally accessible to a thread in a thread-safe/efficient
-    manner (e.g. static calls into an MDC context).
-
-    However, Tracer maintains thread local state per thread & per instance. This is because all access to the class is
-    done non-statically and state is managed through the instance. While an unlikely situation, this makes it at least
-    possible for users to create multiple Tracer instances with different configurations (e.g. sending to different
-    data-sets) without the Tracers interfering with each other's thread-local context.
-    */
-    private final ThreadLocal<Deque<TracerSpan>> spanStack;
+    private final TracingContext tracingContext;
 
     private final SpanBuilderFactory factory;
 
@@ -91,7 +82,16 @@ public class Tracer {
     public Tracer(final SpanBuilderFactory factory) {
         Assert.notNull(factory, "Validation failed: factory must not be null");
 
-        this.spanStack = ThreadLocal.withInitial(ArrayDeque::new);
+        this.tracingContext = new ThreadLocalTracingContext();
+        this.factory = factory;
+    }
+
+    public Tracer( final SpanBuilderFactory factory, final TracingContext context )
+    {
+        Assert.notNull(factory, "Validation failed: factory must not be null");
+        Assert.notNull(context, "Validation failed: context must not be null");
+
+        this.tracingContext = context;
         this.factory = factory;
     }
 
@@ -172,7 +172,7 @@ public class Tracer {
 
         if (containsSpan(spanToPop)) {
             boolean hasLogged = false;
-            for (final TracerSpan span : spanStack.get()) {
+            for (final TracerSpan span : tracingContext.get()) {
                 if (hasSameSpanId(spanToPop, span)) {
                     popActiveSpan();
                     return span.getDelegate();
@@ -199,7 +199,7 @@ public class Tracer {
      * durations may be skewed.
      */
     public void endTrace() {
-        if (spanStack.get().size() > 1) {
+        if (tracingContext.size() > 1) {
             /*
             If all child spans have been closed properly, we should end up back at the "root" span, so stack size should
             be 1. This is because TracerSpan#close always sets the parentSpan as the new active span.
@@ -207,10 +207,10 @@ public class Tracer {
             */
             LOG.warn("Called #endTrace while the root span had active child spans.");
         }
-        if (spanStack.get().size() >= 1) {
+        if (tracingContext.size() >= 1) {
             LOG.debug("Ending trace");
             // this implicitly closes child spans (if necessary) and clears the context
-            spanStack.get().peekLast().close();
+            tracingContext.peekLast().close();
         } else {
             LOG.debug("Ending trace, but no trace is active");
         }
@@ -233,7 +233,7 @@ public class Tracer {
      * @return the active span.
      */
     public TracerSpan getActiveSpan() {
-        final TracerSpan tracerSpan = spanStack.get().peekFirst();
+        final TracerSpan tracerSpan = tracingContext.peekFirst();
         if (tracerSpan == null) { // stack is empty
             return TracerSpan.getNoopTracerSpan();
         }
@@ -646,10 +646,10 @@ public class Tracer {
         is still active (spans are still on the stack). We submit such data on a best effort basis,
         even if they may be stale (and thus their duration skewed).
          */
-        if (!spanStack.get().isEmpty()) {
-            LOG.warn("The Tracer's thread-local context was expected to be clean but spans from a previous trace are " +
-                     "still active. Those active spans will be submitted now and the context cleared.");
-            final TracerSpan previousRootSpan = spanStack.get().peekLast();
+        if (!tracingContext.isEmpty()) {
+            LOG.warn("The Tracer's thread-local context: {} was expected to be clean but spans from a previous trace are " +
+                     "still active. Those active spans will be submitted now and the context cleared.", tracingContext);
+            final TracerSpan previousRootSpan = tracingContext.peekLast();
             previousRootSpan.addField(TraceFieldConstants.META_DIRTY_CONTEXT_FIELD, true);
             previousRootSpan.close();
         }
@@ -666,16 +666,16 @@ public class Tracer {
     private void pushActiveSpan(final TracerSpan span) {
         if (span.isNoop()) return;
 
-        spanStack.get().push(span);
+        tracingContext.push(span);
     }
 
     private void popActiveSpan() {
-        spanStack.get().pop();
+        tracingContext.pop();
     }
 
     private boolean containsSpan(final Span spanToDetach) {
         boolean containsSpan = false;
-        for (final TracerSpan tracerSpan : spanStack.get()) {
+        for (final TracerSpan tracerSpan : tracingContext.get()) {
             if (hasSameSpanId(spanToDetach, tracerSpan)) {
                 containsSpan = true;
                 break;

@@ -3,6 +3,7 @@ package io.honeycomb.beeline.tracing;
 import io.honeycomb.beeline.tracing.ids.TraceIdProvider;
 import io.honeycomb.beeline.tracing.ids.UUIDTraceIdProvider;
 import io.honeycomb.beeline.tracing.sampling.TraceSampler;
+import io.honeycomb.beeline.tracing.context.TracingContext;
 import io.honeycomb.libhoney.HoneyClient;
 import io.honeycomb.libhoney.transport.batch.ClockProvider;
 import io.honeycomb.libhoney.transport.batch.impl.SystemClockProvider;
@@ -47,6 +48,19 @@ public final class Tracing {
      */
     public static Tracer createTracer(final SpanBuilderFactory factory) {
         return new Tracer(factory);
+    }
+
+    /**
+     * Factory method to create a new {@link Tracer} instance,
+     * which helps manage tracing instrumentation and reports spans to Honeycomb using the provided client.
+     * See the Tracer's javadoc for details.
+     *
+     * @param factory used to create Builders of Spans.
+     * @return an instance of Tracer.
+     * @see #createSpanBuilderFactory(SpanPostProcessor, TraceSampler)
+     */
+    public static Tracer createTracer(final SpanBuilderFactory factory, TracingContext context ) {
+        return new Tracer(factory, context);
     }
 
     /**
