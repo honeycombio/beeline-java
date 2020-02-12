@@ -368,17 +368,17 @@ public class Span implements AutoCloseable {
 
     @Override
     public String toString() {
-        return "Span{" +
-               "noop=" + noop +
-               ", spanName='" + spanName + '\'' +
-               ", serviceName='" + serviceName + '\'' +
-               ", parentSpanId='" + parentSpanId + '\'' +
-               ", traceId='" + traceId + '\'' +
-               ", spanId='" + spanId + '\'' +
-               ", traceFields=" + traceFields +
-               ", fields=" + fields +
+        return getClass().getSimpleName() + "{" +
+               "noop=" + isNoop() +
+               ", spanName='" + getSpanName() + '\'' +
+               ", serviceName='" + getServiceName() + '\'' +
+               ", parentSpanId='" + getParentSpanId() + '\'' +
+               ", traceId='" + getTraceId() + '\'' +
+               ", spanId='" + getSpanId() + '\'' +
+               ", traceFields=" + getTraceFields() +
+               ", fields=" + getFields() +
                ", clock=" + clock +
-               ", startTimestamp=" + startTimestamp +
+               ", startTimestamp=" + getStartTime() +
                ", startOfElapsedTime=" + startOfElapsedTime +
                ", closed=" + closed +
                '}';
