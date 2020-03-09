@@ -1,5 +1,18 @@
 # Beeline Changelog
 
+## 1.1.0
+
+Improvements: 
+
+- Update wiremock version to 2.26.0.
+- Make TracingContex an interface for holding span stack. This allows more flexibility in how related spans are tracked, especially for systems that use fixed-size thread pools that recycle threads.
+
+## 1.0.9
+
+Improvements:
+
+- Change spotbugs dependency to have test scope to resolve [#26](https://github.com/honeycombio/beeline-java/issues/26)
+
 ## 1.0.8
 
 Improvements:
