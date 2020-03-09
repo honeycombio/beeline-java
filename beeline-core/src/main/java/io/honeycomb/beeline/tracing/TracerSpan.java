@@ -163,5 +163,11 @@ public class TracerSpan extends Span {
     protected void closeInternal() {
         delegate.close();
     }
+
+    @Override
+    public String toString()
+    {
+        return "TracerSpan{" + "delegate=" + delegate + '}';
+    }
 }
 

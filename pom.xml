@@ -7,7 +7,7 @@
     <name>Beeline Java (Parent)</name>
     <artifactId>beeline-parent</artifactId>
     <groupId>io.honeycomb.beeline</groupId>
-    <version>1.0.8</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
 
     <description>Parent POM for the Honeycomb Beeline for Java</description>
@@ -77,7 +77,7 @@
         <junitVersion>4.12</junitVersion>
         <mockitoVersion>3.1.0</mockitoVersion>
         <assertjVersion>3.11.1</assertjVersion>
-        <wiremockVersion>2.21.0</wiremockVersion>
+        <wiremockVersion>2.26.0</wiremockVersion>
         <restAssuredVersion>3.3.0</restAssuredVersion>
 
         <!-- Maven plugin versions  -->
@@ -101,6 +101,7 @@
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs</artifactId>
             <version>${spotbugsVersion}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.github.spotbugs</groupId>
