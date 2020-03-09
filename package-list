@@ -4,6 +4,7 @@ io.honeycomb.beeline.spring.beans
 io.honeycomb.beeline.spring.beans.aspects
 io.honeycomb.beeline.spring.utils
 io.honeycomb.beeline.tracing
+io.honeycomb.beeline.tracing.context
 io.honeycomb.beeline.tracing.ids
 io.honeycomb.beeline.tracing.propagation
 io.honeycomb.beeline.tracing.sampling
