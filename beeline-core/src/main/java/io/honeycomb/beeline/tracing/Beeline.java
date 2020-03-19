@@ -146,7 +146,11 @@ public class Beeline {
      * @see #getActiveSpan()
      */
     public void addField(final String key, final Object value) {
-        tracer.getActiveSpan().addField(TraceFieldConstants.USER_FIELD_NAMESPACE + key, value);
+		if (key.startsWith(TraceFieldConstants.USER_FIELD_NAMESPACE)) {
+			tracer.getActiveSpan().addField(key, value);
+		} else {
+		    tracer.getActiveSpan().addField(TraceFieldConstants.USER_FIELD_NAMESPACE + key, value);
+		}
     }
 
     /**
