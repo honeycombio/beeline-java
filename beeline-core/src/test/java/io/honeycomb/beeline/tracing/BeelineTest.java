@@ -57,4 +57,19 @@ public class BeelineTest {
         verify(mockSpan).addField("app.key", "value");
         verifyNoMoreInteractions(tracer, factory, mockSpan);
     }
+
+    @Test
+    public void GIVEN_beeline_WHEN_addingFieldWithAppPrefix_EXPECT_beelineToNotAddNamespace() {
+        final SpanBuilderFactory factory = mock(SpanBuilderFactory.class);
+        final Tracer tracer = mock(Tracer.class);
+        final TracerSpan mockSpan = mock(TracerSpan.class);
+        when(tracer.getActiveSpan()).thenReturn(mockSpan);
+        final Beeline beeline = new Beeline(tracer, factory);
+
+        beeline.addField("app.key", "value");
+
+        verify(tracer).getActiveSpan();
+        verify(mockSpan).addField("app.key", "value");
+        verifyNoMoreInteractions(tracer, factory, mockSpan);
+    }
 }
