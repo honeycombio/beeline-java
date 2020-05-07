@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.honeycomb.beeline</groupId>
         <artifactId>beeline-parent</artifactId>
-        <version>1.0.7</version>
+        <version>1.1.0</version>
     </parent>
     <name>Beeline Java (Core)</name>
     <artifactId>beeline-core</artifactId>
@@ -44,6 +44,12 @@
             <groupId>io.honeycomb.libhoney</groupId>
             <artifactId>libhoney-java</artifactId>
             <version>${libhoneyVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
         </dependency>
         <!-- TEST dependencies -->
         <dependency>

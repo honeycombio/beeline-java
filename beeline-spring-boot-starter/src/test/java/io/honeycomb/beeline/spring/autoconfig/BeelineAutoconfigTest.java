@@ -2,7 +2,7 @@ package io.honeycomb.beeline.spring.autoconfig;
 
 import io.honeycomb.beeline.spring.beans.BeelineHandlerInterceptor;
 import io.honeycomb.beeline.spring.beans.BeelineRestTemplateInterceptor;
-import io.honeycomb.beeline.spring.beans.BeelineServletFilter;
+import io.honeycomb.beeline.spring.beans.SpringServletFilter;
 import io.honeycomb.beeline.spring.beans.DebugResponseObserver;
 import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.tracing.Span;
@@ -49,7 +49,7 @@ public class BeelineAutoconfigTest {
         HoneyClient.class,
         Tracer.class,
         TraceSampler.class,
-        BeelineServletFilter.class,
+        SpringServletFilter.class,
         BeelineMetaFieldProvider.class,
         Beeline.class,
         BeelineHandlerInterceptor.class,

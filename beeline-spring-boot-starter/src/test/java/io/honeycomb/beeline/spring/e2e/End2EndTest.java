@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -27,15 +28,14 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.*;
 
 /**
@@ -124,6 +124,7 @@ public class End2EndTest {
             .contains(
                 entry("type", "http_client"),
                 entry("client.request.method", "GET"),
+                entry("client.response.status_code", 200),
                 entry("client.request.path", "/backend-service"),
                 entry("trace.trace_id", "abc"))
             .doesNotContainKeys(
@@ -136,6 +137,7 @@ public class End2EndTest {
                 entry("request.method", "GET"),
                 entry("request.path", "/call-backend"),
                 entry("trace.trace_id", "abc"),
+                entry("response.status_code", 200),
                 entry("trace.parent_id", "123"))
             .doesNotContainKeys(
                 "spring.request.async_dispatch",
@@ -162,7 +164,7 @@ public class End2EndTest {
             getRequestedFor(urlPathEqualTo("/backend-service"))
             .withoutHeader("x-honeycomb-trace"));
 
-        verifyZeroInteractions(transport);
+        verifyNoInteractions(transport);
     }
 
     @Test
@@ -175,7 +177,7 @@ public class End2EndTest {
             .statusCode(200)
             .body(is("Forward Received"));
 
-        verifyZeroInteractions(transport);
+        verifyNoInteractions(transport);
     }
 
     @Test
@@ -198,6 +200,7 @@ public class End2EndTest {
                 entry("request.method", "GET"),
                 entry("request.path", "/receive-forward"),
                 entry("spring.request.dispatcher_type", "REQUEST"),
+                entry("response.status_code", 200),
                 entry("step2", true))
             .doesNotContainKeys(
                 "trace.parent_id",
@@ -230,6 +233,7 @@ public class End2EndTest {
                 entry("request.method", "GET"),
                 entry("request.path", "/receive-forward"),
                 entry("spring.request.dispatcher_type", "FORWARD"),
+                entry("response.status_code", 200),
                 entry("trace.trace_id", "abc"),
                 entry("step2", true))
             .doesNotContainKeys(
@@ -242,6 +246,7 @@ public class End2EndTest {
                 entry("request.method", "GET"),
                 entry("request.path", "/forward-request"),
                 entry("spring.request.dispatcher_type", "REQUEST"),
+                entry("response.status_code", 200),
                 entry("trace.trace_id", "abc"),
                 entry("trace.parent_id", "123"),
                 entry("step1", true))
@@ -270,6 +275,7 @@ public class End2EndTest {
                 entry("request.path", "/receive-forward-async"),
                 entry("spring.request.dispatcher_type", "REQUEST"),
                 entry("spring.request.async_dispatch", true),
+                entry("response.status_code", 200),
                 entry("trace.trace_id", "abc"),
                 entry("trace.parent_id", "123"),
                 entry("step2", true))
@@ -301,6 +307,7 @@ public class End2EndTest {
                 entry("request.method", "GET"),
                 entry("request.path", "/receive-forward-async"),
                 entry("spring.request.dispatcher_type", "FORWARD"),
+                entry("response.status_code", 200),
                 entry("spring.request.async_dispatch", true),
                 entry("trace.trace_id", "abc"),
                 entry("step2", true))
@@ -313,41 +320,13 @@ public class End2EndTest {
                 entry("request.method", "GET"),
                 entry("request.path", "/forward-to-async"),
                 entry("spring.request.dispatcher_type", "REQUEST"),
+                entry("response.status_code", 200),
                 entry("spring.request.async_dispatch", true),
                 entry("trace.trace_id", "abc"),
                 entry("trace.parent_id", "123"),
                 entry("step1", true))
             .doesNotContainKeys(
                 "request.error");
-    }
-
-    @Test
-    public void GIVEN_AnEndpointThatThrowsAnException_WHEN_callingEndpoint_EXPECT_submittedSpanToHaveErrorDetail() {
-        given()
-            .header("x-honeycomb-trace", "1;trace_id=abc,parent_id=123")
-            .get("/receive-forward-exception")
-
-            .then()
-            .statusCode(INTERNAL_SERVER_ERROR.value())
-            .body("error", Matchers.equalTo("Internal Server Error"));
-
-        final List<ResolvedEvent> resolvedEvents = captureNoOfEvents(1);
-        final ResolvedEvent requestEvent = resolvedEvents.get(0);
-
-        assertThat(fieldStringOf(requestEvent, "request.error_detail"))
-            .contains("Oh boi!");
-        assertThat(requestEvent.getFields())
-            .contains(
-                entry("type", "http_server"),
-                entry("request.method", "GET"),
-                entry("request.path", "/receive-forward-exception"),
-                entry("spring.request.dispatcher_type", "REQUEST"),
-                entry("trace.trace_id", "abc"),
-                entry("trace.parent_id", "123"),
-                entry("request.error", "NestedServletException"),
-                entry("step2", true))
-            .doesNotContainKeys(
-                "spring.request.async_dispatch");
     }
 
     @Test
@@ -434,7 +413,8 @@ public class End2EndTest {
                 entry("request.error", "NestedServletException"),
                 entry("step2", true))
             .doesNotContainKeys(
-                "spring.request.async_dispatch");
+                "spring.request.async_dispatch",
+                "response.status_code");
 
         assertThat(fieldStringOf(requestEvent, "request.error_detail"))
             .contains("Oh boi!");
@@ -448,7 +428,8 @@ public class End2EndTest {
                 entry("trace.parent_id", "123"),
                 entry("step1", true))
             .doesNotContainKeys(
-                "spring.request.async_dispatch");
+                "spring.request.async_dispatch",
+                "response.status_code");
     }
 
     @Test
@@ -462,19 +443,19 @@ public class End2EndTest {
             .statusCode(500)
             .body("error", Matchers.equalTo("Internal Server Error"));
 
-        verifyZeroInteractions(transport);
+        verifyNoInteractions(transport);
     }
 
     @Test
-    public void GIVEN_anEndpointWithExceptionallyCompletedAsyncReturnValue_WHEN_forwardedToEndpoint_EXPECT_submittedSpansToHaveErrorDetails() {
+    public void GIVEN_anEndpointWithExceptionallyCompletedAsyncReturnValue_WHEN_forwardedToEndpoint_EXPECT_submittedSpansToHaveErrorDetailsButNoResponseStatus() {
         // WHEN hitting an instrumented web service with a trace header
         given()
             .header("x-honeycomb-trace", "1;trace_id=abc,parent_id=123")
             .get("/forward-to-exception-async")
 
         .then()
-            .statusCode(500)
-            .body("error", Matchers.equalTo("Internal Server Error"));
+           .statusCode(500)
+           .body("error", Matchers.equalTo("Internal Server Error"));
 
         final List<ResolvedEvent> resolvedEvents = captureNoOfEvents(2);
         final ResolvedEvent forwardEvent = resolvedEvents.get(0);
@@ -496,7 +477,7 @@ public class End2EndTest {
                 entry("trace.trace_id", "abc"),
                 entry("request.error", "NestedServletException"),
                 entry("step2", true))
-            .doesNotContainKeys();
+            .doesNotContainKeys("response.status_code");
 
         assertThat(fieldStringOf(requestEvent, "request.error_detail"))
             .contains("Oh dear!");
@@ -510,11 +491,11 @@ public class End2EndTest {
                 entry("trace.trace_id", "abc"),
                 entry("trace.parent_id", "123"),
                 entry("step1", true))
-            .doesNotContainKeys();
+            .doesNotContainKeys("response.status_code");
     }
 
     @Test
-    public void GIVEN_anEndpointReturningLongAsyncTask_WHEN_hittingAsyncTimeout_EXPECT_submittedSpansToHaveTimeoutErrorDetails() {
+    public void GIVEN_anEndpointReturningLongAsyncTask_WHEN_hittingAsyncTimeout_EXPECT_submittedSpansToHaveTimeoutErrorDetailsButNoResponseStatus() {
         // WHEN hitting an instrumented web service with a trace header
         given()
             .header("x-honeycomb-trace", "1;trace_id=abc,parent_id=123")
@@ -539,17 +520,15 @@ public class End2EndTest {
                 entry("spring.request.async_dispatch", true),
                 entry("trace.trace_id", "abc"),
                 entry("trace.parent_id", "123"))
-            .doesNotContainKeys();
+            .doesNotContainKeys("response.status_code");
     }
 
-
     @Test
-    public void GIVEN_anEndpointThatIsAnnotatedToCreateAChildSpab_WHEN_receivingRespons_EXPECT_anExtraSpanToHaveBeenSubmitted() throws Exception {
+    public void GIVEN_anEndpointThatIsAnnotatedToCreateAChildSpan_WHEN_receivingResponse_EXPECT_anExtraSpanToHaveBeenSubmitted() throws Exception {
         given()
             .header("x-honeycomb-trace", "1;trace_id=abc,parent_id=123")
             .header("x-application-header", "fish")
             .get("/annotation-span")
-
             .then()
             .statusCode(OK.value())
             .body(Matchers.equalTo("bacteria"));
@@ -568,7 +547,7 @@ public class End2EndTest {
                 entry("type", "annotated_method"),
                 entry("trace.trace_id", "abc"))
             .containsKeys("trace.parent_id", "trace.span_id")
-            .doesNotContainKeys("spring.request.dispatcher_type", "spring.request.async_dispatch");
+            .doesNotContainKeys("spring.request.dispatcher_type", "spring.request.async_dispatch", "response.status_code");
 
         assertThat(requestEvent.getFields())
             .contains(
@@ -577,9 +556,64 @@ public class End2EndTest {
                 entry("request.path", "/annotation-span"),
                 entry("spring.request.dispatcher_type", "REQUEST"),
                 entry("trace.trace_id", "abc"),
+                entry("response.status_code", 200),
                 entry("trace.parent_id", "123"))
-            .doesNotContainKeys("request.error");
+            .doesNotContainKeys("request.error", "request.error_detail");
     }
+
+    @Test
+    public void GIVEN_anEndpointThatThrowsAHandledException_WHEN_callingEndpoint_EXPECT_SpanContainingMappedErrorCode() {
+        given()
+            .header("x-honeycomb-trace", "1;trace_id=abc,parent_id=123")
+            .get("/handled-exception")
+            .then()
+            .statusCode(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED.value());
+
+        final List<ResolvedEvent> resolvedEvents = captureNoOfEvents(1);
+        final ResolvedEvent exceptionEvent = resolvedEvents.get(0);
+
+        assertThat(exceptionEvent.getFields())
+            .contains(
+                entry("type", "http_server"),
+                entry("request.method", "GET"),
+                entry("request.path", "/handled-exception"),
+                entry("spring.request.dispatcher_type", "REQUEST"),
+                entry("response.status_code", HttpStatus.BANDWIDTH_LIMIT_EXCEEDED.value()),
+                entry("trace.trace_id", "abc"),
+                entry("custom_error_field", "HandledException"),
+                entry("trace.parent_id", "123"))
+            .doesNotContainKeys(
+                "request.error",
+                "request.error_detail",
+                "spring.request.async_dispatch");
+    }
+
+    @Test
+    public void GIVEN_anEndpointThatThrowsAnUnhandledException_WHEN_callingEndpoint_EXPECT_SpanContainingErrorDetailButNoResponseStatus() {
+        given()
+            .header("x-honeycomb-trace", "1;trace_id=abc,parent_id=123")
+            .get("/unhandled-exception")
+            .then()
+            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+        final List<ResolvedEvent> resolvedEvents = captureNoOfEvents(1);
+        final ResolvedEvent exceptionEvent = resolvedEvents.get(0);
+
+        assertThat(exceptionEvent.getFields())
+            .contains(
+                entry("type", "http_server"),
+                entry("request.method", "GET"),
+                entry("request.path", "/unhandled-exception"),
+                entry("spring.request.dispatcher_type", "REQUEST"),
+                entry("trace.trace_id", "abc"),
+                entry("request.error","NestedServletException"),
+                entry("trace.parent_id", "123"))
+            .containsKeys("request.error_detail")
+            .doesNotContainKeys(
+                "spring.request.async_dispatch",
+                "response.status_code");
+    }
+
     // @formatter:on
 
     private List<ResolvedEvent> captureNoOfEvents(final int times) {

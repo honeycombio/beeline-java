@@ -19,13 +19,13 @@ import static io.honeycomb.beeline.spring.utils.MoreTraceFieldConstants.SPRING_M
 
 
 /**
- * The interceptor is coupler to the {@link BeelineServletFilter} and requires it to have set up the thread local
+ * The interceptor is coupled to the {@link SpringServletFilter} and requires it to have set up the thread local
  * context via the Tracer.
  * <p>
  * The purpose of this is to add additional fields to the web application's "root" Span that are not yet available
  * within a Servlet Filter. Namely, information about the handler mapping.
  * <p>
- * For details about the execution flow see the Javadoc of the super classes and the {@link BeelineServletFilter}.
+ * For details about the execution flow see the Javadoc of the super classes and the {@link SpringServletFilter}.
  */
 public class BeelineHandlerInterceptor extends HandlerInterceptorAdapter {
     private final Tracer tracer;

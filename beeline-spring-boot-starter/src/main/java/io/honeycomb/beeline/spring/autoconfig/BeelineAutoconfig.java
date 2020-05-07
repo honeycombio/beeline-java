@@ -128,13 +128,13 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
 
     @Bean
     @ConditionalOnMissingBean
-    public BeelineServletFilter defaultBeelineFilter(final BeelineProperties beelineProperties,
-                                                     final Beeline beeline) {
-        return new BeelineServletFilter(
-            beelineProperties,
-            beeline,
+    public SpringServletFilter defaultBeelineFilter(final BeelineProperties beelineProperties,
+                                                    final Beeline beeline) {
+        return new SpringServletFilter(
+            beelineProperties.getServiceName(),
             beelineProperties.getIncludePathPatterns(),
-            beelineProperties.getExcludePathPatterns()
+            beelineProperties.getExcludePathPatterns(),
+            beeline
         );
     }
 
@@ -180,12 +180,12 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public FilterRegistrationBean<BeelineServletFilter> beelineFilterRegistration(
-        final BeelineServletFilter filter,
+    public FilterRegistrationBean<SpringServletFilter> beelineFilterRegistration(
+        final SpringServletFilter filter,
         final BeelineProperties properties
     ) {
         // SpringServletContainerInitializer
-        final FilterRegistrationBean<BeelineServletFilter> registration = new FilterRegistrationBean<>(filter);
+        final FilterRegistrationBean<SpringServletFilter> registration = new FilterRegistrationBean<>(filter);
         registration.setDispatcherTypes(
             DispatcherType.REQUEST,
             DispatcherType.ASYNC,
