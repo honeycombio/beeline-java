@@ -23,24 +23,28 @@ public class BeelineBuilder {
     private SpanBuilderFactory defaultFactory = null;
     private Tracer tracer = null;
 
-    private HoneyClientBuilder clientBuilder = new HoneyClientBuilder();
+    private final HoneyClientBuilder clientBuilder = new HoneyClientBuilder();
 
-    public Beeline build() throws URISyntaxException {
-        client = createClient();
+    /**
+     * Build new Beeline instance
+     * @return the new Beeline instance
+     */
+    public Beeline build() {
+        client = clientBuilder.build();
         return createBeeline();
     }
 
 
     @SuppressWarnings("unchecked")
     private Beeline createBeeline() {
-        TraceSampler<Object> sampler = (TraceSampler<Object>) createSampler();
+        TraceSampler<Object> sampler = (TraceSampler<Object>) getSampler();
         SpanPostProcessor postProcessor = spanPostProcessor != null ? spanPostProcessor : Tracing.createSpanProcessor(client, sampler);
         SpanBuilderFactory factory = defaultFactory != null ? defaultFactory : Tracing.createSpanBuilderFactory(postProcessor, sampler);
         Tracer tracer = this.tracer != null ? this.tracer : Tracing.createTracer(factory);
         return Tracing.createBeeline(tracer, factory);
     }
 
-    private TraceSampler<?> createSampler() {
+    private TraceSampler<?> getSampler() {
         if (sampleRate == null) {
             return Sampling.alwaysSampler();
         }
@@ -48,10 +52,6 @@ public class BeelineBuilder {
             return Sampling.neverSampler();
         }
         return Sampling.deterministicSampler(sampleRate);
-    }
-
-    private HoneyClient createClient() throws URISyntaxException {
-        return clientBuilder.build();
     }
 
     public BeelineBuilder addGlobalField(String name, Object field) {
