@@ -18,7 +18,6 @@ import java.net.URISyntaxException;
 
 public class BeelineBuilder {
     private Integer sampleRate = null;
-    private HoneyClient client = null;
     private SpanPostProcessor spanPostProcessor = null;
     private SpanBuilderFactory defaultFactory = null;
     private Tracer tracer = null;
@@ -26,25 +25,25 @@ public class BeelineBuilder {
     private final HoneyClientBuilder clientBuilder = new HoneyClientBuilder();
 
     /**
-     * Build new Beeline instance
+     * Instantiate the configured Beeline instance
      * @return the new Beeline instance
      */
     public Beeline build() {
-        client = clientBuilder.build();
-        return createBeeline();
+        HoneyClient client = clientBuilder.build();
+        return createBeeline(client);
     }
 
 
     @SuppressWarnings("unchecked")
-    private Beeline createBeeline() {
-        TraceSampler<Object> sampler = (TraceSampler<Object>) getSampler();
+    private Beeline createBeeline(HoneyClient client) {
+        TraceSampler<Object> sampler = (TraceSampler<Object>) selectSampler();
         SpanPostProcessor postProcessor = spanPostProcessor != null ? spanPostProcessor : Tracing.createSpanProcessor(client, sampler);
         SpanBuilderFactory factory = defaultFactory != null ? defaultFactory : Tracing.createSpanBuilderFactory(postProcessor, sampler);
         Tracer tracer = this.tracer != null ? this.tracer : Tracing.createTracer(factory);
         return Tracing.createBeeline(tracer, factory);
     }
 
-    private TraceSampler<?> getSampler() {
+    private TraceSampler<?> selectSampler() {
         if (sampleRate == null) {
             return Sampling.alwaysSampler();
         }
@@ -69,123 +68,124 @@ public class BeelineBuilder {
         return this;
     }
 
-    public BeelineBuilder setDataSet(String dataSet) {
-        clientBuilder.setDataSet(dataSet);
+    public BeelineBuilder dataSet(String dataSet) {
+        clientBuilder.dataSet(dataSet);
         return this;
     }
 
-    public BeelineBuilder setApiHost(String apiHost) throws URISyntaxException {
-        clientBuilder.setApiHost(apiHost);
+    public BeelineBuilder apiHost(String apiHost) throws URISyntaxException {
+        clientBuilder.apiHost(apiHost);
         return this;
     }
 
-    public BeelineBuilder setWriteKey(String writeKey) {
-        clientBuilder.setWriteKey(writeKey);
+    public BeelineBuilder writeKey(String writeKey) {
+        clientBuilder.writeKey(writeKey);
         return this;
     }
 
-    public BeelineBuilder setDebugFlag(boolean debugFlag) {
-        clientBuilder.setDebugFlag(debugFlag);
+    public BeelineBuilder debug(boolean enabled) {
+        clientBuilder.debug(enabled);
         return this;
     }
 
-    public BeelineBuilder setSampleRate(int sampleRate) {
+    public BeelineBuilder sampleRate(int sampleRate) {
         this.sampleRate = sampleRate;
+        clientBuilder.sampleRate(sampleRate);
         return this;
     }
 
-    public BeelineBuilder setBatchSize(int batchSize) {
-        clientBuilder.setBatchSize(batchSize);
+    public BeelineBuilder batchSize(int batchSize) {
+        clientBuilder.batchSize(batchSize);
         return this;
     }
 
-    public BeelineBuilder setBatchTimeoutMillis(long batchTimeoutMillis) {
-        clientBuilder.setBatchTimeoutMillis(batchTimeoutMillis);
+    public BeelineBuilder batchTimeoutMillis(long batchTimeoutMillis) {
+        clientBuilder.batchTimeoutMillis(batchTimeoutMillis);
         return this;
     }
 
-    public BeelineBuilder setQueueCapacity(int queueCapacity) {
-        clientBuilder.setQueueCapacity(queueCapacity);
+    public BeelineBuilder queueCapacity(int queueCapacity) {
+        clientBuilder.queueCapacity(queueCapacity);
         return this;
     }
 
-    public BeelineBuilder setMaxPendingBatchRequests(int maxPendingBatchRequests) {
-        clientBuilder.setMaxPendingBatchRequests(maxPendingBatchRequests);
+    public BeelineBuilder maxPendingBatchRequests(int maxPendingBatchRequests) {
+        clientBuilder.maxPendingBatchRequests(maxPendingBatchRequests);
         return this;
     }
 
-    public BeelineBuilder setMaxConnections(int maxConnections) {
-        clientBuilder.setMaxConnections(maxConnections);
+    public BeelineBuilder maxConnections(int maxConnections) {
+        clientBuilder.maxConnections(maxConnections);
         return this;
     }
 
-    public BeelineBuilder setMaxConnectionsPerApiHost(int maxConnectionsPerApiHost) {
-        clientBuilder.setMaxConnectionsPerApiHost(maxConnectionsPerApiHost);
+    public BeelineBuilder maxConnectionsPerApiHost(int maxConnectionsPerApiHost) {
+        clientBuilder.maxConnectionsPerApiHost(maxConnectionsPerApiHost);
         return this;
     }
 
-    public BeelineBuilder setConnectTimeout(int connectTimeout) {
-        clientBuilder.setConnectTimeout(connectTimeout);
+    public BeelineBuilder connectTimeout(int connectTimeout) {
+        clientBuilder.connectTimeout(connectTimeout);
         return this;
     }
 
-    public BeelineBuilder setConnectionRequestTimeout(int connectionRequestTimeout) {
-        clientBuilder.setConnectionRequestTimeout(connectionRequestTimeout);
+    public BeelineBuilder connectionRequestTimeout(int connectionRequestTimeout) {
+        clientBuilder.connectionRequestTimeout(connectionRequestTimeout);
         return this;
     }
 
-    public BeelineBuilder setSocketTimeout(int socketTimeout) {
-        clientBuilder.setSocketTimeout(socketTimeout);
+    public BeelineBuilder socketTimeout(int socketTimeout) {
+        clientBuilder.socketTimeout(socketTimeout);
         return this;
     }
 
-    public BeelineBuilder setBufferSize(int bufferSize) {
-        clientBuilder.setBufferSize(bufferSize);
+    public BeelineBuilder bufferSize(int bufferSize) {
+        clientBuilder.bufferSize(bufferSize);
         return this;
     }
 
-    public BeelineBuilder setIoThreadCount(int ioThreadCount) {
-        clientBuilder.setIoThreadCount(ioThreadCount);
+    public BeelineBuilder ioThreadCount(int ioThreadCount) {
+        clientBuilder.ioThreadCount(ioThreadCount);
         return this;
     }
 
-    public BeelineBuilder setMaximumHttpRequestShutdownWait(Long maximumHttpRequestShutdownWait) {
-        clientBuilder.setMaximumHttpRequestShutdownWait(maximumHttpRequestShutdownWait);
+    public BeelineBuilder maximumHttpRequestShutdownWait(Long maximumHttpRequestShutdownWait) {
+        clientBuilder.maximumHttpRequestShutdownWait(maximumHttpRequestShutdownWait);
         return this;
     }
 
-    public BeelineBuilder setAdditionalUserAgent(String additionalUserAgent) {
-        clientBuilder.setAdditionalUserAgent(additionalUserAgent);
+    public BeelineBuilder additionalUserAgent(String additionalUserAgent) {
+        clientBuilder.additionalUserAgent(additionalUserAgent);
         return this;
     }
 
-    public BeelineBuilder setProxyHostNoCredentials(String proxyHost) {
-        clientBuilder.setProxyNoCredentials(proxyHost);
+    public BeelineBuilder proxyNoCredentials(String host) {
+        clientBuilder.proxyNoCredentials(host);
         return this;
     }
 
-    public BeelineBuilder setSslContext(SSLContext sslContext) {
-        clientBuilder.setSSLContext(sslContext);
+    public BeelineBuilder sslContext(SSLContext sslContext) {
+        clientBuilder.sslContext(sslContext);
         return this;
     }
 
-    public BeelineBuilder setSpanPostProcessor(SpanPostProcessor spanPostProcessor) {
+    public BeelineBuilder spanPostProcessor(SpanPostProcessor spanPostProcessor) {
         this.spanPostProcessor = spanPostProcessor;
         return this;
     }
 
-    public BeelineBuilder setFactory(SpanBuilderFactory factory) {
+    public BeelineBuilder spanBuilderFactory(SpanBuilderFactory factory) {
         this.defaultFactory = factory;
         return this;
     }
 
-    public BeelineBuilder setTracer(Tracer tracer) {
+    public BeelineBuilder tracer(Tracer tracer) {
         this.tracer = tracer;
         return this;
     }
 
-    public BeelineBuilder setMaximumPendingBatchRequests(int maximumPendingBatchRequests) {
-        clientBuilder.setMaximumPendingBatchRequests(maximumPendingBatchRequests);
+    public BeelineBuilder maximumPendingBatchRequests(int maximumPendingBatchRequests) {
+        clientBuilder.maximumPendingBatchRequests(maximumPendingBatchRequests);
         return this;
     }
 
@@ -194,8 +194,8 @@ public class BeelineBuilder {
         return this;
     }
 
-    public BeelineBuilder setEventPostProcessor(EventPostProcessor eventPostProcessor) {
-        clientBuilder.setEventPostProcessor(eventPostProcessor);
+    public BeelineBuilder eventPostProcessor(EventPostProcessor eventPostProcessor) {
+        clientBuilder.eventPostProcessor(eventPostProcessor);
         return this;
     }
 
