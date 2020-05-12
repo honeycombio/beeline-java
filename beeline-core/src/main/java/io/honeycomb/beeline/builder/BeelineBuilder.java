@@ -1,4 +1,4 @@
-package io.honeycomb.beeline;
+package io.honeycomb.beeline.builder;
 
 import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.tracing.SpanBuilderFactory;
@@ -27,7 +27,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class BeelineBuilder {
-    private final HoneyClientBuilder clientBuilder = new HoneyClientBuilder();
+    protected final HoneyClientBuilder clientBuilder = new HoneyClientBuilder();
     private SpanBuilderFactory defaultFactory = null;
     private Integer sampleRate = null;
     private SpanPostProcessor spanPostProcessor = null;
@@ -36,7 +36,7 @@ public class BeelineBuilder {
 
     /**
      * Build new Beeline instance as configured by calling the various builder methods previous to this call.
-     * <p/>
+     * <p>
      * <h3>Example</h3>
      * <pre>{@code
      * Beeline beeline = new BeelineBuilder()
@@ -107,7 +107,7 @@ public class BeelineBuilder {
 
     /**
      * Use this method to configure the HTTP client to use a proxy that needs authentication.
-     * <p/>
+     * <p>
      * For configuring a proxy server without authentication see: {@link #proxyNoCredentials(String)}
      *
      * @param proxyHost hostname of the proxy, frequently FQDN of the server
@@ -220,7 +220,7 @@ public class BeelineBuilder {
      * <p>
      * Default: 100
      *
-     * @param batchTimeoutMillis milliseconds to send non-empty but not-full batch.
+     * @param batchTimeoutMillis max milliseconds to send non-empty but not-full batch.
      */
     public BeelineBuilder batchTimeoutMillis(final long batchTimeoutMillis) {
         clientBuilder.batchTimeoutMillis(batchTimeoutMillis);
@@ -415,7 +415,7 @@ public class BeelineBuilder {
 
     /**
      * Use this method to configure the HTTP client to use a proxy without authentication.
-     * <p/>
+     * <p>
      * For configuring a proxy server with authentication see: {@link #addProxyCredential(String, String, String)}
      *
      * @param host hostname of the proxy, frequently FQDN of the server
