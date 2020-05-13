@@ -17,10 +17,8 @@ import io.honeycomb.libhoney.ResponseObserver;
 import io.honeycomb.libhoney.TransportOptions;
 import io.honeycomb.libhoney.ValueSupplier;
 import io.honeycomb.libhoney.builders.HoneyClientBuilder;
+import io.honeycomb.libhoney.responses.ClientRejected.RejectionReason;
 import io.honeycomb.libhoney.transport.batch.impl.HoneycombBatchConsumer;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
-import org.apache.http.impl.nio.reactor.IOReactorConfig;
 
 import javax.net.ssl.SSLContext;
 import java.net.URI;
@@ -82,7 +80,7 @@ public class BeelineBuilder {
      * @param name  the "key".
      * @param field the "value"
      * @return this.
-     * @see Options.Builder#setGlobalFields(java.util.Map)
+     * @see io.honeycomb.libhoney.Options.Builder#setGlobalFields(java.util.Map)
      */
     public BeelineBuilder addGlobalField(final String name, final Object field) {
         clientBuilder.addGlobalField(name, field);
@@ -98,7 +96,7 @@ public class BeelineBuilder {
      *
      * @param name          the "key"
      * @param valueSupplier calculates value
-     * @see Options.Builder#setGlobalDynamicFields(java.util.Map)
+     * @see io.honeycomb.libhoney.Options.Builder#setGlobalDynamicFields(java.util.Map)
      */
     public BeelineBuilder addGlobalDynamicFields(final String name, final ValueSupplier<?> valueSupplier) {
         clientBuilder.addGlobalDynamicFields(name, valueSupplier);
@@ -125,7 +123,7 @@ public class BeelineBuilder {
      * events. If absent, dataset must be explicitly set on an {@link EventFactory} or {@link Event}.
      *
      * @param dataSet to set.
-     * @see Options.Builder#setDataset(java.lang.String)
+     * @see io.honeycomb.libhoney.Options.Builder#setDataset(java.lang.String)
      * <p>
      * Default: None
      */
@@ -140,7 +138,7 @@ public class BeelineBuilder {
      * Default: {@code https://api.honeycomb.io/}
      *
      * @param apiHost to set.
-     * @see Options.Builder#setApiHost(java.net.URI)
+     * @see io.honeycomb.libhoney.Options.Builder#setApiHost(java.net.URI)
      */
     public BeelineBuilder apiHost(final String apiHost) throws URISyntaxException {
         clientBuilder.apiHost(apiHost);
@@ -157,7 +155,7 @@ public class BeelineBuilder {
      * Default: None
      *
      * @param writeKey to set.
-     * @see Options.Builder#setWriteKey(java.lang.String)
+     * @see io.honeycomb.libhoney.Options.Builder#setWriteKey(java.lang.String)
      */
     public BeelineBuilder writeKey(final String writeKey) {
         clientBuilder.writeKey(writeKey);
@@ -210,7 +208,7 @@ public class BeelineBuilder {
     }
 
     /**
-     * If batches do no fill up to the batch size in time (as defined by {@link TransportOptions.Builder#setBatchSize(int)}), then
+     * If batches do no fill up to the batch size in time (as defined by {@link io.honeycomb.libhoney.TransportOptions.Builder#setBatchSize(int)}), then
      * this timeout will trigger a batch request to the Honeycomb server. Essentially, for batches that fill
      * slowly, this ensures that there is a temporal upper bound to when events are sent via a batch request.
      * The time is measured in milliseconds.
@@ -237,7 +235,7 @@ public class BeelineBuilder {
      * Default: 10000
      *
      * @param queueCapacity queue size.
-     * @see io.honeycomb.libhoney.responses.ClientRejected.RejectionReason#QUEUE_OVERFLOW
+     * @see RejectionReason#QUEUE_OVERFLOW
      * @see io.honeycomb.libhoney.transport.batch.BatchConsumer#consume(java.util.List)
      */
     public BeelineBuilder queueCapacity(final int queueCapacity) {
@@ -250,8 +248,8 @@ public class BeelineBuilder {
      * Set to -1 if there is no maximum, i.e. the number of batch requests pending completion is allowed to grow
      * without bound.
      * <p>
-     * Once a batch request has been triggered (see {@link TransportOptions.Builder#setBatchSize(int)} and
-     * {@link TransportOptions.Builder#setBatchTimeoutMillis(long)}), then the batch request is submitted
+     * Once a batch request has been triggered (see {@link io.honeycomb.libhoney.TransportOptions.Builder#setBatchSize(int)} and
+     * {@link io.honeycomb.libhoney.TransportOptions.Builder#setBatchTimeoutMillis(long)}), then the batch request is submitted
      * to {@link io.honeycomb.libhoney.transport.batch.BatchConsumer#consume(java.util.List)}.
      * <p>
      * If the maximum pending requests is reached, then
@@ -262,9 +260,9 @@ public class BeelineBuilder {
      * implementation cannot keep up with the number of batch requests being submitted. The intended consequence of
      * this is that the event queue may reach its capacity and overflow.
      * <p>
-     * See {@link TransportOptions.Builder#setQueueCapacity(int)}.
+     * See {@link io.honeycomb.libhoney.TransportOptions.Builder#setQueueCapacity(int)}.
      * <p>
-     * This configuration differs from {@link TransportOptions.Builder#getMaxConnections()} in that a batch request may be pending
+     * This configuration differs from {@link io.honeycomb.libhoney.TransportOptions.Builder#getMaxConnections()} in that a batch request may be pending
      * completion, but it may be still be waiting for an HTTP connection. This is the case in the default
      * {@link HoneycombBatchConsumer} where the
      * {@link org.apache.http.nio.client.HttpAsyncClient} maintains an internal unbounded pending queue for
@@ -275,7 +273,7 @@ public class BeelineBuilder {
      * Default: 250
      *
      * @param maxPendingBatchRequests max simultaneous requests.
-     * @see TransportOptions.Builder#setMaxConnections(int)
+     * @see io.honeycomb.libhoney.TransportOptions.Builder#setMaxConnections(int)
      */
     public BeelineBuilder maxPendingBatchRequests(final int maxPendingBatchRequests) {
         clientBuilder.maxPendingBatchRequests(maxPendingBatchRequests);
@@ -289,7 +287,7 @@ public class BeelineBuilder {
      * Default: 200
      *
      * @param maxConnections maximum number of connections.
-     * @see HttpAsyncClientBuilder#setMaxConnTotal(int)
+     * @see org.apache.http.impl.nio.client.HttpAsyncClientBuilder#setMaxConnTotal(int)
      */
     public BeelineBuilder maxConnections(final int maxConnections) {
         clientBuilder.maxConnections(maxConnections);
@@ -304,7 +302,7 @@ public class BeelineBuilder {
      * Default: 100
      *
      * @param maxConnectionsPerApiHost pool size for per hostname
-     * @see HttpAsyncClientBuilder#setMaxConnPerRoute(int)
+     * @see org.apache.http.impl.nio.client.HttpAsyncClientBuilder#setMaxConnPerRoute(int)
      */
     public BeelineBuilder maxConnectionsPerApiHost(final int maxConnectionsPerApiHost) {
         clientBuilder.maxConnectionsPerApiHost(maxConnectionsPerApiHost);
@@ -317,7 +315,7 @@ public class BeelineBuilder {
      * Default: 0
      *
      * @param connectTimeout to set.
-     * @see RequestConfig#getConnectTimeout()
+     * @see org.apache.http.client.config.RequestConfig#getConnectTimeout()
      */
     public BeelineBuilder connectTimeout(final int connectTimeout) {
         clientBuilder.connectTimeout(connectTimeout);
@@ -336,7 +334,7 @@ public class BeelineBuilder {
      * Default: 0
      *
      * @param connectionRequestTimeout to set.
-     * @see RequestConfig#getConnectionRequestTimeout()
+     * @see org.apache.http.client.config.RequestConfig#getConnectionRequestTimeout()
      */
     public BeelineBuilder connectionRequestTimeout(final int connectionRequestTimeout) {
         clientBuilder.connectionRequestTimeout(connectionRequestTimeout);
@@ -349,7 +347,7 @@ public class BeelineBuilder {
      * Default: 3000
      *
      * @param socketTimeout to set.
-     * @see RequestConfig#getSocketTimeout()
+     * @see org.apache.http.client.config.RequestConfig#getSocketTimeout()
      */
     public BeelineBuilder socketTimeout(final int socketTimeout) {
         clientBuilder.socketTimeout(socketTimeout);
@@ -376,7 +374,7 @@ public class BeelineBuilder {
      *
      * @param ioThreadCount to set, must be between 1 and the system's number of CPU cores.
      * @see <a href="https://hc.apache.org/httpcomponents-core-ga/tutorial/html/nio.html">Apache http client NIO</a>
-     * @see IOReactorConfig#getIoThreadCount()
+     * @see org.apache.http.impl.nio.reactor.IOReactorConfig#getIoThreadCount()
      */
     public BeelineBuilder ioThreadCount(final int ioThreadCount) {
         clientBuilder.ioThreadCount(ioThreadCount);
@@ -392,7 +390,7 @@ public class BeelineBuilder {
      * Default: 2000
      *
      * @param maximumHttpRequestShutdownWait milliseconds.
-     * @see TransportOptions.Builder#setMaximumHttpRequestShutdownWait(long)
+     * @see io.honeycomb.libhoney.TransportOptions.Builder#setMaximumHttpRequestShutdownWait(long)
      */
     public BeelineBuilder maximumHttpRequestShutdownWait(final Long maximumHttpRequestShutdownWait) {
         clientBuilder.maximumHttpRequestShutdownWait(maximumHttpRequestShutdownWait);
@@ -406,7 +404,7 @@ public class BeelineBuilder {
      * Default: None
      *
      * @param additionalUserAgent added to the user agent on http request header.
-     * @see TransportOptions.Builder#setAdditionalUserAgent(java.lang.String)
+     * @see io.honeycomb.libhoney.TransportOptions.Builder#setAdditionalUserAgent(java.lang.String)
      */
     public BeelineBuilder additionalUserAgent(final String additionalUserAgent) {
         clientBuilder.additionalUserAgent(additionalUserAgent);
