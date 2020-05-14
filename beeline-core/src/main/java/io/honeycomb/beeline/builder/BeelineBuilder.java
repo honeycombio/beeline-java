@@ -12,12 +12,11 @@ import io.honeycomb.libhoney.EventFactory;
 import io.honeycomb.libhoney.EventPostProcessor;
 import io.honeycomb.libhoney.HoneyClient;
 import io.honeycomb.libhoney.LibHoney;
-import io.honeycomb.libhoney.Options;
 import io.honeycomb.libhoney.ResponseObserver;
-import io.honeycomb.libhoney.TransportOptions;
 import io.honeycomb.libhoney.ValueSupplier;
 import io.honeycomb.libhoney.builders.HoneyClientBuilder;
 import io.honeycomb.libhoney.responses.ClientRejected.RejectionReason;
+import io.honeycomb.libhoney.transport.Transport;
 import io.honeycomb.libhoney.transport.batch.impl.HoneycombBatchConsumer;
 
 import javax.net.ssl.SSLContext;
@@ -25,7 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class BeelineBuilder {
-    protected final HoneyClientBuilder clientBuilder = new HoneyClientBuilder();
+    protected HoneyClientBuilder clientBuilder = new HoneyClientBuilder();
     private SpanBuilderFactory defaultFactory = null;
     private Integer sampleRate = null;
     private SpanPostProcessor spanPostProcessor = null;
@@ -106,7 +105,7 @@ public class BeelineBuilder {
     /**
      * Use this method to configure the HTTP client to use a proxy that needs authentication.
      * <p>
-     * For configuring a proxy server without authentication see: {@link #proxyNoCredentials(String)}
+     * For configuring a proxy server without authentication see: {@link #addProxyNoCredential(String)}
      *
      * @param proxyHost hostname of the proxy, frequently FQDN of the server
      * @param username  username for authentication with proxy server
@@ -317,8 +316,8 @@ public class BeelineBuilder {
      * @param connectTimeout to set.
      * @see org.apache.http.client.config.RequestConfig#getConnectTimeout()
      */
-    public BeelineBuilder connectTimeout(final int connectTimeout) {
-        clientBuilder.connectTimeout(connectTimeout);
+    public BeelineBuilder connectionTimeout(final int connectTimeout) {
+        clientBuilder.connectionTimeout(connectTimeout);
         return this;
     }
 
@@ -418,7 +417,7 @@ public class BeelineBuilder {
      *
      * @param host hostname of the proxy, frequently FQDN of the server
      */
-    public BeelineBuilder proxyNoCredentials(final String host) {
+    public BeelineBuilder addProxyNoCredential(final String host) {
         clientBuilder.addProxyNoCredential(host);
         return this;
     }
@@ -459,6 +458,15 @@ public class BeelineBuilder {
     public BeelineBuilder eventPostProcessor(final EventPostProcessor eventPostProcessor) {
         clientBuilder.eventPostProcessor(eventPostProcessor);
         return this;
+    }
+
+    /**
+     * Transport for sending events to HoneyComb. Used by the {@link io.honeycomb.libhoney.HoneyClient} internals.
+     * This can also be used to disable sending events to Honeycomb by passing in a mock Transport.
+     */
+    public BeelineBuilder transport(final Transport transport){
+       clientBuilder.transport(transport);
+       return this;
     }
 
 }
