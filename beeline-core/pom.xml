@@ -16,7 +16,6 @@
 
     <properties>
         <slf4jVersion>1.7.25</slf4jVersion>
-        <apacheClientVersion>4.1.3</apacheClientVersion>
     </properties>
 
     <build>
