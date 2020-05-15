@@ -63,4 +63,11 @@ public class SpanPostProcessor {
             .addField(TraceFieldConstants.DURATION_FIELD, span.elapsedTimeMs());
         return event;
     }
+
+    /**
+     * Close the HoneyClient instance. This will send any pending events.
+     */
+    public void close() {
+        client.close();
+    }
 }
