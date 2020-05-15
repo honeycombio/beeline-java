@@ -4,6 +4,7 @@ Adding honeycomb trace header can help you track calls from one system to the ne
 ### Apache HTTP Components
 #### Synchronous
 [Apache's HttpComponents Client](https://hc.apache.org/httpcomponents-client-4.5.x/index.html)
+
 Example creating request
 ```java
 // create HTTP client
@@ -64,6 +65,7 @@ Use the HttpClientPropagator and a custom HttpRequestInterceptor (start trace) a
 
 ### Jersey
 [Eclipse Jersey](https://eclipse-ee4j.github.io/jersey/)
+
 Example creating request with Honeycomb Trace set. The method can also be passed a class for automatic entity conversion to class `.get(MyClass.class)`.
 ```java
 System.out.println("Setting up Jersey client");
@@ -81,7 +83,8 @@ To do this programmatically, implement ClientRequestFilter / ClientResponseFilte
 ### Java HTTP client
 Java SDK added a built-in HTTP client. It was experimental in JDK 9 and became stable in JDK 11.
 
-Example creating request with Honeycomb Trace set. This is a synchronous example.
+#### Synchronous
+Example creating request with Honeycomb Trace set.
 ```java
 HttpClient client = HttpClient.newBuilder().build();
 HttpRequest request = HttpRequest.newBuilder()
@@ -93,8 +96,8 @@ HttpResponse<String> response = client.send(request, HttpResponse.BodyHandler.as
 // process response
 
 ```
-
-Example creating request with Honeycomb Trace set. This is an asynchronous example.
+#### Asynchronous
+Example creating request with Honeycomb Trace set.
 ```java
 HttpClient client = HttpClient.newBuilder().build();
 HttpRequest request = HttpRequest.newBuilder()
