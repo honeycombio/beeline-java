@@ -166,6 +166,9 @@ public class DefaultBeeline {
         this.tracer.endTrace();
     }
 
+    /**
+     * Close the Beeline to ensure that any pending events are sent
+     */
     public void close() {
         this.beeline.close();
     }
