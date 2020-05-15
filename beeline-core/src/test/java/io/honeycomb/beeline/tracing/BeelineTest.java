@@ -76,4 +76,16 @@ public class BeelineTest {
         verify(mockSpan).addField("app.key", "value");
         verifyNoMoreInteractions(tracer, factory, mockSpan);
     }
+
+    @Test
+    public void GIVEN_beeline_WHEN_closing_EXPECT_beelineToDelegateToSpanBuilderFactory() {
+        final SpanBuilderFactory factory = mock(SpanBuilderFactory.class);
+        final Tracer tracer = mock(Tracer.class);
+        final Beeline beeline = new Beeline(tracer, factory);
+
+        beeline.close();
+
+        verify(factory).close();
+        verifyNoMoreInteractions(tracer, factory);
+    }
 }
