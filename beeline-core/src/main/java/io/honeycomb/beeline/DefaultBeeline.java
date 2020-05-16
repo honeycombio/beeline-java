@@ -35,13 +35,13 @@ public class DefaultBeeline {
             builder.setApiHost(apiHost);
         }
 
-        HoneyClient client;
+        final HoneyClient client;
         if (transportOptions != null) {
             client = LibHoney.create(builder.build(), transportOptions);
         } else {
            client = LibHoney.create(builder.build());
         }
-        SpanPostProcessor processor = Tracing.createSpanProcessor(client, Sampling.alwaysSampler());
+        final SpanPostProcessor processor = Tracing.createSpanProcessor(client, Sampling.alwaysSampler());
         this.factory = Tracing.createSpanBuilderFactory(processor, Sampling.alwaysSampler());
         this.tracer = Tracing.createTracer(this.factory);
         this.beeline = Tracing.createBeeline(this.tracer, this.factory);
