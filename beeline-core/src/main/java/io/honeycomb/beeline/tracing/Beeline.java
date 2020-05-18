@@ -195,4 +195,16 @@ public class Beeline {
     public SpanBuilderFactory getSpanBuilderFactory() {
         return factory;
     }
+
+    /**
+     * <p>Close the Beeline by closing SpanBuilderFactory which will internally close the HoneyClient instance.</p>
+     * <p>This method should be called in lieu of {@code HoneyClient.close()}. Only one close method needs to be called.
+     * {@code beeline.close()} OR {@code honeyClient.close()}</p>
+     * <p>This will send any pending events.</p>
+     * @see io.honeycomb.libhoney.HoneyClient#close()
+     */
+    public void close(){
+        factory.close();
+    }
 }
+

@@ -14,6 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class SpanBuilderFactoryTest {
     private SpanBuilderFactory factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), UUIDTraceIdProvider.getInstance(), Sampling.alwaysSampler());
@@ -330,5 +333,14 @@ public class SpanBuilderFactoryTest {
         final Span span = factory.createBuilderFrom(Span.getNoopInstance()).build();
 
         assertThat(span.isNoop()).isTrue();
+    }
+
+    @Test
+    public void GIVEN_aFactory_WHEN_closed_EXEPECT_factoryToDelegateToSpanPostProcessor() {
+        factory.close();
+
+        final SpanPostProcessor mock = factory.getProcessor();
+        verify(mock, times(1)).close();
+        verifyNoMoreInteractions(mock);
     }
 }

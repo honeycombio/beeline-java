@@ -11,6 +11,7 @@ import org.junit.Test;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.setLenientDateParsing;
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
@@ -90,5 +91,13 @@ public class SpanPostProcessorTest {
         final Event event = spanPostProcessor.generateEvent(mockSpan);
 
         verify(event, never()).setDataset(any());
+    }
+
+    @Test
+    public void WHEN_closing_THEN_delegateToClient() {
+        spanPostProcessor.close();
+
+        verify(mockClient, times(1)).close();
+        verifyNoMoreInteractions(mockClient, mockSampler, mockEvent, mockSpan);
     }
 }

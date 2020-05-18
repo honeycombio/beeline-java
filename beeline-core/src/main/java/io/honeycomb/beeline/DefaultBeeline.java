@@ -2,6 +2,7 @@ package io.honeycomb.beeline;
 
 import java.net.URI;
 
+import io.honeycomb.beeline.builder.BeelineBuilder;
 import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.tracing.Span;
 import io.honeycomb.beeline.tracing.SpanBuilderFactory;
@@ -14,17 +15,15 @@ import io.honeycomb.libhoney.TransportOptions;
 import io.honeycomb.libhoney.LibHoney;
 import io.honeycomb.libhoney.Options.Builder;
 
-/** 
+/**
 * DefaultBeeline is a singleton representing an initialized Beeline and its collaborator classes
 * It uses a simple set of defaults and provides a few convenience wrappers. If you need a more
 * specialized configuration, see the Beeline class and our docs at
 * https://docs.honeycomb.io/getting-data-in/java/beeline/
-*/ 
+*/
 public class DefaultBeeline {
     private static DefaultBeeline INSTANCE;
 
-    private HoneyClient client;
-    private SpanPostProcessor postProcessor;
     private SpanBuilderFactory factory;
     private Tracer tracer;
     private Beeline beeline;
@@ -35,19 +34,28 @@ public class DefaultBeeline {
         if (apiHost != null) {
             builder.setApiHost(apiHost);
         }
+
+        final HoneyClient client;
         if (transportOptions != null) {
-            this.client = LibHoney.create(builder.build(), transportOptions);
+            client = LibHoney.create(builder.build(), transportOptions);
         } else {
-           this.client = LibHoney.create(builder.build());
+           client = LibHoney.create(builder.build());
         }
-        this.postProcessor = Tracing.createSpanProcessor(this.client, Sampling.alwaysSampler());
-        this.factory = Tracing.createSpanBuilderFactory(this.postProcessor, Sampling.alwaysSampler());
+        final SpanPostProcessor processor = Tracing.createSpanProcessor(client, Sampling.alwaysSampler());
+        this.factory = Tracing.createSpanBuilderFactory(processor, Sampling.alwaysSampler());
         this.tracer = Tracing.createTracer(this.factory);
         this.beeline = Tracing.createBeeline(this.tracer, this.factory);
         this.serviceName = serviceName;
     }
 
-    public synchronized static DefaultBeeline getInstance(String dataset, String serviceName, String writeKey) {
+    public DefaultBeeline(final BeelineBuilder builder, final String serviceName) {
+        this.beeline = builder.build();
+        this.factory = beeline.getSpanBuilderFactory();
+        this.tracer = beeline.getTracer();
+        this.serviceName = serviceName;
+    }
+
+    public synchronized static DefaultBeeline getInstance(final String dataset, final String serviceName, final String writeKey) {
         if (INSTANCE == null) {
             INSTANCE = new DefaultBeeline(dataset, serviceName, writeKey, null, null);
         }
@@ -55,9 +63,17 @@ public class DefaultBeeline {
         return INSTANCE;
     }
 
-    public synchronized static DefaultBeeline getInstance(String dataset, String serviceName, String writeKey, URI apiHost, TransportOptions transportOptions) {
+    public synchronized static DefaultBeeline getInstance(final String dataset, final String serviceName, final String writeKey, final URI apiHost, final TransportOptions transportOptions) {
         if (INSTANCE == null) {
             INSTANCE = new DefaultBeeline(dataset, serviceName, writeKey, apiHost, transportOptions);
+        }
+
+        return INSTANCE;
+    }
+
+    public synchronized static DefaultBeeline getInstance(final BeelineBuilder builder, final String serviceName){
+        if (INSTANCE == null) {
+            INSTANCE = new DefaultBeeline(builder, serviceName);
         }
 
         return INSTANCE;
@@ -70,15 +86,15 @@ public class DefaultBeeline {
      * @param spanName will be set in the name field of this span
      * @return a Span
      */
-    public Span startSpan(String spanName) {
+    public Span startSpan(final String spanName) {
         if (this.beeline.getActiveSpan().isNoop()) {
             // start a new trace if no active trace
-            Span span = factory.createBuilder()
+            final Span span = factory.createBuilder()
             .setSpanName(spanName)
             .setServiceName(serviceName)
             .build();
             tracer.startTrace(span);
-            
+
             return span;
         }
         return this.beeline.startChildSpan(spanName);
@@ -102,7 +118,7 @@ public class DefaultBeeline {
      * @param value of the field.
      * @see #getActiveSpan()
      */
-    public void addField(String key, Object value) {
+    public void addField(final String key, final Object value) {
         this.beeline.addField(key, value);
     }
 
@@ -134,7 +150,7 @@ public class DefaultBeeline {
         this.beeline.getActiveSpan().close();
     }
 
-    /** 
+    /**
      * getBeeline returns the Beeline in this instance for times when the convenience wrappers aren't sufficient
      *
      * @return Beeline
@@ -142,7 +158,7 @@ public class DefaultBeeline {
     public Beeline getBeeline() {
         return this.beeline;
     }
-    
+
     /**
      * endTrace ends the currently active trace on the thread it is called from
      */
@@ -150,7 +166,10 @@ public class DefaultBeeline {
         this.tracer.endTrace();
     }
 
+    /**
+     * Close the Beeline to ensure that any pending events are sent
+     */
     public void close() {
-        this.client.close();
+        this.beeline.close();
     }
 }
