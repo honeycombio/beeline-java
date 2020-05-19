@@ -53,8 +53,8 @@ public class BeelineBuilderTest {
 
     @Test
     public void addProxyCredential() {
-        final Beeline beeline = builder.addProxyCredential("proxy.domain.com:8443", "user", "secret").build();
-        verify(mockBuilder, times(1)).addProxyCredential("proxy.domain.com:8443", "user", "secret");
+        final Beeline beeline = builder.addProxy("proxy.domain.com:8443", "user", "secret").build();
+        verify(mockBuilder, times(1)).addProxy("proxy.domain.com:8443", "user", "secret");
         completeNegativeVerification();
     }
 
@@ -192,8 +192,8 @@ public class BeelineBuilderTest {
 
     @Test
     public void addProxyNoCredentials() {
-        builder.addProxyNoCredential("proxyHost").build();
-        verify(mockBuilder, times(1)).addProxyNoCredential(anyString());
+        builder.addProxy("proxyHost").build();
+        verify(mockBuilder, times(1)).addProxy(anyString());
         completeNegativeVerification();
     }
 
