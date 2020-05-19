@@ -57,7 +57,7 @@ public class MyApp{
 ## Simplified Proxy Configuration
 It is now much simpler for people to configure servers behind an http proxy. To add a proxy server that does not need authentication, simply point to the proxy service.
 ```java
-builder.addProxyNoCredentials("https://myproxy.example.com");
+builder.addProxy("https://myproxy.example.com");
 ```
 
 If your proxy server needs authentication, you will need to pass in credentials like:

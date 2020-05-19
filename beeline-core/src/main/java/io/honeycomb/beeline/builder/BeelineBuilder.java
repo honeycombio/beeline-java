@@ -39,7 +39,7 @@ public class BeelineBuilder {
      * Beeline beeline = new BeelineBuilder()
      *                          .dataSet("dataset")
      *                          .writeKey("write key")
-     *                          .addProxyNoCredential("proxy.domain.com")
+     *                          .addProxy("proxy.domain.com")
      *                          .build()}</pre>
      *
      * @return new Beeline instance
