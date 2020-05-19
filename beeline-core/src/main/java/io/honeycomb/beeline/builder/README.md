@@ -62,5 +62,5 @@ builder.addProxy("https://myproxy.example.com");
 
 If your proxy server needs authentication, you will need to pass in credentials like:
 ```java
-builder.addProxyCredential("https://myproxy.example.com", "user", "secret");
+builder.addProxy("https://myproxy.example.com", "user", System.getenv("proxy_password"));
 ```
