@@ -41,6 +41,7 @@ final HttpResponse response = responseFuture.get();
 Example creating request with Honeycomb Trace set. This example uses a callback for processing.
 ```java
 final HttpGet request = new HttpGet("http://google.com");
+request.addHeader("x-honeycomb-trace", MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()));
 client.execute(request, null, new FutureCallback<HttpResponse>() {
     @Override
     public void completed(final HttpResponse result) {
@@ -64,7 +65,8 @@ client.execute(request, null, new FutureCallback<HttpResponse>() {
 Use the HttpClientPropagator and a custom HttpRequestInterceptor (start trace) and HttpResponseInterceptor (end trace) to programmatically handle this.
 
 ### Jersey
-[Eclipse Jersey](https://eclipse-ee4j.github.io/jersey/)
+[Eclipse Jersey](https://eclipse-ee4j.github.io/jersey/) This implements JAX-RS specification. Any client conforming to
+JAX-RS specification should use the same API.
 
 Example creating request with Honeycomb Trace set. The method can also be passed a class for automatic entity conversion to class `.get(MyClass.class)`.
 ```java
@@ -109,4 +111,31 @@ CompletableFuture<HttpResponse<String>> future = client.sendAsync(request, HttpR
 HttpResponse<String> response = future.get();
 // process response
 
+```
+### Resteasy
+Resteasy supports both JAX-RS (Jersey) and Apache HttpClient implementation clients. Syntax is based on the JAX-RS specification.
+
+Example creating request with Honeycomb Trace header set using default client (Jersey).
+```java
+Client client = ResteasyClientBuilder.newBuilder().build();
+WebTarget target = client.target("http://google.com");
+Invocation.Builder request = target.request();
+request.header("x-honeycomb-trace", MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()))
+Response response = request.get();
+```
+### Dropwizard
+Dropwizard's HTTP client is a Jersey client that also uses Apache HttpClient. As a Jersey client, syntax is based on the JAX-RS specification.
+
+Example creating request with Honeycomb Trace header set.
+```java
+// `environment` is an instance of io.dropwizard.setup.Environment
+// jerseyConfiguration is an instance of io.dropwizard.client.JerseyClientConfiguration
+JerseyClientBuilder builder = new io.dropwizard.client.JerseyClientBuilder(environment);
+client = builder.using(jerseyConfiguration).build("example");
+
+// Once client is created, use JAX-RS API as normal
+final WebTarget target = client.target("https://google.com").path("/maps");
+final Response response = target.request(MediaType.APPLICATION_JSON_TYPE)
+    .header("x-honeycomb-trace", MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()))
+    .get();
 ```
