@@ -13,6 +13,13 @@ import org.slf4j.LoggerFactory;
 import zipkin2.Span;
 import zipkin2.reporter.Reporter;
 
+/**
+ * This class bridges the Brave Framework and the Beeline Framework. It uses zipkin2.reporter.Reporter interface over
+ * zipkin2.reporter.Sender as Sender functionality is already handled by Honeycomb's Transport.
+ * @see zipkin2.reporter.Reporter
+ * @see zipkin2.reporter.Sender
+ * @see io.honeycomb.libhoney.transport.Transport
+ */
 public class BraveBeelineReporter implements Reporter<Span> {
 
     private final Beeline beeline;
