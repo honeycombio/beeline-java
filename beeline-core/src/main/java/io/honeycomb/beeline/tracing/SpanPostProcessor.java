@@ -5,7 +5,6 @@ import io.honeycomb.beeline.tracing.utils.TraceFieldConstants;
 import io.honeycomb.libhoney.Event;
 import io.honeycomb.libhoney.HoneyClient;
 import io.honeycomb.libhoney.utils.Assert;
-import io.honeycomb.libhoney.utils.ObjectUtils;
 
 /**
  * This applies post processing to Spans that are ready to be sent. Namely, it can apply the {@code samplerHook} and
@@ -48,6 +47,14 @@ public class SpanPostProcessor {
         final Event event = client.createEvent();
         event.addFields(span.getTraceFields());
         event.addFields(span.getFields());
+        applySpanToEvent(span, event);
+        event
+            .setTimestamp(span.getTimestamp())
+            .addField(TraceFieldConstants.DURATION_FIELD, span.elapsedTimeMs());
+        return event;
+    }
+
+    private void applySpanToEvent(final Span span, final Event event) {
         if (span.getParentSpanId() != null) {
             event.addField(TraceFieldConstants.PARENT_ID_FIELD, span.getParentSpanId());
         }
@@ -55,13 +62,10 @@ public class SpanPostProcessor {
             event.setDataset(span.getDataset());
         }
         event
-            .setTimestamp(span.getTimestamp())
-            .addField(TraceFieldConstants.SERVICE_NAME_FIELD, span.getServiceName())
             .addField(TraceFieldConstants.SPAN_NAME_FIELD, span.getSpanName())
+            .addField(TraceFieldConstants.SERVICE_NAME_FIELD, span.getServiceName())
             .addField(TraceFieldConstants.SPAN_ID_FIELD, span.getSpanId())
-            .addField(TraceFieldConstants.TRACE_ID_FIELD, span.getTraceId())
-            .addField(TraceFieldConstants.DURATION_FIELD, span.elapsedTimeMs());
-        return event;
+            .addField(TraceFieldConstants.TRACE_ID_FIELD, span.getTraceId());
     }
 
     /**
@@ -69,5 +73,21 @@ public class SpanPostProcessor {
      */
     public void close() {
         client.close();
+    }
+
+
+    /**
+     * Generates an Event with required fields to be recognized as an Event as a Span Event. Sleuth annotations will be
+     * converted into Span Events.
+     *
+     * @param span covert this span to a Span Event
+     * @return the generated Span Event
+     * @see <a href="http://docs.honeycomb.io/working-with-your-data/tracing/send-trace-data/#span-events">Span Events</a>
+     */
+    public Event generateSpanEvent(final Span span) {
+        final Event event = client.createEvent();
+        event.addField(TraceFieldConstants.META_SPAN_TYPE_FIELD, TraceFieldConstants.META_TYPE_SPAN_EVENT_VALUE);
+        applySpanToEvent(span, event);
+        return event;
     }
 }

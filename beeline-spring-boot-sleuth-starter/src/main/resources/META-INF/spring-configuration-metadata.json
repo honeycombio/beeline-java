@@ -1,0 +1,50 @@
+{
+  "groups": [
+    {
+      "name": "honeycomb.beeline.sleuth",
+      "type": "io.honeycomb.beeline.spring.sleuth.autoconfig.BeelineSleuthProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "honeycomb.beeline.sleuth.enable-reporter",
+      "type": "java.lang.Boolean",
+      "description": "When set to false, this will prevent creation of a sleuth reporter to send tracing data to Honeycomb. Set to false if the application has a customized Reporter (to avoid duplicate events sent to Honeycomb).",
+      "defaultValue": "true"
+    },
+    {
+      "name": "honeycomb.beeline.sleuth.enabled",
+      "type": "java.lang.Boolean",
+      "description": "When set to false, this will disable Sleuth auto-configuration from sending data to Honeycomb.",
+      "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "honeycomb.beeline.sleuth.enable-reporter",
+      "values": [
+        {
+          "value": "true",
+          "description": "Create Reporter to send traces to Honeycomb."
+        },
+        {
+          "value": "false",
+          "description": "Set this if the application implements a custom Reporter (or Sender) to prevent duplicate reporting to Honeycomb."
+        }
+      ]
+    },
+    {
+      "name": "honeycomb.beeline.sleuth.enabled",
+      "values": [
+        {
+          "value": "true",
+          "description": "Auto-configure Sleuth to send tracing data to Honeycomb."
+        },
+        {
+          "value": "false",
+          "description": "Do NOT auto-configure Sleuth to send tracing data to Honeycomb."
+        }
+      ]
+    }
+  ]
+}

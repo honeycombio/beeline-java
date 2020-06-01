@@ -41,6 +41,12 @@ public final class TraceFieldConstants {
     public static final String INSTRUMENTATIONS_COUNT_FIELD = "meta.instrumentation_count";
     /** os.hostname() aka server name */
     public static final String LOCAL_HOSTNAME_FIELD         = "meta.local_hostname";
+    /** Field key for specifying a span type as a Span Event */
+    public static final String META_SPAN_TYPE_FIELD = "meta.span_type";
+    /** Field value for specifying a span type as a Span Event */
+    public static final String META_TYPE_SPAN_EVENT_VALUE = "span_event";
+    /** Field value for specifying a span type as a Span Event */
+    public static final String META_TYPE_LINK_EVENT_VALUE = "link";
 
     // ========= request namespace =========
     /** Value of the HTTP Host header. */

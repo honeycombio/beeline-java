@@ -28,6 +28,7 @@
     <modules>
         <module>beeline-core</module>
         <module>beeline-spring-boot-starter</module>
+        <module>beeline-spring-boot-sleuth-starter</module>
     </modules>
 
     <scm>
