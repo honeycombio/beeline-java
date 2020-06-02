@@ -22,13 +22,13 @@ CloseableHttpClient client = HttpClients.custom().setConnectionTimeToLive(30, Ti
 // Create HTTP Request using GET
 HttpGet getRequest = new HttpGet("https://google.com");
 // Add Honeycomb trace header
-getRequest.addHeader("x-honeycomb-trace", MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()));
+getRequest.addHeader(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()));
 // Execute HTTP request and get response
 CloseableHttpResponse getResponse = client.execute(getRequest);
 // Create HTTP Request using POST
 HttpPost postRequest = new HttpPost("");
 // Add Honeycomb trace header
-postRequest.addHeader("x-honeycomb-trace", MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()));
+postRequest.addHeader(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()));
 // Execute HTTP request and get response
 CloseableHttpResponse postResponse = client.execute(postRequest);
 ```
@@ -40,7 +40,7 @@ Use the HttpClientPropagator and a custom RequestExecutioner to programmatically
 Example creating request with Honeycomb Trace set. This example uses the returned future for processing.
 ```java
 final HttpGet request = new HttpGet("http://google.com");
-request.addHeader("x-honeycomb-trace", MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()));
+request.addHeader(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()));
 final Future<HttpResponse> responseFuture = client.execute(request, null, null);
 final HttpResponse response = responseFuture.get();
 // process response here
@@ -49,7 +49,7 @@ final HttpResponse response = responseFuture.get();
 Example creating request with Honeycomb Trace set. This example uses a callback for processing.
 ```java
 final HttpGet request = new HttpGet("http://google.com");
-request.addHeader("x-honeycomb-trace", MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()));
+request.addHeader(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()));
 client.execute(request, null, new FutureCallback<HttpResponse>() {
     @Override
     public void completed(final HttpResponse result) {
@@ -82,7 +82,7 @@ final WebTarget target = client.target("https://google.com");
 // Can use target to hit different sub-resources. This is useful if hitting multiple endpoints of a REST API
 final WebTarget mapTarget = target.path("/maps");
 final Response response = mapTarget.request(MediaType.APPLICATION_JSON_TYPE)
-    .header("x-honeycomb-trace", MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()))
+    .header(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()))
     .get();
 ```
 
@@ -97,7 +97,7 @@ Example creating request with Honeycomb Trace set.
 HttpClient client = HttpClient.newBuilder().build();
 HttpRequest request = HttpRequest.newBuilder()
     .uri(new URI("https://postman-echo.com/get"))
-    .header("x-honeycomb-trace", MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()))
+    .header(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()))
     .GET()
     .build();
 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandler.asString())
@@ -109,7 +109,7 @@ Example creating request with Honeycomb Trace set.
 HttpClient client = HttpClient.newBuilder().build();
 HttpRequest request = HttpRequest.newBuilder()
     .uri(new URI("https://postman-echo.com/get"))
-    .header("x-honeycomb-trace", MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()))
+    .header(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()))
     .GET()
     .build();
 CompletableFuture<HttpResponse<String>> future = client.sendAsync(request, HttpResponse.BodyHandler.asString());
@@ -124,7 +124,7 @@ Example creating request with Honeycomb Trace header set using default client (J
 Client client = ResteasyClientBuilder.newBuilder().build();
 WebTarget target = client.target("http://google.com");
 Invocation.Builder request = target.request();
-request.header("x-honeycomb-trace", MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()))
+request.header(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()))
 Response response = request.get();
 ```
 ### Dropwizard
@@ -139,6 +139,6 @@ client = builder.using(jerseyConfiguration).build("example");
 // Once client is created, use JAX-RS API as normal
 final WebTarget target = client.target("https://google.com").path("/maps");
 final Response response = target.request(MediaType.APPLICATION_JSON_TYPE)
-    .header("x-honeycomb-trace", MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()))
+    .header(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, MessageFormat.format("1;trace_id={0},parent_id={1}", span.getTraceId(), span.getParentSpanId()))
     .get();
 ```
