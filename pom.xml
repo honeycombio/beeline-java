@@ -7,7 +7,7 @@
     <name>Beeline Java (Parent)</name>
     <artifactId>beeline-parent</artifactId>
     <groupId>io.honeycomb.beeline</groupId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <packaging>pom</packaging>
 
     <description>Parent POM for the Honeycomb Beeline for Java</description>
@@ -70,7 +70,7 @@
         <jdkVersion>1.8</jdkVersion>
 
         <!-- COMPILE dependency versions  -->
-        <libhoneyVersion>1.1.1</libhoneyVersion>
+        <libhoneyVersion>1.1.2</libhoneyVersion>
         <springBootVersion>2.1.1.RELEASE</springBootVersion>
 
         <!-- TEST dependency versions  -->

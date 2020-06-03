@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.honeycomb.beeline</groupId>
         <artifactId>beeline-parent</artifactId>
-        <version>1.1.0</version>
+        <version>1.1.1</version>
     </parent>
     <name>Beeline Java (Core)</name>
     <artifactId>beeline-core</artifactId>
@@ -31,6 +31,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <doclint>none</doclint>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

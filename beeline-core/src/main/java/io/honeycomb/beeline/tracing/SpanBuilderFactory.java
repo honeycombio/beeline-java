@@ -130,6 +130,13 @@ public class SpanBuilderFactory {
     }
 
     /**
+     * Close the SpanPostProcessor. This will essentially close the HoneyClient after sending any pending events.
+     */
+    public void close() {
+        processor.close();
+    }
+
+    /**
      * Builder to capture various attributes to initialise a Span with.
      * <p>
      * Some properties are already initialised to defaults, but you may have to provide spanName and serviceName.
