@@ -321,7 +321,7 @@ public class BeelineAutoconfigTest {
     }
 
     @Test
-    public void GIVEN_jdbcDisabled_EXPECT_DataSourcePRodyBeanPostProcessorToNotBeLoaded() {
+    public void GIVEN_jdbcDisabled_EXPECT_DataSourceProxyBeanPostProcessorToNotBeLoaded() {
         webApplicationContextRunner
             .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
             .withPropertyValues(defaultProps)
