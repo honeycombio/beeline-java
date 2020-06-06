@@ -63,6 +63,12 @@
             <version>${springBootVersion}</version>
         </dependency>
 
+        <dependency>
+            <groupId>net.ttddyy</groupId>
+            <artifactId>datasource-proxy</artifactId>
+            <version>1.6</version>
+        </dependency>
+
         <!--Annotation processing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

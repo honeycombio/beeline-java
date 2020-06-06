@@ -2,6 +2,7 @@ package io.honeycomb.beeline.spring.autoconfig;
 
 import io.honeycomb.beeline.spring.beans.BeelineHandlerInterceptor;
 import io.honeycomb.beeline.spring.beans.BeelineRestTemplateInterceptor;
+import io.honeycomb.beeline.spring.beans.DataSourceProxyBeanPostProcessor;
 import io.honeycomb.beeline.spring.beans.SpringServletFilter;
 import io.honeycomb.beeline.spring.beans.DebugResponseObserver;
 import io.honeycomb.beeline.tracing.Beeline;
@@ -31,6 +32,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -45,7 +47,7 @@ public class BeelineAutoconfigTest {
     private ApplicationContextRunner contextRunner = new ApplicationContextRunner();
     private WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
 
-    private List<Class<?>> coreBeans = Arrays.asList(
+    private final List<Class<?>> coreBeans = Arrays.asList(
         HoneyClient.class,
         Tracer.class,
         TraceSampler.class,
@@ -54,10 +56,11 @@ public class BeelineAutoconfigTest {
         Beeline.class,
         BeelineHandlerInterceptor.class,
         BeelineRestTemplateInterceptor.class,
-        BatchingHttpTransport.class
+        BatchingHttpTransport.class,
+        DataSourceProxyBeanPostProcessor.class
     );
 
-    private String[] defaultProps = {
+    private final String[] defaultProps = {
         "honeycomb.beeline.write-key=someKey",
         "honeycomb.beeline.dataset=someData",
         "honeycomb.beeline.enabled=true",
@@ -86,7 +89,7 @@ public class BeelineAutoconfigTest {
             .run(context -> {
                 assertThat(context.getBean(BeelineProperties.class).getDataset()).isEqualTo("someData123");
                 assertThat(context.getBean(BeelineProperties.class).getWriteKey()).isEqualTo("someKey0123");
-                assertThat(context.getBean(BeelineProperties.class).getApiHost().toString()).isEqualTo("http://localhost:9111/events");
+                assertThat(Objects.requireNonNull(context.getBean(BeelineProperties.class).getApiHost()).toString()).isEqualTo("http://localhost:9111/events");
                 assertThat(context.getBean(BeelineProperties.class).getServiceName()).isEqualTo("TestService");
                 assertThat(context.getBean(BeelineProperties.class).isEnabled()).isTrue();
             });
@@ -98,7 +101,8 @@ public class BeelineAutoconfigTest {
             .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
             .withPropertyValues(
                 "honeycomb.beeline.write-key=someKey",
-                "honeycomb.beeline.dataset=someData")
+                "honeycomb.beeline.dataset=someData",
+                "honeycomb.beeline.jdbc.enabled=false")
             .withPropertyValues("spring.application.name=TestApp")
 
             .run(context -> assertThat(context.getBean(BeelineProperties.class).getServiceName()).isEqualTo("TestApp"));
@@ -314,5 +318,14 @@ public class BeelineAutoconfigTest {
                     assertThat(interceptors).anyMatch(interceptor -> interceptor instanceof BeelineRestTemplateInterceptor);
                 });
             });
+    }
+
+    @Test
+    public void GIVEN_jdbcDisabled_EXPECT_DataSourcePRodyBeanPostProcessorToNotBeLoaded() {
+        webApplicationContextRunner
+            .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
+            .withPropertyValues(defaultProps)
+            .withPropertyValues("honeycomb.beeline.jdbc.enabled=false")
+            .run(context -> assertThat(context).doesNotHaveBean(DataSourceProxyBeanPostProcessor.class));
     }
 }
