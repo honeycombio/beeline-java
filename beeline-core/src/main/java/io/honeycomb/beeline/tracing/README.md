@@ -38,7 +38,8 @@ HttpGet getRequest = new HttpGet("https://google.com");
 getRequest.addHeader(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, generateHoneycombTraceHeader(span));
 // 4. Execute HTTP request and get response
 CloseableHttpResponse getResponse = client.execute(getRequest);
-
+```
+```java
 // POST
 // 1. Create HTTP Request using POST
 HttpPost postRequest = new HttpPost("https://google.com");
