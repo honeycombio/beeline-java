@@ -12,7 +12,7 @@
 ## Client Calls
 Adding honeycomb trace header can help you track calls from one system to the next. Each HTTP client framework will have a slightly different way to add the header. To have this done automatically for each request, you will typically create a custom Interceptor or Filter.
 
-*Note:* To keep the examples concise, they call this utility function.
+**Note:** *To keep the examples concise, they call this utility function.*
 ```java
 private String generateHoneycombTraceHeader(Span span){
     HttpHeaderV1PropagationCodec codec = HttpHeaderV1PropagationCodec.getInstance(); // Ideally dependency injected
