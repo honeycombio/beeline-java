@@ -133,7 +133,7 @@ HttpResponse<String> response = future.get();
 // process response
 ```
 ### Resteasy
-Resteasy supports both JAX-RS (Jersey) and Apache HttpClient implementation clients. Syntax comes from JAX-RS specification.
+Resteasy supports both JAX-RS (Jersey) and Apache HttpClient implementation clients. Based on JAX-RS specification syntax.
 
 Example creating request with Honeycomb Trace header set using default client (Jersey).
 ```java
@@ -144,7 +144,7 @@ request.header(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, generateHone
 Response response = request.get();
 ```
 ### Dropwizard
-Dropwizard's HTTP client is a Jersey client that also uses Apache HttpClient. As a Jersey client, syntax is based on the JAX-RS specification.
+Dropwizard's HTTP client is a Jersey client that also uses Apache HttpClient. Based on JAX-RS specification syntax.
 
 Example creating request with Honeycomb Trace header set.
 ```java
