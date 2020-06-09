@@ -2,6 +2,7 @@ package io.honeycomb.beeline.spring.beans;
 
 
 import brave.propagation.ExtraFieldPropagation;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.honeycomb.beeline.spring.autoconfig.BeelineProperties;
 import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.tracing.SpanBuilderFactory;
@@ -30,6 +31,7 @@ public class BraveBeelineReporter implements Reporter<Span> {
         this.properties = properties;
     }
 
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE") // Java 11 false positive
     @Override
     public void report(final Span span) {
         try (io.honeycomb.beeline.tracing.Span hcRootSpan = transformBraveSpanToHoneycombSpan(span)) {
