@@ -90,11 +90,4 @@ public class SpanPostProcessor {
         applySpanToEvent(span, event);
         return event;
     }
-
-    /**
-     * Close the HoneyClient instance. This will send any pending events.
-     */
-    public void close() {
-        client.close();
-    }
 }
