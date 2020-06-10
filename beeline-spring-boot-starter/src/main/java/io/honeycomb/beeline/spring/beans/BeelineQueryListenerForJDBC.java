@@ -30,8 +30,12 @@ public class BeelineQueryListenerForJDBC implements QueryExecutionListener {
 
     @Override
     public void beforeQuery(final ExecutionInfo execInfo, final List<QueryInfo> queryInfoList) {
-        final boolean hasActiveSpan = !beeline.getActiveSpan().isNoop();
-        final Span rootSpan = hasActiveSpan ? beeline.startTrace(BATCH_SPAN_NAME, PropagationContext.emptyContext(), SERVICE_NAME) : beeline.getActiveSpan();
+        final Span rootSpan;
+        if(beeline.getActiveSpan().isNoop()){
+            rootSpan = beeline.startTrace(BATCH_SPAN_NAME, PropagationContext.emptyContext(), SERVICE_NAME);
+        } else {
+            rootSpan = beeline.getActiveSpan();
+        }
         final Tracer tracer = beeline.getTracer();
         final List<Span> childSpans = new ArrayList<>();
         queryInfoList.forEach(queryInfo -> {
@@ -45,35 +49,35 @@ public class BeelineQueryListenerForJDBC implements QueryExecutionListener {
 
     @Override
     public void afterQuery(final ExecutionInfo execInfo, final List<QueryInfo> queryInfoList) {
-        final Span rootSpan = safelyValidateRootSpan(execInfo);
-        final List<Span> childSpans = safelyValidateChildSpans(execInfo);
-        if (rootSpan == null) {
-            LOG.error("Root span not found");
-            return;
-        }
-        if (childSpans == null) {
-            rootSpan.close();
-            LOG.error("Child spans not found");
-            return;
-        }
-        if (childSpans.size() != queryInfoList.size()) {
-            LOG.warn("Expected Child spans to match queries childSpans={} queries={}", childSpans.size(), queryInfoList.size());
-        }
+        try (Span rootSpan = safelyValidateRootSpan(execInfo)) {
+            final List<Span> childSpans = safelyValidateChildSpans(execInfo);
+            if (rootSpan == null) {
+                LOG.error("Root span not found");
+                return;
+            }
+            if (childSpans == null) {
+                rootSpan.close();
+                LOG.error("Child spans not found");
+                return;
+            }
+            if (childSpans.size() != queryInfoList.size()) {
+                LOG.warn("Expected Child spans to match queries childSpans={} queries={}", childSpans.size(), queryInfoList.size());
+            }
 
-        final int length = Math.min(childSpans.size(), queryInfoList.size());
-        for (int i = 0; i < length; i++) {
-            final Object o = childSpans.get(i);
-            final Class<?> oClass = o.getClass();
-            if (!Span.class.isAssignableFrom(oClass)) {
-                LOG.warn("Expected span type but got class {}", oClass);
-                continue;
-            }
-            try (Span span = (Span) o) {
-                final QueryInfo info = queryInfoList.get(i);
-                applyToSpan(execInfo, info, span);
+            final int length = Math.min(childSpans.size(), queryInfoList.size());
+            for (int i = 0; i < length; i++) {
+                final Object o = childSpans.get(i);
+                final Class<?> oClass = o.getClass();
+                if (!Span.class.isAssignableFrom(oClass)) {
+                    LOG.warn("Expected span type but got class {}", oClass);
+                    continue;
+                }
+                try (Span span = (Span) o) {
+                    final QueryInfo info = queryInfoList.get(i);
+                    applyToSpan(execInfo, info, span);
+                }
             }
         }
-        rootSpan.close();
     }
 
     private Span safelyValidateRootSpan(ExecutionInfo executionInfo) {
