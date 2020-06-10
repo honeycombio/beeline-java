@@ -48,7 +48,7 @@ public class BeelineQueryListenerForJDBC implements QueryExecutionListener {
         execInfo.addCustomValue(ROOT_SPAN_KEY, rootSpan);
     }
 
-    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE") // JDK 11 issue https://github.com/spotbugs/spotbugs/issues/756
+    @SuppressFBWarnings({"RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", "RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE", "RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"}) // JDK 11 issue https://github.com/spotbugs/spotbugs/issues/756
     @Override
     public void afterQuery(final ExecutionInfo execInfo, final List<QueryInfo> queryInfoList) {
         try (Span rootSpan = safelyValidateRootSpan(execInfo)) {
