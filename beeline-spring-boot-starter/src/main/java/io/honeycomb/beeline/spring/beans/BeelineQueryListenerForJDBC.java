@@ -56,7 +56,6 @@ public class BeelineQueryListenerForJDBC implements QueryExecutionListener {
                 return;
             }
             if (childSpans == null) {
-                rootSpan.close();
                 LOG.error("Child spans not found");
                 return;
             }
