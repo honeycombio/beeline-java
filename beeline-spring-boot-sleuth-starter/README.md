@@ -4,6 +4,7 @@ This component will autoconfigure Spring Sleuth to send Sleuth traces to Honeyco
 ## Quick start
 1. Add [Spring Sleuth starter](https://spring.io/projects/spring-cloud-sleuth)
 2. Add Beeline starter for Spring Sleuth
+
     Using Gradle
     ```
     implementation 'io.honeycomb.beeline:beeline-spring-boot-starter:1.1.1'
