@@ -7,13 +7,13 @@ This component will autoconfigure Spring Sleuth to send Sleuth traces to Honeyco
 
     Using Gradle
     ```
-    implementation 'io.honeycomb.beeline:beeline-spring-boot-starter:1.1.1'
+    implementation 'io.honeycomb.beeline:beeline-spring-boot-sleuth-starter:1.1.1'
     ```
     Using Maven
     ```xml
     <dependency>
         <groupId>io.honeycomb.beeline</groupId>
-        <artifactId>beeline-spring-boot-starter</artifactId>
+        <artifactId>beeline-spring-boot-sleuth-starter</artifactId>
         <version>1.1.1</version>
     </dependency>
     ```
