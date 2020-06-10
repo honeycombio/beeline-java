@@ -1,5 +1,6 @@
 package io.honeycomb.beeline.spring.beans;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.tracing.Span;
 import io.honeycomb.beeline.tracing.Tracer;
@@ -47,6 +48,7 @@ public class BeelineQueryListenerForJDBC implements QueryExecutionListener {
         execInfo.addCustomValue(ROOT_SPAN_KEY, rootSpan);
     }
 
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE") // JDK 11 issue https://github.com/spotbugs/spotbugs/issues/756
     @Override
     public void afterQuery(final ExecutionInfo execInfo, final List<QueryInfo> queryInfoList) {
         try (Span rootSpan = safelyValidateRootSpan(execInfo)) {
