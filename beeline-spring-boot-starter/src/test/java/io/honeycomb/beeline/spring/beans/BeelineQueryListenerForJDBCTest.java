@@ -20,6 +20,7 @@ import java.util.List;
 
 import static io.honeycomb.beeline.spring.beans.BeelineQueryListenerForJDBC.CHILD_SPAN_KEY;
 import static io.honeycomb.beeline.spring.beans.BeelineQueryListenerForJDBC.ROOT_SPAN_KEY;
+import static io.honeycomb.beeline.spring.beans.BeelineQueryListenerForJDBC.SHOULD_REMOVE_SPAN_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -27,6 +28,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -82,6 +85,28 @@ public class BeelineQueryListenerForJDBCTest {
         assertThat(rootSpan).isNotNull();
         assertThat(childSpans).isNotNull().hasSize(2);
         verify(childSpan, times(2)).markStart();
+    }
+
+    @Test
+    public void GIVEN_beforeQueryNoActiveSpan_EXPECT_flagShouldBeSetToCloseRootSpan() {
+        reset(activeSpan);
+        when(activeSpan.isNoop()).thenReturn(true);
+        final List<QueryInfo> queryInfoList = Collections.singletonList(new QueryInfo("query1"));
+
+        listener.beforeQuery(executionInfo, queryInfoList);
+
+        final Boolean resultShouldRemoveSpan = executionInfo.getCustomValue(SHOULD_REMOVE_SPAN_KEY, Boolean.class);
+        assertThat(resultShouldRemoveSpan).isTrue();
+    }
+
+    @Test
+    public void GIVEN_beforeQueryActiveSpan_EXPECT_flagShouldNOTBeSetToCloseRootSpan() {
+        final List<QueryInfo> queryInfoList = Collections.singletonList(new QueryInfo("query1"));
+
+        listener.beforeQuery(executionInfo, queryInfoList);
+
+        final Boolean resultShouldRemoveSpanFlag = executionInfo.getCustomValue(SHOULD_REMOVE_SPAN_KEY, Boolean.class);
+        assertThat(resultShouldRemoveSpanFlag).isNull();
     }
 
     @Test
@@ -214,19 +239,43 @@ public class BeelineQueryListenerForJDBCTest {
     }
 
     @Test
-    public void GIVEN_afterQueryCouldNotConvertChildSpanList_EXPECT_invalidSpanDataDroppedButRootSpanClosed() {
+    public void GIVEN_afterQueryShouldRemoveRootSpanFlagTrue_EXPECT_rootSpanClosed() {
         final List<QueryInfo> queryInfoList = Collections.singletonList(new QueryInfo("query1"));
-        final Object nonSpan = mock(Mock.class);
         executionInfo.addCustomValue(ROOT_SPAN_KEY, activeSpan);
-        executionInfo.addCustomValue(CHILD_SPAN_KEY, nonSpan);
+        executionInfo.addCustomValue(CHILD_SPAN_KEY, Collections.singletonList(childSpan));
+        executionInfo.addCustomValue(SHOULD_REMOVE_SPAN_KEY, Boolean.TRUE);
 
         listener.afterQuery(executionInfo, queryInfoList);
 
-        verifyNoInteractions(nonSpan, childSpan);
         verify(activeSpan, atLeastOnce()).close();
     }
+
     @Test
-    public void GIVEN_afterQueryCouldNotConvertChildSpan_EXPECT_invalidSpanDataDroppedButRootSpanClosed() {
+    public void GIVEN_afterQueryShouldRemoveRootSpanFlagFalse_EXPECT_rootSpanNotClosed() {
+        final List<QueryInfo> queryInfoList = Collections.singletonList(new QueryInfo("query1"));
+        executionInfo.addCustomValue(ROOT_SPAN_KEY, activeSpan);
+        executionInfo.addCustomValue(CHILD_SPAN_KEY, Collections.singletonList(childSpan));
+        executionInfo.addCustomValue(SHOULD_REMOVE_SPAN_KEY, Boolean.FALSE);
+
+        listener.afterQuery(executionInfo, queryInfoList);
+
+        verify(activeSpan, never()).close();
+    }
+
+    @Test
+    public void GIVEN_afterQueryShouldRemoveRootSpanFlagMissing_EXPECT_rootSpanNotClosed() {
+        final List<QueryInfo> queryInfoList = Collections.singletonList(new QueryInfo("query1"));
+        executionInfo.addCustomValue(ROOT_SPAN_KEY, activeSpan);
+        executionInfo.addCustomValue(CHILD_SPAN_KEY, Collections.singletonList(childSpan));
+
+        listener.afterQuery(executionInfo, queryInfoList);
+
+        verifyAddedFieldsToSpan(1);
+        verify(activeSpan, never()).close();
+    }
+
+    @Test
+    public void GIVEN_afterQueryCouldNotConvertChildSpanObject_EXPECT_invalidSpanDataDropped() {
         final List<QueryInfo> queryInfoList = Collections.singletonList(new QueryInfo("query1"));
         final Object nonSpan = mock(Mock.class);
         executionInfo.addCustomValue(ROOT_SPAN_KEY, activeSpan);
@@ -235,7 +284,20 @@ public class BeelineQueryListenerForJDBCTest {
         listener.afterQuery(executionInfo, queryInfoList);
 
         verifyNoInteractions(nonSpan, childSpan);
-        verify(activeSpan, atLeastOnce()).close();
+        verify(activeSpan, never()).close();
+    }
+
+    @Test
+    public void GIVEN_afterQueryCouldNotConvertChildSpanList_EXPECT_invalidSpanDataDropped() {
+        final List<QueryInfo> queryInfoList = Collections.singletonList(new QueryInfo("query1"));
+        final Object nonSpan = mock(Mock.class);
+        executionInfo.addCustomValue(ROOT_SPAN_KEY, activeSpan);
+        executionInfo.addCustomValue(CHILD_SPAN_KEY, nonSpan);
+
+        listener.afterQuery(executionInfo, queryInfoList);
+
+        verifyNoInteractions(nonSpan, childSpan);
+        verify(activeSpan, never()).close();
     }
 
     @Test
@@ -260,17 +322,6 @@ public class BeelineQueryListenerForJDBCTest {
         verifyAddedFieldsToSpan(1);
     }
 
-    @Test
-    public void GIVEN_afterQueryMissingChildSpans_EXPECT_rootSpanToBeClosed() {
-        final List<QueryInfo> queryInfoList = Collections.singletonList(new QueryInfo("query1"));
-        executionInfo.addCustomValue(ROOT_SPAN_KEY, activeSpan);
-        executionInfo.addCustomValue(CHILD_SPAN_KEY, null);
-
-        listener.afterQuery(executionInfo, queryInfoList);
-
-        verifyAddedFieldsToSpan(0);
-        verify(activeSpan, atLeastOnce()).close();
-    }
 
     @Test
     public void GIVEN_afterQueryMissingRootSpan_EXPECT_nothingToHappen() {
@@ -281,5 +332,10 @@ public class BeelineQueryListenerForJDBCTest {
         listener.afterQuery(executionInfo, queryInfoList);
 
         verifyNoInteractions(activeSpan, childSpan);
+    }
+
+    @Test
+    public void EXPECT_instrumentationName() {
+        assertThat(listener.getName()).isNotNull().isEqualTo("spring_jdbc");
     }
 }
