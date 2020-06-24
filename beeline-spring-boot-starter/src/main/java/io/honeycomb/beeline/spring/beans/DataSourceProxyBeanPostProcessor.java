@@ -1,6 +1,5 @@
 package io.honeycomb.beeline.spring.beans;
 
-import io.honeycomb.beeline.tracing.Beeline;
 import net.ttddyy.dsproxy.support.ProxyDataSource;
 import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -9,10 +8,10 @@ import javax.sql.DataSource;
 
 public class DataSourceProxyBeanPostProcessor implements BeanPostProcessor {
 
-    private final Beeline beeline;
+    private final BeelineQueryListenerForJDBC listener;
 
-    public DataSourceProxyBeanPostProcessor(final Beeline beeline) {
-        this.beeline = beeline;
+    public DataSourceProxyBeanPostProcessor(BeelineQueryListenerForJDBC listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -23,7 +22,7 @@ public class DataSourceProxyBeanPostProcessor implements BeanPostProcessor {
 
         return ProxyDataSourceBuilder.create((DataSource) bean)
             .name(beanName)
-            .listener(new BeelineQueryListenerForJDBC(beeline))
+            .listener(listener)
             .build();
     }
 

@@ -1,6 +1,5 @@
 package io.honeycomb.beeline.spring.beans;
 
-import io.honeycomb.beeline.tracing.Beeline;
 import net.ttddyy.dsproxy.support.ProxyDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,13 +18,13 @@ import static org.mockito.Mockito.mock;
 @RunWith(SpringRunner.class)
 public class DataSourceProxyBeanPostProcessorTest {
     @Mock
-    Beeline beeline;
+    BeelineQueryListenerForJDBC listener;
 
     DataSourceProxyBeanPostProcessor processor;
 
     @Before
     public void setUp() {
-        processor = new DataSourceProxyBeanPostProcessor(beeline);
+        processor = new DataSourceProxyBeanPostProcessor(listener);
     }
 
     @Test

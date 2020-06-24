@@ -114,8 +114,8 @@ public class MockMvcTest {
         assertThat(eventFields).containsKey("meta.beeline_version");
         assertThat(eventFields).containsEntry("meta.package", "Spring Boot");
         assertThat(eventFields).containsKey("meta.package_version");
-        assertThat((Iterable<String>) eventFields.get("meta.instrumentations")).containsExactlyInAnyOrder("spring_mvc", "spring_aop", "spring_rest_template");
-        assertThat(eventFields).containsEntry("meta.instrumentation_count", 3);
+        assertThat((Iterable<String>) eventFields.get("meta.instrumentations")).containsExactlyInAnyOrder("spring_mvc", "spring_aop", "spring_rest_template", "spring_jdbc");
+        assertThat(eventFields).containsEntry("meta.instrumentation_count", 4);
         assertThat(eventFields).containsEntry("meta.local_hostname", tryGetLocalHostname());
     }
 

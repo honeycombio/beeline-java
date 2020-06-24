@@ -1,10 +1,11 @@
 package io.honeycomb.beeline.spring.autoconfig;
 
 import io.honeycomb.beeline.spring.beans.BeelineHandlerInterceptor;
+import io.honeycomb.beeline.spring.beans.BeelineQueryListenerForJDBC;
 import io.honeycomb.beeline.spring.beans.BeelineRestTemplateInterceptor;
 import io.honeycomb.beeline.spring.beans.DataSourceProxyBeanPostProcessor;
-import io.honeycomb.beeline.spring.beans.SpringServletFilter;
 import io.honeycomb.beeline.spring.beans.DebugResponseObserver;
+import io.honeycomb.beeline.spring.beans.SpringServletFilter;
 import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.tracing.Span;
 import io.honeycomb.beeline.tracing.SpanPostProcessor;
@@ -57,7 +58,8 @@ public class BeelineAutoconfigTest {
         BeelineHandlerInterceptor.class,
         BeelineRestTemplateInterceptor.class,
         BatchingHttpTransport.class,
-        DataSourceProxyBeanPostProcessor.class
+        DataSourceProxyBeanPostProcessor.class,
+        BeelineQueryListenerForJDBC.class
     );
 
     private final String[] defaultProps = {
@@ -326,6 +328,8 @@ public class BeelineAutoconfigTest {
             .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
             .withPropertyValues(defaultProps)
             .withPropertyValues("honeycomb.beeline.jdbc.enabled=false")
-            .run(context -> assertThat(context).doesNotHaveBean(DataSourceProxyBeanPostProcessor.class));
+            .run(context -> assertThat(context)
+                .doesNotHaveBean(DataSourceProxyBeanPostProcessor.class)
+                .doesNotHaveBean(BeelineQueryListenerForJDBC.class));
     }
 }

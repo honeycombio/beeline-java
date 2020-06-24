@@ -219,7 +219,13 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
 
     @Bean
     @ConditionalOnProperty(name = "honeycomb.beeline.jdbc.enabled", havingValue = "true", matchIfMissing = true)
-    public DataSourceProxyBeanPostProcessor proxyBeanPostProcessor(Beeline beeline){
-        return new DataSourceProxyBeanPostProcessor(beeline);
+    public BeelineQueryListenerForJDBC beelineQueryListenerForJDBC(Beeline beeline){
+        return new BeelineQueryListenerForJDBC(beeline);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "honeycomb.beeline.jdbc.enabled", havingValue = "true", matchIfMissing = true)
+    public DataSourceProxyBeanPostProcessor proxyBeanPostProcessor(BeelineQueryListenerForJDBC listener){
+        return new DataSourceProxyBeanPostProcessor(listener);
     }
 }
