@@ -8,8 +8,8 @@ import java.util.regex.Pattern;
 import static io.honeycomb.libhoney.utils.ObjectUtils.isNullOrEmpty;
 
 /**
- * Codec that can decode/encode trace context based on the Amazon X-Ray http header ('X-Amzn-Trace-Id').
- * Prefer the {@link Propagation#amazonXRay()} factory method to retrieve an instance.
+ * Codec that can decode/encode trace context based on the AWS http header ('X-Amzn-Trace-Id').
+ * Prefer the {@link Propagation#aws()} factory method to retrieve an instance.
  * <p>
  * The design of this class avoids throwing exceptions in favour of logging warnings and returning null on encode
  * or an "empty context" on decode.
@@ -17,12 +17,12 @@ import static io.honeycomb.libhoney.utils.ObjectUtils.isNullOrEmpty;
  * <h1>Thread-safety</h1>
  * Instances of this class are thread-safe and can be shared.
  */
-public class AmazonXRayPropagationCodec implements PropagationCodec<String> {
+public class AWSPropagationCodec implements PropagationCodec<String> {
 
-    private static final AmazonXRayPropagationCodec INSTANCE = new AmazonXRayPropagationCodec();
+    private static final AWSPropagationCodec INSTANCE = new AWSPropagationCodec();
 
     // @formatter:off
-    public static final String AMAZON_XRAY_TRACE_HEADER     = "X-Amzn-Trace-Id";
+    public static final String AWS_TRACE_HEADER             = "X-Amzn-Trace-Id";
 
     private static final String SEGMENT_SEPARATOR           = ";";
     private static final Pattern SPLIT_SEGMENTS_PATTERN     = Pattern.compile(SEGMENT_SEPARATOR);
@@ -37,7 +37,7 @@ public class AmazonXRayPropagationCodec implements PropagationCodec<String> {
     private static final int DEFAULT_STRINGBUILDER_CAPACITY = 1024;
     // @formatter:on
 
-    public static AmazonXRayPropagationCodec getInstance() {
+    public static AWSPropagationCodec getInstance() {
         return INSTANCE;
     }
 
@@ -97,7 +97,7 @@ public class AmazonXRayPropagationCodec implements PropagationCodec<String> {
      * This will return null if the span id or trace id are not set (i.e. the context is not an active trace).
      *
      * @param context to encode into a valid header value.
-     * @return a valid Amazon X-Ray http header value - empty if required IDs are missing or input is null.
+     * @return a valid AWS http header value - empty if required IDs are missing or input is null.
      */
     @Override
     public Optional<String> encode(PropagationContext context) {

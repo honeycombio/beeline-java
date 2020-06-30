@@ -12,13 +12,13 @@ import java.util.Collections;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AmazonXRayPropagationCodecTest {
+public class AWSPropagationCodecTest {
 
-    private AmazonXRayPropagationCodec codec;
+    private AWSPropagationCodec codec;
 
     @Before
     public void setUp() {
-        codec = new AmazonXRayPropagationCodec();
+        codec = new AWSPropagationCodec();
     }
 
     // Decode

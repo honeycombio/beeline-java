@@ -24,11 +24,11 @@ public final class Propagation {
     }
 
     /**
-     * Codec that can decode/encode trace context based on the Amazon X-Ray http header ('X-Amzn-Trace-Id').
+     * Codec that can decode/encode trace context based on the AWS http header ('X-Amzn-Trace-Id').
      *
      * @return a codec.
      */
-    public static PropagationCodec<String> amazonXRay() {
-        return AmazonXRayPropagationCodec.getInstance();
+    public static PropagationCodec<String> aws() {
+        return AWSPropagationCodec.getInstance();
     }
 }
