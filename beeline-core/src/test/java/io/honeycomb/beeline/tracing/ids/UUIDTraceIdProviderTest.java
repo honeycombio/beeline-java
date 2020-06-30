@@ -14,4 +14,14 @@ public class UUIDTraceIdProviderTest {
 
         assertThat(uuid).isNotNull();
     }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void checkThatValidTraceIdsAreCreated() {
+        UUIDTraceIdProvider.getInstance().generateTraceId();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void checkThatValidSpanIdsAreCreated() {
+        UUIDTraceIdProvider.getInstance().generateSpanId();
+    }
 }

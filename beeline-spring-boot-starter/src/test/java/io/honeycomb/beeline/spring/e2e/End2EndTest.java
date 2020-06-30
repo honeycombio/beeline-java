@@ -4,6 +4,8 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
+import io.honeycomb.beeline.tracing.ids.W3CTraceIdProvider;
 import io.honeycomb.beeline.tracing.sampling.TraceSampler;
 import io.honeycomb.libhoney.eventdata.ResolvedEvent;
 import io.honeycomb.libhoney.responses.ResponseObservable;
@@ -192,8 +194,8 @@ public class End2EndTest {
         final List<ResolvedEvent> resolvedEvents = captureNoOfEvents(1);
         final ResolvedEvent requestEvent = resolvedEvents.get(0);
 
-        assertThat(fieldStringOf(requestEvent, "trace.span_id")).satisfies(UUID::fromString);
-        assertThat(fieldStringOf(requestEvent, "trace.trace_id")).satisfies(UUID::fromString);
+        assertThat(fieldStringOf(requestEvent, "trace.span_id")).satisfies(W3CTraceIdProvider::validateSpanId);
+        assertThat(fieldStringOf(requestEvent, "trace.trace_id")).satisfies(W3CTraceIdProvider::validateTraceId);
         assertThat(requestEvent.getFields())
             .contains(
                 entry("type", "http_server"),

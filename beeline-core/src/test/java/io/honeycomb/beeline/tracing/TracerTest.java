@@ -1,6 +1,6 @@
 package io.honeycomb.beeline.tracing;
 
-import io.honeycomb.beeline.tracing.ids.UUIDTraceIdProvider;
+import io.honeycomb.beeline.tracing.ids.W3CTraceIdProvider;
 import io.honeycomb.beeline.tracing.propagation.PropagationContext;
 import io.honeycomb.beeline.tracing.sampling.Sampling;
 import io.honeycomb.libhoney.HoneyClient;
@@ -59,7 +59,7 @@ public class TracerTest {
             .setWriteKey("testWriteKey")
             .build(), mockTransport);
         final SpanPostProcessor spanPostProcessor = new SpanPostProcessor(client, Sampling.alwaysSampler());
-        factory = new SpanBuilderFactory(spanPostProcessor, SystemClockProvider.getInstance(), UUIDTraceIdProvider.getInstance(), Sampling.alwaysSampler());
+        factory = new SpanBuilderFactory(spanPostProcessor, SystemClockProvider.getInstance(), W3CTraceIdProvider.getInstance(), Sampling.alwaysSampler());
         tracer = new Tracer(factory);
 
     }

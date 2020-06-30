@@ -9,6 +9,7 @@ import java.util.UUID;
  * <h1>Thread-safety</h1>
  * Instances of this class are thread-safe and can be shared.
  */
+@Deprecated
 public class UUIDTraceIdProvider implements TraceIdProvider {
     private static final TraceIdProvider INSTANCE = new UUIDTraceIdProvider();
 
@@ -19,5 +20,15 @@ public class UUIDTraceIdProvider implements TraceIdProvider {
     @Override
     public String generateId() {
         return UUID.randomUUID().toString();
+    }
+
+    @Override
+    public String generateTraceId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String generateSpanId() {
+        throw new UnsupportedOperationException();
     }
 }
