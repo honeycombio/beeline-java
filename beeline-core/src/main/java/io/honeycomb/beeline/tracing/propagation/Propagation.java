@@ -15,7 +15,7 @@ public final class Propagation {
     }
 
     /**
-     * Codec that can decode/encode trace context based on Version 1 of the honeycomb http header ('x-honeycomb-trace').
+     * Codec that can decode/encode trace context based on Version 1 of the Honeycomb http header ('x-honeycomb-trace').
      *
      * @return a codec.
      */
@@ -30,5 +30,14 @@ public final class Propagation {
      */
     public static PropagationCodec<String> aws() {
         return AWSPropagationCodec.getInstance();
+    }
+
+    /**
+     * Codec that can decode/encode trace context based on Version 1 of the W3C http header ('traceparent').
+     *
+     * @return a codec.
+     */
+    public static PropagationCodec<String> w3c() {
+        return HttpHeaderV1PropagationCodec.getInstance();
     }
 }

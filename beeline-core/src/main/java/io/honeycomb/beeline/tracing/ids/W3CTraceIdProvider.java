@@ -2,6 +2,8 @@ package io.honeycomb.beeline.tracing.ids;
 
 import java.util.Random;
 
+import static io.honeycomb.libhoney.utils.ObjectUtils.isNullOrEmpty;
+
 /**
  * Creates Trace and Span IDs that conform to the W3C specification.
  * This is inline with Beeline instrumentations in other programming languages.
@@ -12,8 +14,14 @@ import java.util.Random;
 public class W3CTraceIdProvider implements TraceIdProvider {
     private static final TraceIdProvider INSTANCE = new W3CTraceIdProvider();
     private static final Random RAND = new Random();
-    private static final int TRACEID_LENGTH = 16;
-    private static final int SPANID_LENGTH = 8;
+
+    private static final int TRACEID_BYTES_LENGTH = 16;
+    private static final int SPANID_BYTES_LENGTH = 8;
+
+    private static final String INVALID_TRACEID = "00000000000000000000000000000000";
+    private static final int TRACEID_STRING_LENGTH = INVALID_TRACEID.length();
+    private static final String INVALID_SPANID = "0000000000000000";
+    private static final int SPANID_STRING_LENGTH = INVALID_SPANID.length();
 
     public static TraceIdProvider getInstance() {
         return INSTANCE;
@@ -26,14 +34,14 @@ public class W3CTraceIdProvider implements TraceIdProvider {
 
     @Override
     public String generateTraceId() {
-        byte[] bytes = new byte[TRACEID_LENGTH];
+        byte[] bytes = new byte[TRACEID_BYTES_LENGTH];
         RAND.nextBytes(bytes);
         return bytesToHex(bytes);
     }
 
     @Override
     public String generateSpanId() {
-        byte[] bytes = new byte[SPANID_LENGTH];
+        byte[] bytes = new byte[SPANID_BYTES_LENGTH];
         RAND.nextBytes(bytes);
         return bytesToHex(bytes);
     }
@@ -59,11 +67,21 @@ public class W3CTraceIdProvider implements TraceIdProvider {
      *         If the traceId is not valid.
      */
     public static void validateTraceId(String traceId) {
-        if (traceId.isEmpty() ||
-            traceId.length() != 32 ||
-            !isHexString(traceId)) {
+        if (!isValidTraceId(traceId)) {
             throw new IllegalArgumentException("Invalid TraceID string: " + traceId);
         }
+    }
+
+    /**
+     * Validates the provided traceId.
+     * @param spanId
+     * @return boolean whether the traceId is valid or not.
+     */
+    public static Boolean isValidTraceId(String traceId) {
+        return !isNullOrEmpty(traceId) &&
+               traceId.length() == TRACEID_STRING_LENGTH &&
+               !traceId.equals(INVALID_TRACEID) &&
+               isHexString(traceId);
     }
 
     /**
@@ -74,11 +92,21 @@ public class W3CTraceIdProvider implements TraceIdProvider {
      *         If the spanId is not valid.
      */
     public static void validateSpanId(String spanId) {
-        if (spanId.isEmpty() ||
-            spanId.length() != 16 ||
-            !isHexString(spanId)) {
+        if (!isValidSpanId(spanId)) {
             throw new IllegalArgumentException("Invalid SpanID string: " + spanId);
         }
+    }
+
+    /**
+     * Validates the provided spanId.
+     * @param spanId
+     * @return boolean whether the spanId is valid or not.
+     */
+    public static Boolean isValidSpanId(String spanId) {
+        return !isNullOrEmpty(spanId) &&
+               spanId.length() == SPANID_STRING_LENGTH &&
+               !spanId.equals(INVALID_SPANID) &&
+               isHexString(spanId);
     }
 
     private static Boolean isHexString(String id) {
