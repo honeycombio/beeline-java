@@ -22,4 +22,13 @@ public final class Propagation {
     public static PropagationCodec<String> honeycombHeaderV1() {
         return HttpHeaderV1PropagationCodec.getInstance();
     }
+
+    /**
+     * Codec that can decode/encode trace context based on the AWS http header ('X-Amzn-Trace-Id').
+     *
+     * @return a codec.
+     */
+    public static PropagationCodec<String> aws() {
+        return AWSPropagationCodec.getInstance();
+    }
 }
