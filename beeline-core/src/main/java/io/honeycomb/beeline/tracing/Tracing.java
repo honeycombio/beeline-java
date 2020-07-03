@@ -1,7 +1,7 @@
 package io.honeycomb.beeline.tracing;
 
 import io.honeycomb.beeline.tracing.ids.TraceIdProvider;
-import io.honeycomb.beeline.tracing.ids.UUIDTraceIdProvider;
+import io.honeycomb.beeline.tracing.ids.W3CTraceIdProvider;
 import io.honeycomb.beeline.tracing.sampling.TraceSampler;
 import io.honeycomb.beeline.tracing.context.TracingContext;
 import io.honeycomb.libhoney.HoneyClient;
@@ -19,7 +19,7 @@ import io.honeycomb.libhoney.transport.batch.impl.SystemClockProvider;
  */
 public final class Tracing {
     private static final ClockProvider CLOCK = SystemClockProvider.getInstance();
-    private static final TraceIdProvider ID_PROVIDER = UUIDTraceIdProvider.getInstance();
+    private static final TraceIdProvider ID_PROVIDER = W3CTraceIdProvider.getInstance();
 
     private Tracing() {
         // utils class

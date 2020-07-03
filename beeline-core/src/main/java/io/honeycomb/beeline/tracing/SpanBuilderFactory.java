@@ -114,7 +114,7 @@ public class SpanBuilderFactory {
     }
 
     public String generateId() {
-        return idProvider.generateId();
+        return idProvider.generateTraceId();
     }
 
     public SpanPostProcessor getProcessor() {
@@ -262,7 +262,7 @@ public class SpanBuilderFactory {
          * @throws IllegalArgumentException if required attributes are not set.
          */
         public Span build() {
-            final String traceId = parentContext.isTraced() ? parentContext.getTraceId() : idProvider.generateId();
+            final String traceId = parentContext.isTraced() ? parentContext.getTraceId() : idProvider.generateTraceId();
             final int sampleRate = traceSampler.sample(traceId);
             LOG.debug("Building span - sampling decision for traceId '{}' is '{}'", traceId, sampleRate);
             return sampleRate > 0 ? createSendingSpan(sampleRate, traceId) : Span.getNoopInstance();
@@ -275,7 +275,7 @@ public class SpanBuilderFactory {
             final Span span = new SendingSpan(
                 spanName,
                 serviceName,
-                spanId == null ? idProvider.generateId() : spanId,
+                spanId == null ? idProvider.generateSpanId() : spanId,
                 fields,
                 context,
                 processor,

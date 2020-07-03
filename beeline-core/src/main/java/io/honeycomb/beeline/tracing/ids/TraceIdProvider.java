@@ -7,5 +7,9 @@ package io.honeycomb.beeline.tracing.ids;
  * Implementations must be thread-safe and so that they can be shared.
  */
 public interface TraceIdProvider {
+    @Deprecated
     String generateId();
+
+    String generateTraceId();
+    String generateSpanId();
 }

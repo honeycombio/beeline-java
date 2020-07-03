@@ -1,11 +1,10 @@
 package io.honeycomb.beeline.tracing;
 
+import io.honeycomb.beeline.tracing.ids.W3CTraceIdProvider;
 import io.honeycomb.beeline.tracing.sampling.Sampling;
 import io.honeycomb.libhoney.HoneyClient;
 import io.honeycomb.libhoney.transport.batch.impl.SystemClockProvider;
 import org.junit.Test;
-
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -26,7 +25,7 @@ public class TracingTest {
         assertThat(factory.getProcessor()).isSameAs(mock);
         assertThat(factory.getSampler()).isSameAs(Sampling.alwaysSampler());
         assertThat(factory.getClock()).isSameAs(SystemClockProvider.getInstance());
-        assertThat(factory.generateId()).satisfies(UUID::fromString);
+        assertThat(factory.generateId()).satisfies(W3CTraceIdProvider::validateTraceId);
     }
 
     @Test

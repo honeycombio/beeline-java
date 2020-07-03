@@ -1,6 +1,6 @@
 package io.honeycomb.beeline.tracing;
 
-import io.honeycomb.beeline.tracing.ids.UUIDTraceIdProvider;
+import io.honeycomb.beeline.tracing.ids.W3CTraceIdProvider;
 import io.honeycomb.beeline.tracing.propagation.PropagationContext;
 import io.honeycomb.beeline.tracing.sampling.Sampling;
 import io.honeycomb.libhoney.transport.batch.ClockProvider;
@@ -8,7 +8,6 @@ import io.honeycomb.libhoney.transport.batch.impl.SystemClockProvider;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -19,7 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class SpanBuilderFactoryTest {
-    private SpanBuilderFactory factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), UUIDTraceIdProvider.getInstance(), Sampling.alwaysSampler());
+    private SpanBuilderFactory factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), W3CTraceIdProvider.getInstance(), Sampling.alwaysSampler());
 
     @Test
     public void WHEN_copyingANoopSpan_EXPECT_returnOfNoopBuilderAndSpan() {
@@ -150,13 +149,13 @@ public class SpanBuilderFactoryTest {
         final Span span = factory.createBuilder().setSpanName("span").setServiceName("service").setParentContext(context).build();
 
         assertThat(span.getParentSpanId()).isNull();
-        assertThat(span.getTraceId()).satisfies(UUID::fromString);
-        assertThat(span.getSpanId()).satisfies(UUID::fromString);
+        assertThat(span.getTraceId()).satisfies(W3CTraceIdProvider::validateTraceId);
+        assertThat(span.getSpanId()).satisfies(W3CTraceIdProvider::validateSpanId);
         assertThat(span.getSpanName()).isEqualTo("span");
         assertThat(span.getServiceName()).isEqualTo("service");
         assertThat(span.elapsedTimeMs()).isGreaterThan(0.0);
         assertThat(span.getTraceContext().getTraceFields()).containsEntry("key", "value");
-        assertThat(span.getTraceContext().getTraceId()).satisfies(UUID::fromString); // checks that it's a valid UUID string
+        assertThat(span.getTraceContext().getTraceId()).satisfies(W3CTraceIdProvider::validateTraceId);
         assertThat(span.getTraceContext().getSpanId()).isEqualTo(span.getSpanId());
     }
 
@@ -168,7 +167,7 @@ public class SpanBuilderFactoryTest {
 
         assertThat(span.getParentSpanId()).isEqualTo("abc");
         assertThat(span.getTraceId()).isEqualTo("123");
-        assertThat(span.getSpanId()).satisfies(UUID::fromString);
+        assertThat(span.getSpanId()).satisfies(W3CTraceIdProvider::validateSpanId);
         assertThat(span.getSpanName()).isEqualTo("span");
         assertThat(span.getServiceName()).isEqualTo("service");
         assertThat(span.elapsedTimeMs()).isGreaterThan(0.0);
@@ -186,7 +185,7 @@ public class SpanBuilderFactoryTest {
 
         assertThat(childSpan.getParentSpanId()).isEqualTo(parentSpan.getSpanId());
         assertThat(childSpan.getTraceId()).isEqualTo("123");
-        assertThat(childSpan.getSpanId()).satisfies(UUID::fromString);
+        assertThat(childSpan.getSpanId()).satisfies(W3CTraceIdProvider::validateSpanId);
         assertThat(childSpan.getSpanName()).isEqualTo("new-span");
         assertThat(childSpan.getServiceName()).isEqualTo("service");
         assertThat(childSpan.elapsedTimeMs()).isGreaterThan(0.0);
@@ -206,7 +205,7 @@ public class SpanBuilderFactoryTest {
 
         assertThat(childSpan.getParentSpanId()).isEqualTo(testSpan.getSpanId());
         assertThat(childSpan.getTraceId()).isEqualTo(testSpan.getTraceId());
-        assertThat(childSpan.getSpanId()).satisfies(UUID::fromString);
+        assertThat(childSpan.getSpanId()).satisfies(W3CTraceIdProvider::validateSpanId);
         assertThat(childSpan.getSpanName()).isEqualTo("new-span");
         assertThat(childSpan.getServiceName()).isEqualTo(testSpan.getServiceName());
         assertThat(childSpan.elapsedTimeMs()).isGreaterThan(0.0);
@@ -241,7 +240,7 @@ public class SpanBuilderFactoryTest {
 
         assertThat(childSpan.getParentSpanId()).isEqualTo(tracerSpan.getSpanId());
         assertThat(childSpan.getTraceId()).isEqualTo(tracerSpan.getTraceId());
-        assertThat(childSpan.getSpanId()).satisfies(UUID::fromString);
+        assertThat(childSpan.getSpanId()).satisfies(W3CTraceIdProvider::validateSpanId);
         assertThat(childSpan.getSpanName()).isEqualTo("new-span");
         assertThat(childSpan.getServiceName()).isEqualTo(tracerSpan.getServiceName());
         assertThat(childSpan.elapsedTimeMs()).isGreaterThan(0.0);
@@ -272,7 +271,7 @@ public class SpanBuilderFactoryTest {
     ///////////////////////////////////////////////////////////////////////////
     @Test
     public void GIVEN_aFactoryThatNeverSamplesSpans_WHEN_buildingASpan_EXPECT_returnedSpanToBeNoop() {
-        factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), UUIDTraceIdProvider.getInstance(), Sampling.neverSampler());
+        factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), W3CTraceIdProvider.getInstance(), Sampling.neverSampler());
 
         final Span rootSpan = factory.createBuilder().setSpanName("span").setServiceName("service").build();
 
@@ -282,7 +281,7 @@ public class SpanBuilderFactoryTest {
     @Test
     public void GIVEN_aFactoryThatNeverSamplesSpans_WHEN_buildingAChildSpan_EXPECT_returnedSpanToBeNoop() {
         final Span testSpan = getTestSpan();
-        factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), UUIDTraceIdProvider.getInstance(), Sampling.neverSampler());
+        factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), W3CTraceIdProvider.getInstance(), Sampling.neverSampler());
 
         final Span span = factory.createBuilderFromParent(testSpan).setSpanName("span").build();
 
@@ -292,7 +291,7 @@ public class SpanBuilderFactoryTest {
     @Test
     public void GIVEN_aFactoryThatAlwaysSamplesSpans_WHEN_buildingAChildSpan_EXPECT_sampleRateToBeZero() {
         final Span testSpan = getTestSpan();
-        factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), UUIDTraceIdProvider.getInstance(), Sampling.alwaysSampler());
+        factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), W3CTraceIdProvider.getInstance(), Sampling.alwaysSampler());
 
         final SendingSpan span = (SendingSpan) factory.createBuilderFromParent(testSpan).setSpanName("span").build();
 
@@ -309,7 +308,7 @@ public class SpanBuilderFactoryTest {
 
     @Test
     public void GIVEN_aFactoryThatNeverSamplesSpans_WHEN_passingANoopSpanToChildSpanMethod_EXPECT_returnedSpanToBeNoop() {
-        factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), UUIDTraceIdProvider.getInstance(), Sampling.neverSampler());
+        factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), W3CTraceIdProvider.getInstance(), Sampling.neverSampler());
 
         final Span span = factory.createBuilderFromParent(Span.getNoopInstance()).setSpanName("span").build();
 
@@ -319,7 +318,7 @@ public class SpanBuilderFactoryTest {
 
     @Test
     public void GIVEN_aFactoryThatNeverSamplesSpans_WHEN_creatingACopySpan_EXPECT_returnedSpanToBeNoop() {
-        factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), UUIDTraceIdProvider.getInstance(), Sampling.neverSampler());
+        factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), W3CTraceIdProvider.getInstance(), Sampling.neverSampler());
 
         final Span span = factory.createBuilderFrom(getTestSpan()).build();
 
@@ -328,7 +327,7 @@ public class SpanBuilderFactoryTest {
 
     @Test
     public void GIVEN_aFactoryThatNeverSamplesSpans_WHEN_passingANoopSpanToCopyMethod_EXPECT_returnedSpanToBeNoop() {
-        factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), UUIDTraceIdProvider.getInstance(), Sampling.neverSampler());
+        factory = new SpanBuilderFactory(mock(SpanPostProcessor.class), SystemClockProvider.getInstance(), W3CTraceIdProvider.getInstance(), Sampling.neverSampler());
 
         final Span span = factory.createBuilderFrom(Span.getNoopInstance()).build();
 
