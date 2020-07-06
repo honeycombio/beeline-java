@@ -216,4 +216,16 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
     public SpanAspect defaultBeelineSpanAspect(final Tracer tracer) {
         return new SpanAspect(tracer);
     }
+
+    @Bean
+    @ConditionalOnProperty(name = "honeycomb.beeline.jdbc.enabled", havingValue = "true", matchIfMissing = true)
+    public BeelineQueryListenerForJDBC beelineQueryListenerForJDBC(Beeline beeline){
+        return new BeelineQueryListenerForJDBC(beeline);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "honeycomb.beeline.jdbc.enabled", havingValue = "true", matchIfMissing = true)
+    public DataSourceProxyBeanPostProcessor proxyBeanPostProcessor(BeelineQueryListenerForJDBC listener){
+        return new DataSourceProxyBeanPostProcessor(listener);
+    }
 }

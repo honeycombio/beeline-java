@@ -110,6 +110,24 @@ public final class TraceFieldConstants {
     /** The response content type - if available. */
     public static final String RESPONSE_CONTENT_TYPE_FIELD  = "response.header.content_type";
 
+    // ========= database namespace =========
+    /** The database query being run */
+    public static final String DATABASE_QUERY_FIELD = "db.query";
+    /** The database query parameters */
+    public static final String DATABASE_QUERY_PARAMETERS_FIELD = "db.query_params";
+    public static final String DATABASE_CONNECTION_ID_FIELD = "db.connection_id";
+    /** The size of database batch being executed */
+    public static final String DATABASE_BATCH_SIZE_FIELD = "db.batch_size";
+    /** Is the query part of a batch execution */
+    public static final String DATABASE_IS_BATCH_FIELD = "db.is_batch";
+    public static final String DATABASE_STATEMENT_TYPE_FIELD = "db.statement_type";
+    /** Whether database query was successful */
+    public static final String DATABASE_IS_SUCCESS = "db.is_success";
+    /** Name of an error encountered that caused the request to fail (e.g. the name of an exception). */
+    public static final String DATABASE_ERROR = "db.error";
+    /** Detail about the error (e.g. the exception's message). */
+    public static final String DATABASE_ERROR_DETAILS = "db.error_details";
+
     //// ========= indicators of problems =========
     /** A child span sent as result of its parent being closed before it was closed. */
     public static final String META_SENT_BY_PARENT_FIELD    = "meta.sent_by_parent";
