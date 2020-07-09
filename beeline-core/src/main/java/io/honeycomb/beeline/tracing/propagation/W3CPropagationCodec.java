@@ -30,7 +30,6 @@ public class W3CPropagationCodec implements PropagationCodec<String> {
 
     // @formatter:off
     public static final String W3C_TRACEPARENT_HEADER       = "traceparent";
-    public static final String W3C_TRACESTATE_HEADER        = "tracestate";
 
     private static final String DEFAULT_VERSION             = "00";
     private static final String NOT_SAMPLED_TRACEFLAGS      = "00";
