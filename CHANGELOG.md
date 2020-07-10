@@ -1,5 +1,16 @@
 # Beeline Changelog
 
+## 1.2.0
+
+This is a big release! New functionality:
+
+- JPA / JDBC Autoinstrumentation! Spring Boot 2 users will now get spans automatically emitted as part of a trace for JDBC queries including details about their database queries.
+- Spring Boot Sleuth integration. See the associated [README](https://github.com/honeycombio/beeline-java/tree/master/beeline-spring-boot-sleuth-starter) for more information.
+- Simplified Beeline Builder that gives more access to transport options like proxy configuration. See [README](https://github.com/honeycombio/beeline-java/blob/master/beeline-core/src/main/java/io/honeycomb/beeline/builder/README.md).
+- Marshal / Unmarshal functions for W3C Trace Context and AWS Trace Context headers.
+- The Beeline now generates 8-byte SpanIDs and 16-byte TraceIDs as hex encoded strings instead of v4 UUIDs.
+
+
 ## 1.1.0
 
 Improvements: 
