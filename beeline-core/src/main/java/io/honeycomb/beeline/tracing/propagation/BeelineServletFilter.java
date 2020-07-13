@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.REQUEST_ERROR_DETAIL_FIELD;
 import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.REQUEST_ERROR_FIELD;
@@ -482,6 +483,23 @@ public class BeelineServletFilter implements Filter {
         @Override
         public int getContentLength() {
             return request.getContentLength();
+        }
+
+        @Override
+        public Map<String, String> getHeaders() {
+            Map<String, String> headers = Map.of();
+            Enumeration<String> headerNames = request.getHeaderNames();
+
+            if (headerNames != null) {
+                return Collections.list(request.getHeaderNames())
+                    .stream()
+                    .collect(Collectors.toMap(
+                        Function.identity(),
+                        h -> request.getHeader(h)
+                    ));
+            }
+
+            return headers;
         }
     }
 

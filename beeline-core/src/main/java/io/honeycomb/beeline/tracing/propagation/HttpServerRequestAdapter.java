@@ -8,7 +8,7 @@ import java.util.Optional;
  * Adapt an HTTP request that has been received by a server. This is so it can be
  * processed by an {@link HttpServerPropagator}.
  */
-public interface HttpServerRequestAdapter {
+public interface HttpServerRequestAdapter extends HttpRequestAdapter {
     /**
      * Returns the HTTP method of the request.
      * @return the HTTP method

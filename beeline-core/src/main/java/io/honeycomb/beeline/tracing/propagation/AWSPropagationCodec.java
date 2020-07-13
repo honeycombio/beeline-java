@@ -17,12 +17,12 @@ import static io.honeycomb.libhoney.utils.ObjectUtils.isNullOrEmpty;
  * <h1>Thread-safety</h1>
  * Instances of this class are thread-safe and can be shared.
  */
-public class AWSPropagationCodec implements PropagationCodec<String> {
+public class AWSPropagationCodec implements PropagationCodec<Map<String, String>> {
 
     private static final AWSPropagationCodec INSTANCE = new AWSPropagationCodec();
 
     // @formatter:off
-    public static final String AWS_TRACE_HEADER             = "X-Amzn-Trace-Id";
+    protected static final String AWS_TRACE_HEADER          = "X-Amzn-Trace-Id";
 
     private static final String SEGMENT_SEPARATOR           = ";";
     private static final Pattern SPLIT_SEGMENTS_PATTERN     = Pattern.compile(SEGMENT_SEPARATOR);
@@ -57,7 +57,11 @@ public class AWSPropagationCodec implements PropagationCodec<String> {
      * @return extracted context - "empty" context if encodedTrace value has an invalid format or is null.
      */
     @Override
-    public PropagationContext decode(String encodedTrace) {
+    public PropagationContext decode(Map<String, String> headers) {
+        if (headers == null || !headers.containsKey(AWS_TRACE_HEADER)) {
+            return PropagationContext.emptyContext();
+        }
+        final String encodedTrace = headers.getOrDefault(AWSPropagationCodec.AWS_TRACE_HEADER, null);
         if (isNullOrEmpty(encodedTrace)) {
             return PropagationContext.emptyContext();
         }
@@ -100,7 +104,7 @@ public class AWSPropagationCodec implements PropagationCodec<String> {
      * @return a valid AWS http header value - empty if required IDs are missing or input is null.
      */
     @Override
-    public Optional<String> encode(PropagationContext context) {
+    public Optional<Map<String, String>> encode(PropagationContext context) {
         if (context == null || isNullOrEmpty(context.getSpanId()) || isNullOrEmpty(context.getTraceId())) {
             return Optional.empty();
         }
@@ -116,6 +120,8 @@ public class AWSPropagationCodec implements PropagationCodec<String> {
             }
         }
 
-        return Optional.of(builder.toString());
+        return Optional.of(
+            Map.of(AWS_TRACE_HEADER, builder.toString())
+        );
     }
 }

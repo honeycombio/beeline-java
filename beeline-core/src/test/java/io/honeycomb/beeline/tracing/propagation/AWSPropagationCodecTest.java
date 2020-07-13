@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,7 +33,7 @@ public class AWSPropagationCodecTest {
 
     @Test
     public void GIVEN_amEmptyParameter_EXPECT_anEmptyContext() {
-        final PropagationContext context = codec.decode("");
+        final PropagationContext context = codec.decode(Map.of("", ""));
 
         assertThat(context).isEqualTo(PropagationContext.emptyContext());
     }
@@ -40,7 +41,7 @@ public class AWSPropagationCodecTest {
     @Test
     public void GIVEN_aValidTraceValue_EXPECT_toDecodeCorrectly() {
         final String traceHeader = "root=123;parent=abc;foo=bar;userId=123;toRetry=true";
-        final PropagationContext context = codec.decode(traceHeader);
+        final PropagationContext context = codec.decode(Map.of(AWSPropagationCodec.AWS_TRACE_HEADER, traceHeader));
 
         assertThat(context.getTraceId()).isEqualTo("123");
         assertThat(context.getSpanId()).isEqualTo("abc");
@@ -53,7 +54,7 @@ public class AWSPropagationCodecTest {
     @Test
     public void GIVEN_aValidTraceValueWithSelf_EXPECT_toDecodeCorrectly() {
         final String traceHeader = "root=123;self=abc;foo=bar;userId=123;toRetry=true";
-        final PropagationContext context = codec.decode(traceHeader);
+        final PropagationContext context = codec.decode(Map.of(AWSPropagationCodec.AWS_TRACE_HEADER, traceHeader));
 
         assertThat(context.getTraceId()).isEqualTo("123");
         assertThat(context.getSpanId()).isEqualTo("abc");
@@ -66,7 +67,7 @@ public class AWSPropagationCodecTest {
     @Test
     public void GIVEN_aValidTraceValueWithMixedCasing_EXPECT_toDecodeCorrectly() {
         final String traceHeader = "rOoT=123;PaReNt=abc;foo=bar;userId=123;toRetry=true";
-        final PropagationContext context = codec.decode(traceHeader);
+        final PropagationContext context = codec.decode(Map.of(AWSPropagationCodec.AWS_TRACE_HEADER, traceHeader));
 
         assertThat(context.getTraceId()).isEqualTo("123");
         assertThat(context.getSpanId()).isEqualTo("abc");
@@ -79,7 +80,7 @@ public class AWSPropagationCodecTest {
     @Test
     public void GIVEN_aValidTraceValueWithSelfAndMixedCasing_EXPECT_toDecodeCorrectly() {
         final String traceHeader = "rOoT=123;sElF=abc;foo=bar;userId=123;toRetry=true";
-        final PropagationContext context = codec.decode(traceHeader);
+        final PropagationContext context = codec.decode(Map.of(AWSPropagationCodec.AWS_TRACE_HEADER, traceHeader));
 
         assertThat(context.getTraceId()).isEqualTo("123");
         assertThat(context.getSpanId()).isEqualTo("abc");
@@ -92,8 +93,7 @@ public class AWSPropagationCodecTest {
     @Test
     public void GIVEN_aTraceHeaderWhereKVsareInReverseOrder_EXPECT_toDecodeCorrectly() {
         final String traceHeader = "foo=bar;userId=123;toRetry=true;parent=abc;root=123";
-
-        final PropagationContext context = codec.decode(traceHeader);
+        final PropagationContext context = codec.decode(Map.of(AWSPropagationCodec.AWS_TRACE_HEADER, traceHeader));
 
         assertThat(context.getTraceId()).isEqualTo("123");
         assertThat(context.getSpanId()).isEqualTo("abc");
@@ -106,8 +106,7 @@ public class AWSPropagationCodecTest {
     @Test
     public void GIVEN_aTraceHeaderWithSelfParentRoot_EXPECT_toDecodeCorrectlyWithLastValueWins() {
         final String traceHeader = "root=123;parent=abc;self=baz";
-
-        final PropagationContext context = codec.decode(traceHeader);
+        final PropagationContext context = codec.decode(Map.of(AWSPropagationCodec.AWS_TRACE_HEADER, traceHeader));
 
         assertThat(context.getTraceId()).isEqualTo("123");
         assertThat(context.getSpanId()).isEqualTo("baz");
@@ -117,8 +116,7 @@ public class AWSPropagationCodecTest {
     @Test
     public void GIVEN_aTraceHeaderWithSelfRootParent_EXPECT_toDecodeCorrectlyWithLastValueWins() {
         final String traceHeader = "root=123;self=baz;parent=abc;";
-
-        final PropagationContext context = codec.decode(traceHeader);
+        final PropagationContext context = codec.decode(Map.of(AWSPropagationCodec.AWS_TRACE_HEADER, traceHeader));
 
         assertThat(context.getTraceId()).isEqualTo("123");
         assertThat(context.getSpanId()).isEqualTo("abc");
@@ -128,8 +126,7 @@ public class AWSPropagationCodecTest {
     @Test
     public void GIVEN_aTraceHeaderWithoutParentOrSelf_EXPECT_toDecodeCorrectlySpanIdAsTraceId() {
         final String traceHeader = "root=123";
-
-        final PropagationContext context = codec.decode(traceHeader);
+        final PropagationContext context = codec.decode(Map.of(AWSPropagationCodec.AWS_TRACE_HEADER, traceHeader));
 
         assertThat(context.getTraceId()).isEqualTo("123");
         assertThat(context.getSpanId()).isEqualTo("123");
@@ -139,15 +136,15 @@ public class AWSPropagationCodecTest {
 
     @Test
     public void GIVEN_anEmptyContext_EXPECT_empty() {
-        final Optional<String> encoded = codec.encode(PropagationContext.emptyContext());
+        final Optional<Map<String,String>> encoded = codec.encode(PropagationContext.emptyContext());
 
         assertThat(encoded).isEmpty();
     }
 
     @Test
     public void GIVEN_aPopulatedContext_EXPECT_aValidHeaderValue() {
-        final String encoded = codec.encode(new PropagationContext("123", "abc", null, Collections.singletonMap("test", "value"))).get();
+        final Map<String, String> encoded = codec.encode(new PropagationContext("123", "abc", null, Collections.singletonMap("test", "value"))).get();
 
-        assertThat(encoded).isEqualTo("root=123;parent=abc;test=value");
+        assertThat(encoded).isEqualTo(Map.of(AWSPropagationCodec.AWS_TRACE_HEADER, "root=123;parent=abc;test=value"));
     }
 }

@@ -4,6 +4,7 @@ import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.tracing.Span;
 import io.honeycomb.libhoney.shaded.org.apache.http.HttpHeaders;
 
+import java.util.Map;
 import java.util.function.Function;
 
 import static io.honeycomb.beeline.tracing.propagation.HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER;
@@ -39,7 +40,7 @@ public class HttpServerPropagator {
     private final Function<HttpServerRequestAdapter, String> requestToSpanName;
     private final String serviceName;
     private final HttpServerRequestSpanCustomizer spanCustomizer;
-    private final PropagationCodec<String> propagationCodec;
+    private final PropagationCodec<Map<String, String>> propagationCodec;
     private final Beeline beeline;
 
     /**
@@ -62,7 +63,7 @@ public class HttpServerPropagator {
     protected HttpServerPropagator(final String serviceName,
                                 final Function<HttpServerRequestAdapter, String> requestToSpanName,
                                 final HttpServerRequestSpanCustomizer spanCustomizer,
-                                final PropagationCodec<String> propagationCodec,
+                                final PropagationCodec<Map<String, String>> propagationCodec,
                                 final Beeline beeline) {
         this.requestToSpanName = requestToSpanName;
         this.serviceName = serviceName;
@@ -78,9 +79,8 @@ public class HttpServerPropagator {
      * @return the span
      */
     public Span startPropagation(final HttpServerRequestAdapter httpRequest) {
-        final String honeycombHeaderValue = httpRequest.getFirstHeader(HONEYCOMB_TRACE_HEADER).orElse(null);
         //PropagationCodec#decode is null-safe
-        final PropagationContext decoded = propagationCodec.decode(honeycombHeaderValue);
+        final PropagationContext decoded = propagationCodec.decode(httpRequest.getHeaders());
 
         final String spanName = requestToSpanName.apply(httpRequest);
 

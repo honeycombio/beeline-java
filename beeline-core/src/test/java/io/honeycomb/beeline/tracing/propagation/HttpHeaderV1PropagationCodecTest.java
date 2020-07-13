@@ -38,7 +38,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final String jsonAsBase64 = Base64.encodeBase64String(jsonString.getBytes(UTF_8));
         final String traceHeader = "1;trace_id=123,parent_id=abc,dataset=hellodataset,context=" + jsonAsBase64;
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode.getSpanId()).isEqualTo("abc");
         assertThat(decode.getTraceId()).isEqualTo("123");
@@ -52,7 +52,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final String jsonAsBase64 = Base64.encodeBase64String(jsonString.getBytes(UTF_8));
         final String traceHeader = "1;context=" + jsonAsBase64 + ",dataset=hellodataset,parent_id=abc,trace_id=123";
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode.getSpanId()).isEqualTo("abc");
         assertThat(decode.getTraceId()).isEqualTo("123");
@@ -66,7 +66,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final String jsonAsBase64 = Base64.encodeBase64String(jsonString.getBytes(UTF_8));
         final String traceHeader = "1;trace_id=beef-patty,parent_id=turkey_roast,context=" + jsonAsBase64;
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode.getSpanId()).isEqualTo("turkey_roast");
         assertThat(decode.getTraceId()).isEqualTo("beef-patty");
@@ -80,7 +80,7 @@ public class HttpHeaderV1PropagationCodecTest {
     public void GIVEN_aValidTraceThatHasAContextOfNull_EXPECT_toDecodeCorrectly() {
         final String traceHeader = "1;trace_id=123,parent_id=abc,context=" + null;
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode.getSpanId()).isEqualTo("abc");
         assertThat(decode.getTraceId()).isEqualTo("123");
@@ -91,7 +91,7 @@ public class HttpHeaderV1PropagationCodecTest {
     public void GIVEN_aValidTraceThatHasAMissingDataset_EXPECT_datasetToBeNull() {
         final String traceHeader = "1;trace_id=123,parent_id=abc";
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode.getDataset()).isEqualTo(null);
     }
@@ -100,7 +100,7 @@ public class HttpHeaderV1PropagationCodecTest {
     public void GIVEN_aValidTraceThatHasAnEncodedDataset_EXPECT_datasetToBeDecoded() {
         final String traceHeader = "1;trace_id=123,parent_id=abc,dataset=%2Fhello+world";
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode.getDataset()).isEqualTo("/hello world");
     }
@@ -109,7 +109,7 @@ public class HttpHeaderV1PropagationCodecTest {
     public void GIVEN_aTraceHeaderMissingParentID_EXPECT_emptyContext() {
         final String traceHeader = "1;trace_id=123";
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode).isEqualTo(PropagationContext.emptyContext());
     }
@@ -118,7 +118,7 @@ public class HttpHeaderV1PropagationCodecTest {
     public void GIVEN_aTraceHeaderMissingTraceID_EXPECT_emptyContext() {
         final String traceHeader = "1;parent_id=123";
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode).isEqualTo(PropagationContext.emptyContext());
     }
@@ -127,7 +127,7 @@ public class HttpHeaderV1PropagationCodecTest {
     public void GIVEN_aTraceHeaderThePayloadPart_EXPECT_emptyContext() {
         final String traceHeader = "1;";
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode).isEqualTo(PropagationContext.emptyContext());
     }
@@ -136,7 +136,7 @@ public class HttpHeaderV1PropagationCodecTest {
     public void GIVEN_aValidTraceThatOmitsTraceFields_EXPECT_toDecodeCorrectly() {
         final String traceHeader = "1;trace_id=123,parent_id=abc";
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode.getSpanId()).isEqualTo("abc");
         assertThat(decode.getTraceId()).isEqualTo("123");
@@ -152,7 +152,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final JsonDeserializer deserializer = mock(JsonDeserializer.class);
         codec = new HttpHeaderV1PropagationCodec(serializer, deserializer);
 
-        codec.decode(traceHeader);
+        codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         verify(deserializer).deserialize(jsonString.getBytes("utf-8"));
         verifyZeroInteractions(serializer);
@@ -164,7 +164,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final String jsonAsBase64 = Base64.encodeBase64String(jsonString.getBytes(UTF_8));
         final String traceHeader = "1;christmas_food=mince_pie,trace_id=123,parent_id=abc,context=" + jsonAsBase64;
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode.getSpanId()).isEqualTo("abc");
         assertThat(decode.getTraceId()).isEqualTo("123");
@@ -173,7 +173,7 @@ public class HttpHeaderV1PropagationCodecTest {
 
     @Test
     public void GIVEN_amEmptyParameter_EXPECT_anEmptyContext() {
-        final PropagationContext decode = codec.decode("");
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, ""));
 
         assertThat(decode).isEqualTo(PropagationContext.emptyContext());
     }
@@ -191,7 +191,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final String jsonAsBase64 = Base64.encodeBase64String(jsonString.getBytes(UTF_8));
         final String traceHeader = "1;parent_id=abc,context=" + jsonAsBase64;
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode).isEqualTo(PropagationContext.emptyContext());
     }
@@ -202,7 +202,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final String jsonAsBase64 = Base64.encodeBase64String(jsonString.getBytes(UTF_8));
         final String traceHeader = "1;trace_id=abc,context=" + jsonAsBase64;
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode).isEqualTo(PropagationContext.emptyContext());
     }
@@ -214,7 +214,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final String versionString = "2";
         final String traceHeader = versionString + ";parent_id=123,trace_id=abc,context=" + jsonAsBase64;
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode).isEqualTo(PropagationContext.emptyContext());
     }
@@ -226,7 +226,7 @@ public class HttpHeaderV1PropagationCodecTest {
         // wrong separator between the version and payload:
         final String traceHeader = "1,parent_id=123,trace_id=abc,context=" + jsonAsBase64;
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode).isEqualTo(PropagationContext.emptyContext());
     }
@@ -238,7 +238,7 @@ public class HttpHeaderV1PropagationCodecTest {
         // wrong separator between the version and payload:
         final String traceHeader = "1;parent_id=123,trace_id=abc,context=" + jsonAsBase64;
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode.getSpanId()).isEqualTo("123");
         assertThat(decode.getTraceId()).isEqualTo("abc");
@@ -252,7 +252,7 @@ public class HttpHeaderV1PropagationCodecTest {
         // wrong separator between the version and payload:
         final String traceHeader = "1;parent_id=123,trace_id=abc,context=" + "$" + jsonAsBase64;
 
-        final PropagationContext decode = codec.decode(traceHeader);
+        final PropagationContext decode = codec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         assertThat(decode.getSpanId()).isEqualTo("123");
         assertThat(decode.getTraceId()).isEqualTo("abc");
@@ -261,59 +261,71 @@ public class HttpHeaderV1PropagationCodecTest {
 
     @Test
     public void GIVEN_anEmptyContext_EXPECT_empty() {
-        final Optional<String> encoded = codec.encode(PropagationContext.emptyContext());
+        final Optional<Map<String, String>> encoded = codec.encode(PropagationContext.emptyContext());
 
         assertThat(encoded).isEmpty();
     }
 
     @Test
     public void GIVEN_aMissingIds_EXPECT_empty() {
-        final Optional<String> encoded = codec.encode(new PropagationContext("", "", "", Collections.singletonMap("key", "value")));
+        final Optional<Map<String, String>> encoded = codec.encode(new PropagationContext("", "", "", Collections.singletonMap("key", "value")));
 
         assertThat(encoded).isEmpty();
     }
 
     @Test
     public void GIVEN_aPopulatedContext_EXPECT_aValidHeaderValue() {
-        final String encoded = codec.encode(new PropagationContext("abc", "123", "myDataset", Collections.singletonMap("key", "value"))).get();
+        final Map<String, String> encoded = codec.encode(new PropagationContext("abc", "123", "myDataset", Collections.singletonMap("key", "value"))).get();
 
-        assertThat(encoded).isEqualTo("1;trace_id=abc,parent_id=123,dataset=myDataset,context=" + Base64.encodeBase64String("{\"key\":\"value\"}".getBytes(UTF_8)));
+        assertThat(encoded).isEqualTo(
+            Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,dataset=myDataset,context=" + Base64.encodeBase64String("{\"key\":\"value\"}".getBytes(UTF_8)))
+        );
     }
 
     @Test
     public void GIVEN_aContextWithADataset_EXPECT_datasetStringToBeEncoded() {
-        final String encoded = codec.encode(new PropagationContext("abc", "123", "/hello world", Collections.singletonMap("key", "value"))).get();
+        final Map<String, String> encoded = codec.encode(new PropagationContext("abc", "123", "/hello world", Collections.singletonMap("key", "value"))).get();
 
-        assertThat(encoded).isEqualTo("1;trace_id=abc,parent_id=123,dataset=%2Fhello+world,context=" + Base64.encodeBase64String("{\"key\":\"value\"}".getBytes(UTF_8)));
+        assertThat(encoded).isEqualTo(
+            Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,dataset=%2Fhello+world,context=" + Base64.encodeBase64String("{\"key\":\"value\"}".getBytes(UTF_8)))
+        );
     }
 
 
     @Test
     public void GIVEN_aPopulatedContextWithoutADataset_EXPECT_aValidHeaderValue() {
-        final String encoded = codec.encode(new PropagationContext("abc", "123", null, Collections.singletonMap("key", "value"))).get();
+        final Map<String, String> encoded = codec.encode(new PropagationContext("abc", "123", null, Collections.singletonMap("key", "value"))).get();
 
-        assertThat(encoded).isEqualTo("1;trace_id=abc,parent_id=123,context=" + Base64.encodeBase64String("{\"key\":\"value\"}".getBytes(UTF_8)));
+        assertThat(encoded).isEqualTo(
+            Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,context=" + Base64.encodeBase64String("{\"key\":\"value\"}".getBytes(UTF_8)))
+        );
     }
 
     @Test
     public void GIVEN_aPopulatedContextWithoutAnyFields_EXPECT_aValidHeaderValue() {
-        final String encoded = codec.encode(new PropagationContext("abc", "123", "myDataset", Collections.emptyMap())).get();
+        final Map<String, String> encoded = codec.encode(new PropagationContext("abc", "123", "myDataset", Collections.emptyMap())).get();
 
-        assertThat(encoded).isEqualTo("1;trace_id=abc,parent_id=123,dataset=myDataset");
+        assertThat(encoded).isEqualTo(
+            Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,dataset=myDataset")
+        );
     }
 
     @Test
     public void GIVEN_aPopulatedContextWithAComplexObject_EXPECT_aValidHeaderValue() {
-        final String encoded = codec.encode(new PropagationContext("abc", "123", "myDataset", Collections.singletonMap("key", Collections.singletonMap("nested-key", "value")))).get();
+        final Map<String, String> encoded = codec.encode(new PropagationContext("abc", "123", "myDataset", Collections.singletonMap("key", Collections.singletonMap("nested-key", "value")))).get();
 
-        assertThat(encoded).isEqualTo("1;trace_id=abc,parent_id=123,dataset=myDataset,context=" + Base64.encodeBase64String("{\"key\":{\"nested-key\":\"value\"}}".getBytes(UTF_8)));
+        assertThat(encoded).isEqualTo(
+            Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,dataset=myDataset,context=" + Base64.encodeBase64String("{\"key\":{\"nested-key\":\"value\"}}".getBytes(UTF_8)))
+        );
     }
 
     @Test
     public void GIVEN_aPopulatedContextWithAnUnserializableObject_EXPECT_aValidHeaderValueOmittingContext() {
-        final String encoded = codec.encode(new PropagationContext("abc", "123", "myDataset", Collections.singletonMap("key", Collections.singletonMap("nested-key", new Unserializable())))).get();
+        final Map<String, String> encoded = codec.encode(new PropagationContext("abc", "123", "myDataset", Collections.singletonMap("key", Collections.singletonMap("nested-key", new Unserializable())))).get();
 
-        assertThat(encoded).isEqualTo("1;trace_id=abc,parent_id=123,dataset=myDataset");
+        assertThat(encoded).isEqualTo(
+            Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,dataset=myDataset")
+        );
     }
 
     public static class Unserializable {

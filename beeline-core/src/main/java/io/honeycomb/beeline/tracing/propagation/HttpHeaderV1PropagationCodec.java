@@ -32,12 +32,12 @@ import static io.honeycomb.libhoney.utils.ObjectUtils.isNullOrEmpty;
  * <h1>Thread-safety</h1>
  * Instances of this class are thread-safe and can be shared.
  */
-public class HttpHeaderV1PropagationCodec implements PropagationCodec<String> {
+public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String, String>> {
     private static final Logger LOG = LoggerFactory.getLogger(HttpHeaderV1PropagationCodec.class);
     private static final HttpHeaderV1PropagationCodec INSTANCE = new HttpHeaderV1PropagationCodec();
 
     // @formatter:off
-    public static final String HONEYCOMB_TRACE_HEADER       = "x-honeycomb-trace";
+    protected static final String HONEYCOMB_TRACE_HEADER    = "x-honeycomb-trace";
 
     private static final String TRACE_CONTEXT_VERSION_ONE   = "1";
     private static final String PAYLOAD_SEPARATOR           = ",";
@@ -86,7 +86,11 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<String> {
      */
     @SuppressWarnings({"OverlyComplexMethod", "OverlyLongMethod"})
     @Override
-    public PropagationContext decode(final String encodedTrace) {
+    public PropagationContext decode(final Map<String, String> headers) {
+        if (headers == null || !headers.containsKey(HONEYCOMB_TRACE_HEADER)) {
+            return PropagationContext.emptyContext();
+        }
+        final String encodedTrace = headers.getOrDefault(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, null);
         if (isNullOrEmpty(encodedTrace)) {
             return PropagationContext.emptyContext();
         }
@@ -167,7 +171,7 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<String> {
      * @return a valid honeycomb trace header value - empty if required IDs are missing or input is null.
      */
     @Override
-    public Optional<String> encode(final PropagationContext context) {
+    public Optional<Map<String, String>> encode(final PropagationContext context) {
         if (context == null || isNullOrEmpty(context.getSpanId()) || isNullOrEmpty(context.getTraceId())) {
             return Optional.empty();
         }
@@ -178,7 +182,9 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<String> {
         }
 
         final StringBuilder stringBuilder = buildString(context, contextAsB64);
-        return Optional.of(stringBuilder.toString());
+        return Optional.of(
+            Map.of(HONEYCOMB_TRACE_HEADER, stringBuilder.toString())
+        );
     }
 
     /**

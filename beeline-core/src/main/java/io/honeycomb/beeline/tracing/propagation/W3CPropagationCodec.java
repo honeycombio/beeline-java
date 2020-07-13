@@ -1,5 +1,6 @@
 package io.honeycomb.beeline.tracing.propagation;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -23,20 +24,19 @@ import static io.honeycomb.libhoney.utils.ObjectUtils.isNullOrEmpty;
  * <h1>Thread-safety</h1>
  * Instances of this class are thread-safe and can be shared.
  */
-public class W3CPropagationCodec implements PropagationCodec<String> {
+public class W3CPropagationCodec implements PropagationCodec<Map<String, String>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(W3CPropagationCodec.class);
     private static final W3CPropagationCodec INSTANCE = new W3CPropagationCodec();
 
     // @formatter:off
-    public static final String W3C_TRACEPARENT_HEADER       = "traceparent";
+    protected static final String W3C_TRACEPARENT_HEADER    = "traceparent";
 
     private static final String DEFAULT_VERSION             = "00";
     private static final String NOT_SAMPLED_TRACEFLAGS      = "00";
     private static final String SAMPLED_TRACEFLAGS          = "01";
     private static final String SEGMENT_SEPARATOR           = "-";
     private static final Pattern SPLIT_SEGMENTS_PATTERN     = Pattern.compile(SEGMENT_SEPARATOR);
-
     private static final int HEADER_LENGTH                  = 55; // {version:2}-{trace-id:32}-{parent-id:16}-{traceflags:2}
     // @formatter:on
 
@@ -56,7 +56,11 @@ public class W3CPropagationCodec implements PropagationCodec<String> {
      * @return extracted context - "empty" context if encodedTrace value has an invalid format or is null.
      */
     @Override
-    public PropagationContext decode(String encodedTrace) {
+    public PropagationContext decode(Map<String, String> headers) {
+        if (headers == null || !headers.containsKey(W3C_TRACEPARENT_HEADER)) {
+            return PropagationContext.emptyContext();
+        }
+        final String encodedTrace = headers.getOrDefault(W3C_TRACEPARENT_HEADER, null);
         // Header must not be empty and be 55 characters long
         if (isNullOrEmpty(encodedTrace) || encodedTrace.length() != HEADER_LENGTH) {
             return PropagationContext.emptyContext();
@@ -104,7 +108,7 @@ public class W3CPropagationCodec implements PropagationCodec<String> {
      * @return a valid W3C traceparent header value - empty if required IDs are missing or input is null.
      */
     @Override
-    public Optional<String> encode(PropagationContext context) {
+    public Optional<Map<String, String>> encode(PropagationContext context) {
         // Check context is valid
         if (context == null) {
             return Optional.empty();
@@ -126,6 +130,8 @@ public class W3CPropagationCodec implements PropagationCodec<String> {
             .append(context.getSpanId()).append(SEGMENT_SEPARATOR)
             .append(NOT_SAMPLED_TRACEFLAGS);
 
-        return Optional.of(builder.toString());
+        return Optional.of(
+            Map.of(W3C_TRACEPARENT_HEADER, builder.toString())
+        );
     }
 }
