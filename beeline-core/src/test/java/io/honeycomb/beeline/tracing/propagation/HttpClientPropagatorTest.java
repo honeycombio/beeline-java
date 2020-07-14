@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,7 +44,7 @@ public class HttpClientPropagatorTest {
     @Test
     public void whenStartPropagation_traceHeaderIsAdded_onlyRequiredSpanFieldsAreAdded() {
         when(mockTracer.startChildSpan(EXPECTED_SPAN_NAME)).thenReturn(mockSpan);
-        when(mockPropagationCodec.encode(any())).thenReturn(Optional.of(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, EXPECTED_TRACE_HEADER)));
+        when(mockPropagationCodec.encode(any())).thenReturn(Optional.of(Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, EXPECTED_TRACE_HEADER)));
         final String expectedHttpMethod = "httpMethod1";
         when(mockHttpRequest.getMethod()).thenReturn(expectedHttpMethod);
 
@@ -58,7 +59,7 @@ public class HttpClientPropagatorTest {
     @Test
     public void whenStartPropagation_withAdditionalData_optionalSpanFieldsAreAdded_traceHeaderIsAdded() {
         when(mockTracer.startChildSpan(EXPECTED_SPAN_NAME)).thenReturn(mockSpan);
-        when(mockPropagationCodec.encode(any())).thenReturn(Optional.of(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, EXPECTED_TRACE_HEADER)));
+        when(mockPropagationCodec.encode(any())).thenReturn(Optional.of(Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, EXPECTED_TRACE_HEADER)));
         final String expectedHttpMethod = "httpMethod1";
         when(mockHttpRequest.getMethod()).thenReturn(expectedHttpMethod);
         final String expectedPath = "expectedPath";
