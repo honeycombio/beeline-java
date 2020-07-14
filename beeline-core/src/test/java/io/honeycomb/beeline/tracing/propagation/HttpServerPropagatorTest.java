@@ -50,10 +50,9 @@ public class HttpServerPropagatorTest {
     @Test
     public void whenStartPropagation_traceIsStarted_andHttpFieldsAreApplied() {
         final String expectedTraceHeader = "expectedTraceHeader";
-        // TODO: Fix thes
-        // when(mockHttpRequest.getFirstHeader(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER)).thenReturn(Optional.of(expectedTraceHeader));
-        // when(mockPropagationCodec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, expectedTraceHeader))).thenReturn(mockPropagationContext);
-        // when(mockBeeline.startTrace(EXPECTED_SPAN_NAME, mockPropagationContext, EXPECTED_SERVICE_NAME)).thenReturn(mockSpan);
+        when(mockHttpRequest.getHeaders()).thenReturn(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, expectedTraceHeader));
+        when(mockPropagationCodec.decode(Map.of(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, expectedTraceHeader))).thenReturn(mockPropagationContext);
+        when(mockBeeline.startTrace(EXPECTED_SPAN_NAME, mockPropagationContext, EXPECTED_SERVICE_NAME)).thenReturn(mockSpan);
 
         final Span span = httpServerPropagator.startPropagation(mockHttpRequest);
         verify(mockSpanCustomizer).customize(span, mockHttpRequest);
@@ -61,9 +60,8 @@ public class HttpServerPropagatorTest {
 
     @Test
     public void whenStartPropagation_andNoTraceHeaderIsPresent_traceIsStarted_andHttpFieldsAreApplied() {
-        // TODO: Fix these
-        // when(mockPropagationCodec.decode(null)).thenReturn(mockPropagationContext);
-        // when(mockBeeline.startTrace(EXPECTED_SPAN_NAME, mockPropagationContext, EXPECTED_SERVICE_NAME)).thenReturn(mockSpan);
+        when(mockPropagationCodec.decode(Map.of())).thenReturn(mockPropagationContext);
+        when(mockBeeline.startTrace(EXPECTED_SPAN_NAME, mockPropagationContext, EXPECTED_SERVICE_NAME)).thenReturn(mockSpan);
 
         final Span span = httpServerPropagator.startPropagation(mockHttpRequest);
         verify(mockSpanCustomizer).customize(span, mockHttpRequest);
