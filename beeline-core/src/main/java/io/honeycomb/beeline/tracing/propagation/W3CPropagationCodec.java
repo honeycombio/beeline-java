@@ -1,5 +1,6 @@
 package io.honeycomb.beeline.tracing.propagation;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -130,8 +131,6 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
             .append(context.getSpanId()).append(SEGMENT_SEPARATOR)
             .append(NOT_SAMPLED_TRACEFLAGS);
 
-        return Optional.of(
-            Map.of(W3C_TRACEPARENT_HEADER, builder.toString())
-        );
+        return Optional.of(Collections.singletonMap(W3C_TRACEPARENT_HEADER, builder.toString()));
     }
 }

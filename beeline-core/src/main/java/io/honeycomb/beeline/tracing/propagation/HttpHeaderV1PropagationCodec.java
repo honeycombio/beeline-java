@@ -182,9 +182,7 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
         }
 
         final StringBuilder stringBuilder = buildString(context, contextAsB64);
-        return Optional.of(
-            Map.of(HONEYCOMB_TRACE_HEADER, stringBuilder.toString())
-        );
+        return Optional.of(Collections.singletonMap(HONEYCOMB_TRACE_HEADER, stringBuilder.toString()));
     }
 
     /**

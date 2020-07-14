@@ -487,7 +487,7 @@ public class BeelineServletFilter implements Filter {
 
         @Override
         public Map<String, String> getHeaders() {
-            Map<String, String> headers = Map.of();
+            Map<String, String> headers = Collections.emptyMap();
             Enumeration<String> headerNames = request.getHeaderNames();
 
             if (headerNames != null) {

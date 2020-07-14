@@ -1,5 +1,6 @@
 package io.honeycomb.beeline.tracing.propagation;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -120,8 +121,6 @@ public class AWSPropagationCodec implements PropagationCodec<Map<String, String>
             }
         }
 
-        return Optional.of(
-            Map.of(AWS_TRACE_HEADER, builder.toString())
-        );
+        return Optional.of(Collections.singletonMap(AWS_TRACE_HEADER, builder.toString()));
     }
 }
