@@ -6,7 +6,7 @@ import java.util.Optional;
  * Adapt an HTTP request that is about to be sent by a client. This is so it can be
  * processed by an {@link HttpClientPropagator}.
  */
-public interface HttpClientRequestAdapter {
+public interface HttpClientRequestAdapter extends HttpRequestAdapter {
     /**
      * Returns the HTTP method of the request.
      * @return the HTTP method

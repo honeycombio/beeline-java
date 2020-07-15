@@ -4,6 +4,7 @@ import io.honeycomb.beeline.tracing.Span;
 import io.honeycomb.beeline.tracing.Tracer;
 import io.honeycomb.libhoney.shaded.org.apache.http.HttpHeaders;
 
+import java.util.Map;
 import java.util.function.Function;
 
 import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.*;
@@ -36,7 +37,7 @@ public class HttpClientPropagator {
     public static final String HTTP_CLIENT_SPAN_TYPE = "http_client";
 
     private final Tracer tracer;
-    private final PropagationCodec<String> propagationCodec;
+    private final PropagationCodec<Map<String, String>> propagationCodec;
     private final Function<HttpClientRequestAdapter, String> requestToSpanName;
 
     /**
@@ -54,7 +55,7 @@ public class HttpClientPropagator {
 
     //Exposed for unit testing
     protected HttpClientPropagator(final Tracer tracer,
-                                   final PropagationCodec<String> propagationCodec,
+                                   final PropagationCodec<Map<String, String>> propagationCodec,
                                    final Function<HttpClientRequestAdapter, String> requestToSpanName) {
         this.tracer = tracer;
         this.propagationCodec = propagationCodec;
@@ -109,8 +110,8 @@ public class HttpClientPropagator {
 
     private void propagateTrace(final HttpClientRequestAdapter httpRequest, final Span childSpan) {
         propagationCodec.encode(childSpan.getTraceContext())
-            .ifPresent(headerValue ->
-                httpRequest.addHeader(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, headerValue)
+            .ifPresent(headers ->
+                headers.forEach((k,v) -> httpRequest.addHeader(k, v))
             );
     }
 

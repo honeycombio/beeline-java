@@ -11,6 +11,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 import static io.honeycomb.beeline.spring.utils.InstrumentationConstants.HTTP_CLIENT_SPAN_NAME;
@@ -86,6 +87,11 @@ public class BeelineRestTemplateInterceptor implements ClientHttpRequestIntercep
         @Override
         public Optional<String> getFirstHeader(String name) {
             return Optional.ofNullable(request.getHeaders().getFirst(name));
+        }
+
+        @Override
+        public Map<String, String> getHeaders() {
+            return request.getHeaders().toSingleValueMap();
         }
     }
 
