@@ -22,9 +22,9 @@ import java.security.NoSuchAlgorithmException;
  * <h1>Thread-safety</h1>
  * Instances of this class are thread-safe and can be shared.
  *
- * @see <a href="https://github.com/honeycombio/beeline-go/blob/master/sample/deterministic_sampler.go">
+ * @see <a href="https://github.com/honeycombio/beeline-go/blob/main/sample/deterministic_sampler.go">
  * Go sampler</a>
- * @see <a href="https://github.com/honeycombio/beeline-nodejs/blob/master/lib/deterministic_sampler.js">
+ * @see <a href="https://github.com/honeycombio/beeline-nodejs/blob/main/lib/deterministic_sampler.js">
  * Nodejs sampler</a>
  */
 public class DeterministicTraceSampler implements TraceSampler<String> {
