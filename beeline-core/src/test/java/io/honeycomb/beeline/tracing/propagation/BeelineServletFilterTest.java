@@ -303,10 +303,11 @@ public class BeelineServletFilterTest {
         final String traceId = "current-trace-1";
         final String parentId = "parent-span-1";
         final PropagationContext context = new PropagationContext(traceId, parentId, null, Collections.singletonMap("trace-field", "abc"));
-        final String headerValue = Propagation.honeycombHeaderV1()
+        final Map<String, String> headers = Propagation.honeycombHeaderV1()
                                         .encode(context)
                                         .orElseThrow(() -> new  AssertionError("Propagation context test setup errored"));
 
+        final String headerValue = headers.get(HONEYCOMB_TRACE_HEADER);
         given().header(HONEYCOMB_TRACE_HEADER, headerValue).when().get(fullPath(HELLO_PATH)).then().assertThat().statusCode(200);
         verify(mockTransport).submit(resolvedEventCaptor.capture());
         final ResolvedEvent resolvedEvent = resolvedEventCaptor.getValue();

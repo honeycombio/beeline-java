@@ -1,9 +1,12 @@
 package io.honeycomb.beeline.tracing.propagation;
 
+import java.util.Map;
+
 /**
  * Contains helpers for propagation of trace data.
  * <p>
  * For example, decode trace data received over the wire and start a trace:
+ *
  * <pre>
  * PropagationContext context = Propagation.honeycombHeaderV1().decode(traceHeader);
  * tracer.startTrace("customer-db", "get-customer-data", context);
@@ -19,7 +22,7 @@ public final class Propagation {
      *
      * @return a codec.
      */
-    public static PropagationCodec<String> honeycombHeaderV1() {
+    public static PropagationCodec<Map<String,String>> honeycombHeaderV1() {
         return HttpHeaderV1PropagationCodec.getInstance();
     }
 
@@ -28,7 +31,7 @@ public final class Propagation {
      *
      * @return a codec.
      */
-    public static PropagationCodec<String> aws() {
+    public static PropagationCodec<Map<String,String>> aws() {
         return AWSPropagationCodec.getInstance();
     }
 
@@ -37,7 +40,7 @@ public final class Propagation {
      *
      * @return a codec.
      */
-    public static PropagationCodec<String> w3c() {
+    public static PropagationCodec<Map<String,String>> w3c() {
         return HttpHeaderV1PropagationCodec.getInstance();
     }
 }

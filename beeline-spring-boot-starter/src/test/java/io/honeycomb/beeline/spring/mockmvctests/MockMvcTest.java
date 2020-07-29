@@ -26,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.util.NestedServletException;
 
 import java.net.InetAddress;
@@ -36,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.ImmutableMap.of;
-import static io.honeycomb.beeline.tracing.propagation.HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER;
 import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.META_SENT_BY_PARENT_FIELD;
 import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.REQUEST_ERROR_DETAIL_FIELD;
 import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.REQUEST_ERROR_FIELD;
@@ -493,9 +493,11 @@ public class MockMvcTest {
     @Test
     public void GIVEN_aTraceHeaderInRequest_WHEN_serverReceivesRequest_EXPECT_traceToBeContinued() throws Exception {
         final PropagationContext context = new PropagationContext("current-trace-1", "parent-span-1", null, null);
-        final String headerValue = Propagation.honeycombHeaderV1().encode(context).get();
+        final Map<String, String> headers = Propagation.honeycombHeaderV1().encode(context).get();
 
-        mvc.perform(get("/basic-get").header(HONEYCOMB_TRACE_HEADER, headerValue));
+        final MockHttpServletRequestBuilder builder = get("/basic-get");
+        headers.forEach((k,v) -> builder.header(k, v));
+        mvc.perform(builder);
         final Map<String, Object> eventFields = captureEventData();
 
         assertThat(eventFields).containsEntry("trace.parent_id", "parent-span-1");
@@ -506,9 +508,11 @@ public class MockMvcTest {
     @Test
     public void GIVEN_aTraceHeaderInRequestContainingTraceFields_WHEN_serverReceivesRequest_EXPECT_traceToBeContinuedWithTraceFields() throws Exception {
         final PropagationContext context = new PropagationContext("current-trace-1", "parent-span-1", null, Collections.singletonMap("trace-field", "abc"));
-        final String headerValue = Propagation.honeycombHeaderV1().encode(context).get();
+        final Map<String, String> headers = Propagation.honeycombHeaderV1().encode(context).get();
 
-        mvc.perform(get("/basic-get").header(HONEYCOMB_TRACE_HEADER, headerValue));
+        final MockHttpServletRequestBuilder builder = get("/basic-get");
+        headers.forEach((k,v) -> builder.header(k, v));
+        mvc.perform(builder);
         final Map<String, Object> eventFields = captureEventData();
 
         assertThat(eventFields).containsEntry("trace-field", "abc");
@@ -548,10 +552,12 @@ public class MockMvcTest {
     @Test
     public void WHEN_makingARequestWithHoneycombHeaderSpecifyingADataset_EXPECT_AllEventsToSendToDataset() throws Exception {
         final PropagationContext context = new PropagationContext("current-trace-1", "parent-span-1", "myDataset", Collections.singletonMap("trace-field", "abc"));
-        final String headerValue = Propagation.honeycombHeaderV1().encode(context).get();
-        mvc.perform(get("/annotation-span")
-            .header("x-application-header", "fish")
-            .header(HONEYCOMB_TRACE_HEADER, headerValue));
+        final Map<String, String> headers = Propagation.honeycombHeaderV1().encode(context).get();
+
+        final MockHttpServletRequestBuilder builder = get("/annotation-span")
+            .header("x-application-header", "fish");
+        headers.forEach((k,v) -> builder.header(k, v));
+        mvc.perform(builder);
 
         final List<ResolvedEvent> eventFields = captureNoOfEvents(2);
         final ResolvedEvent aopSpan = eventFields.get(0);
@@ -564,10 +570,12 @@ public class MockMvcTest {
     @Test
     public void WHEN_makingARequestWithHoneycombHeaderNotSpecifyingAnyDataset_EXPECT_AllEventsToSendToConfiguredDataset() throws Exception {
         final PropagationContext context = new PropagationContext("current-trace-1", "parent-span-1", null, Collections.singletonMap("trace-field", "abc"));
-        final String headerValue = Propagation.honeycombHeaderV1().encode(context).get();
-        mvc.perform(get("/annotation-span")
-            .header("x-application-header", "fish")
-            .header(HONEYCOMB_TRACE_HEADER, headerValue));
+        final Map<String, String> headers = Propagation.honeycombHeaderV1().encode(context).get();
+
+        final MockHttpServletRequestBuilder builder = get("/annotation-span")
+            .header("x-application-header", "fish");
+        headers.forEach((k,v) -> builder.header(k, v));
+        mvc.perform(builder);
 
         final List<ResolvedEvent> eventFields = captureNoOfEvents(2);
         final ResolvedEvent aopSpan = eventFields.get(0);

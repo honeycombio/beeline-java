@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Based on test cases from the nodejs beeline.
- * https://github.com/honeycombio/beeline-nodejs/blob/master/lib/deterministic_sampler.test.js
+ * https://github.com/honeycombio/beeline-nodejs/blob/main/lib/deterministic_sampler.test.js
  */
 public class DeterministicSamplerTest {
 
