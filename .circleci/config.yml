@@ -40,19 +40,32 @@ jobs:
       javaversion: "<< parameters.javaversion >>"
     steps:
       - build
+
+versions: &versions
+  jobs:
+  - java:
+      javaversion: "8"
+      name: JDK-8
+  - java:
+      javaversion: "9"
+      name: JDK-9
+  - java:
+      javaversion: "10"
+      name: JDK-10
+  - java:
+      javaversion: "11"
+      name: JDK-11
+
 workflows:
   version: 2
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    <<: *versions
   build:
-    jobs:
-      - java:
-          javaversion: "8"
-          name: JDK-8
-      - java:
-          javaversion: "9"
-          name: JDK-9
-      - java:
-          javaversion: "10"
-          name: JDK-10
-      - java:
-          javaversion: "11"
-          name: JDK-11
+    <<: *versions
