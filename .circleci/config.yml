@@ -42,6 +42,27 @@ jobs:
       - build
 workflows:
   version: 2
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - java:
+          javaversion: "8"
+          name: JDK-8
+      - java:
+          javaversion: "9"
+          name: JDK-9
+      - java:
+          javaversion: "10"
+          name: JDK-10
+      - java:
+          javaversion: "11"
+          name: JDK-11
   build:
     jobs:
       - java:
