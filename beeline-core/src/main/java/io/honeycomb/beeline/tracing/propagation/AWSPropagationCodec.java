@@ -2,6 +2,7 @@ package io.honeycomb.beeline.tracing.propagation;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -73,24 +74,38 @@ public class AWSPropagationCodec implements PropagationCodec<Map<String, String>
         Map<String, Object> traceFields = new HashMap<String, Object>();
         for (final String keyValue : segments) {
             final String[] keyAndValue = SPLIT_KV_PATTERN.split(keyValue, 2);
+            if (keyAndValue.length != 2) {
+                continue;
+            }
 
-            // prefer if/else for case insensitive comparisons
-            if (keyAndValue[0].equalsIgnoreCase(ROOT_KEY)) {
-                traceId = keyAndValue[1];
+            switch (keyAndValue[0].toLowerCase(Locale.getDefault())) {
+                case ROOT_KEY:
+                    traceId = keyAndValue[1];
+                    break;
+                case SELF_KEY:
+                    parentSpanId = keyAndValue[1];
+                    break;
+                case PARENT_KEY:
+                    // only use parent if self is empty
+                    if (isNullOrEmpty(parentSpanId)) {
+                        parentSpanId = keyAndValue[1];
+                    }
+                    break;
+                default: // all other fields are to be treated as string-string trace fields
+                    traceFields.put(keyAndValue[0], keyAndValue[1]);
+                    break;
             }
-            else if (keyAndValue[0].equalsIgnoreCase(SELF_KEY) || keyAndValue[0].equalsIgnoreCase(PARENT_KEY)) {
-                parentSpanId = keyAndValue[1];
-            }
-            else // all other fields are to be treated as string-string trace fields
-            {
-                traceFields.put(keyAndValue[0], keyAndValue[1]);
-            }
+        }
+
+        // return empty context if no root found
+        if (isNullOrEmpty(traceId)) {
+            return PropagationContext.emptyContext();
         }
 
         // If no header is provided to an ALB or ELB, it will generate a header
         // with a Root field and forwards the request. In this case it should be
         // used as both the parent id and the trace id.
-        if (!isNullOrEmpty(traceId) && isNullOrEmpty(parentSpanId)) {
+        if (isNullOrEmpty(parentSpanId)) {
             parentSpanId = traceId;
         }
 

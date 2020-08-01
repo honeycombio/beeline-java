@@ -119,7 +119,7 @@ public class AWSPropagationCodecTest {
         final PropagationContext context = codec.decode(Collections.singletonMap(AWSPropagationCodec.AWS_TRACE_HEADER, traceHeader));
 
         assertThat(context.getTraceId()).isEqualTo("123");
-        assertThat(context.getSpanId()).isEqualTo("abc");
+        assertThat(context.getSpanId()).isEqualTo("baz");
         assertThat(context.getTraceFields().isEmpty());
     }
 
