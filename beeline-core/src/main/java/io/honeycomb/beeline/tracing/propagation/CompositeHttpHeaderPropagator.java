@@ -12,11 +12,11 @@ import java.util.Optional;
  * <h1>Thread-safety</h1>
  * Instances of this class are thread-safe and can be shared.
  */
-public class CompositeHttpHeaderPropagtor implements PropagationCodec<Map<String, String>> {
+public class CompositeHttpHeaderPropagator implements PropagationCodec<Map<String, String>> {
 
     private final List<PropagationCodec<Map<String, String>>> codecs;
 
-    public CompositeHttpHeaderPropagtor(List<PropagationCodec<Map<String, String>>> codecs) {
+    public CompositeHttpHeaderPropagator(List<PropagationCodec<Map<String, String>>> codecs) {
         if (codecs == null || codecs.size() == 0) {
             throw new IllegalArgumentException();
         }

@@ -14,16 +14,16 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.*;
 
-public class CompositeHttpHeaderPropagtorTest {
+public class CompositeHttpHeaderPropagatorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void GIVEN_nullCodecsList_EXPECT_illegalArgumentException() {
-        new CompositeHttpHeaderPropagtor(null);
+        new CompositeHttpHeaderPropagator(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void GIVEN_emptyCodecsList_EXPECT_illegalArgumentException() {
-        new CompositeHttpHeaderPropagtor(Collections.emptyList());
+        new CompositeHttpHeaderPropagator(Collections.emptyList());
     }
 
     // DECODE
@@ -36,7 +36,7 @@ public class CompositeHttpHeaderPropagtorTest {
         PropagationCodec<Map<String, String>> mockCodec = (PropagationCodec<Map<String, String>>) mock(PropagationCodec.class);
         when(mockCodec.decode(Mockito.anyMap())).thenReturn(mockContext);
 
-        CompositeHttpHeaderPropagtor propagator = new CompositeHttpHeaderPropagtor(Collections.singletonList(mockCodec));
+        CompositeHttpHeaderPropagator propagator = new CompositeHttpHeaderPropagator(Collections.singletonList(mockCodec));
         final PropagationContext context = propagator.decode(Mockito.anyMap());
 
         assertSame(mockContext, context);
@@ -61,7 +61,7 @@ public class CompositeHttpHeaderPropagtorTest {
         PropagationCodec<Map<String, String>> mockCodec3 = (PropagationCodec<Map<String, String>>) mock(PropagationCodec.class);
         when(mockCodec3.decode(anyMap())).thenReturn(PropagationContext.emptyContext());
 
-        CompositeHttpHeaderPropagtor propagtor = new CompositeHttpHeaderPropagtor(Arrays.asList(mockCodec1, mockCodec2, mockCodec3));
+        CompositeHttpHeaderPropagator propagtor = new CompositeHttpHeaderPropagator(Arrays.asList(mockCodec1, mockCodec2, mockCodec3));
         PropagationContext context = propagtor.decode(Mockito.anyMap());
 
         assertSame(mockContext, context);
@@ -77,7 +77,7 @@ public class CompositeHttpHeaderPropagtorTest {
         PropagationCodec<Map<String, String>> mockCodec1 = (PropagationCodec<Map<String, String>>) mock(PropagationCodec.class);
         when(mockCodec1.decode(anyMap())).thenReturn(PropagationContext.emptyContext());
 
-        CompositeHttpHeaderPropagtor propagtor = new CompositeHttpHeaderPropagtor(Collections.singletonList(mockCodec1));
+        CompositeHttpHeaderPropagator propagtor = new CompositeHttpHeaderPropagator(Collections.singletonList(mockCodec1));
         PropagationContext context = propagtor.decode(Mockito.anyMap());
 
         assertSame(PropagationContext.emptyContext(), context);
@@ -96,7 +96,7 @@ public class CompositeHttpHeaderPropagtorTest {
         when(mockCodec1.encode(any(PropagationContext.class))).thenReturn(codecHeaders);
 
         PropagationContext mockContext = new PropagationContext(null, null, null, null);
-        CompositeHttpHeaderPropagtor propagtor = new CompositeHttpHeaderPropagtor(Collections.singletonList(mockCodec1));
+        CompositeHttpHeaderPropagator propagtor = new CompositeHttpHeaderPropagator(Collections.singletonList(mockCodec1));
         Optional<Map<String, String>> headers = propagtor.encode(mockContext);
 
         assertNotSame(codecHeaders, headers);
@@ -118,7 +118,7 @@ public class CompositeHttpHeaderPropagtorTest {
         when(mockCodec2.encode(any(PropagationContext.class))).thenReturn(codec2Headers);
 
         PropagationContext mockContext = new PropagationContext(null, null, null, null);
-        CompositeHttpHeaderPropagtor propagtor = new CompositeHttpHeaderPropagtor(Arrays.asList(mockCodec1, mockCodec2));
+        CompositeHttpHeaderPropagator propagtor = new CompositeHttpHeaderPropagator(Arrays.asList(mockCodec1, mockCodec2));
         Optional<Map<String, String>> headers = propagtor.encode(mockContext);
 
         assertNotSame(codec2Headers, headers);
@@ -142,7 +142,7 @@ public class CompositeHttpHeaderPropagtorTest {
         when(mockCodec2.encode(any(PropagationContext.class))).thenReturn(codec2Headers);
 
         PropagationContext mockContext = new PropagationContext(null, null, null, null);
-        CompositeHttpHeaderPropagtor propagtor = new CompositeHttpHeaderPropagtor(Arrays.asList(mockCodec1, mockCodec2));
+        CompositeHttpHeaderPropagator propagtor = new CompositeHttpHeaderPropagator(Arrays.asList(mockCodec1, mockCodec2));
         Optional<Map<String, String>> headers = propagtor.encode(mockContext);
 
         assertNotSame(codec2Headers, headers);
