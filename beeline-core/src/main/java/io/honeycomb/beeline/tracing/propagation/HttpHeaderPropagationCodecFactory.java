@@ -44,7 +44,7 @@ public class HttpHeaderPropagationCodecFactory {
                 return codecs.get(0);
             default:
                 // multiple codecs, return composite propagator
-                return new CompositeHttpHeaderPropagtor(codecs);
+                return new CompositeHttpHeaderPropagator(codecs);
         }
     }
 }

@@ -31,6 +31,7 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
     private static final W3CPropagationCodec INSTANCE = new W3CPropagationCodec();
 
     // @formatter:off
+    protected static final String CODEC_NAME                       = "w3c";
     protected static final String W3C_TRACEPARENT_HEADER    = "traceparent";
 
     private static final String DEFAULT_VERSION             = "00";
@@ -43,6 +44,13 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
 
     public static W3CPropagationCodec getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Gets the codec name.
+     */
+    public String getName() {
+        return CODEC_NAME;
     }
 
     /**

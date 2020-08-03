@@ -42,7 +42,7 @@ public class HttpHeaderPropagationCodecFactoryTest {
     @Test
     public void GIVEN_multipleValidPropagatorName_EXPECT_compositePropagator() {
         PropagationCodec<Map<String, String>> codec = HttpHeaderPropagationCodecFactory.create(Arrays.asList(W3CPropagationCodec.CODEC_NAME, AWSPropagationCodec.CODEC_NAME));
-        assertThat(codec).isInstanceOf(CompositeHttpHeaderPropagtor.class);
+        assertThat(codec).isInstanceOf(CompositeHttpHeaderPropagator.class);
         assertThat(codec.getName()).isEqualTo(String.join(",", W3CPropagationCodec.CODEC_NAME, AWSPropagationCodec.CODEC_NAME));
     }
 }
