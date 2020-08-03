@@ -138,7 +138,8 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
             beelineProperties.getServiceName(),
             beelineProperties.getIncludePathPatterns(),
             beelineProperties.getExcludePathPatterns(),
-            beeline
+            beeline,
+            HttpHeaderPropagationCodecFactory.create(properties.getPropagators())
         );
     }
 
