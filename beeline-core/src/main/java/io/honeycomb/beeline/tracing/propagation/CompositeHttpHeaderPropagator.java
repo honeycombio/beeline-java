@@ -25,15 +25,35 @@ public class CompositeHttpHeaderPropagator implements PropagationCodec<Map<Strin
     }
 
     /**
+     * Retruns the name of the codec as a comma separated list.
+     */
+    @Override
+    public String getName() {
+        final StringBuilder builder = new StringBuilder();
+        boolean first = true;
+        for (final PropagationCodec<Map<String, String>> propagationCodec : codecs) {
+            if (first) {
+                first = false;
+            } else {
+                builder.append(",");
+            }
+            builder.append(propagationCodec.getName());
+        }
+
+        return builder.toString();
+    }
+
+    /**
      * Calls each inner Decode and returns the first {@link PropagationContext}.
      *
      * @param encodedTrace to decode into a {@link PropagationContext}.
-     * @return extracted context - "empty" context if encodedTrace value has an invalid format or is null.
+     * @return extracted context - "empty" context if encodedTrace value has an
+     *         invalid format or is null.
      */
     @Override
-    public PropagationContext decode(Map<String, String> encodedTrace) {
-        for (PropagationCodec<Map<String, String>> codec : codecs) {
-            PropagationContext context = codec.decode(encodedTrace);
+    public PropagationContext decode(final Map<String, String> encodedTrace) {
+        for (final PropagationCodec<Map<String, String>> codec : codecs) {
+            final PropagationContext context = codec.decode(encodedTrace);
 
             // return first context that is not empty
             if (context != PropagationContext.emptyContext()) {
@@ -54,10 +74,10 @@ public class CompositeHttpHeaderPropagator implements PropagationCodec<Map<Strin
      * @return a valid AWS http header value - empty if required IDs are missing or input is null.
      */
     @Override
-    public Optional<Map<String, String>> encode(PropagationContext context) {
-        Map<String, String> headers = new HashMap<>();
-        for (PropagationCodec<Map<String, String>> codec : codecs) {
-            Optional<Map<String, String>> codecheaders = codec.encode(context);
+    public Optional<Map<String, String>> encode(final PropagationContext context) {
+        final Map<String, String> headers = new HashMap<>();
+        for (final PropagationCodec<Map<String, String>> codec : codecs) {
+            final Optional<Map<String, String>> codecheaders = codec.encode(context);
             if (codecheaders.isPresent()) {
                 headers.putAll(codecheaders.get());
             }
