@@ -3,6 +3,9 @@ package io.honeycomb.beeline.spring.beans;
 import io.honeycomb.beeline.tracing.Span;
 import io.honeycomb.beeline.tracing.Tracer;
 import io.honeycomb.beeline.tracing.propagation.HttpClientPropagator;
+import io.honeycomb.beeline.tracing.propagation.HttpHeaderV1PropagationCodec;
+import io.honeycomb.beeline.tracing.propagation.Propagation;
+import io.honeycomb.beeline.tracing.propagation.PropagationCodec;
 import io.honeycomb.libhoney.utils.Assert;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.http.HttpRequest;
@@ -23,8 +26,13 @@ public class BeelineRestTemplateInterceptor implements ClientHttpRequestIntercep
     private final HttpClientPropagator httpClientPropagator;
 
     public BeelineRestTemplateInterceptor(final Tracer tracer) {
+        this(tracer, Propagation.honeycombHeaderV1());
+    }
+
+    public BeelineRestTemplateInterceptor(final Tracer tracer, PropagationCodec<Map<String, String>> propagationCodec) {
         Assert.notNull(tracer, "Validation failed: tracer must not be null");
-        this.httpClientPropagator = new HttpClientPropagator(tracer, r -> HTTP_CLIENT_SPAN_NAME);
+        Assert.notNull(propagationCodec, "Validation failed: propagationCodec must not be null");
+        this.httpClientPropagator = new HttpClientPropagator(tracer, propagationCodec, r -> HTTP_CLIENT_SPAN_NAME);
     }
 
     @Override
