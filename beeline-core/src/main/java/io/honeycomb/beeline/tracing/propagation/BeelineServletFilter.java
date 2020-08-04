@@ -88,10 +88,10 @@ public class BeelineServletFilter implements Filter {
                                    final Function<HttpServletRequest, String> requestToRedispatchSpanName,
                                    final Function<io.honeycomb.beeline.tracing.propagation.HttpServerRequestAdapter, String> requestToSpanName,
                                    final PathMatcher pathMatcher,
-                                   final PropagationCodec<Map<String, String>> PropagationCodec) {
+                                   final PropagationCodec<Map<String, String>> propagationCodec) {
         Assert.notNull(serviceName, "Validation failed: serviceName must not be null");
         Assert.notNull(beeline, "Validation failed: beeline must not be null");
-        Assert.notNull(PropagationCodec, "Validation failed: propagation");
+        Assert.notNull(propagationCodec, "Validation failed: propagation");
 
         this.beeline = beeline;
         this.includePaths = includePaths;
@@ -102,7 +102,7 @@ public class BeelineServletFilter implements Filter {
         this.httpServerPropagator = new HttpServerPropagator(beeline,
             serviceName,
             requestToSpanName,
-            PropagationCodec);
+            propagationCodec);
     }
 
     @Override
