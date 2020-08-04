@@ -32,6 +32,8 @@ public class HttpHeaderPropagationCodecFactory {
                 case W3CPropagationCodec.CODEC_NAME:
                     codecs.add(Propagation.w3c());
                     break;
+                default:
+                    continue;
             }
         }
 
