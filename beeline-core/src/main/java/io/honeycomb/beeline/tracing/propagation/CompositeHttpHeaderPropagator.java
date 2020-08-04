@@ -25,7 +25,7 @@ public class CompositeHttpHeaderPropagator implements PropagationCodec<Map<Strin
     }
 
     /**
-     * Retruns the name of the codec as a comma separated list.
+     * Returns the name of the codec as a comma-separated list.
      */
     @Override
     public String getName() {
