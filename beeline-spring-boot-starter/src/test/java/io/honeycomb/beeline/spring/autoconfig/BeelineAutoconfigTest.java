@@ -31,6 +31,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -331,5 +332,26 @@ public class BeelineAutoconfigTest {
             .run(context -> assertThat(context)
                 .doesNotHaveBean(DataSourceProxyBeanPostProcessor.class)
                 .doesNotHaveBean(BeelineQueryListenerForJDBC.class));
+    }
+
+    @Test
+    public void GIVEN_missingPropagators_EXPECT_defaultPropagators() {
+        webApplicationContextRunner
+            .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
+            .withPropertyValues(defaultProps)
+            .run(context -> {
+                assertThat(context.getBean(BeelineProperties.class).getPropagators()).isEqualTo(Collections.singletonList("honey"));
+            });
+    }
+
+    @Test
+    public void GIVEN_propulatedPopagators_EXPECT_providedPropagatorList() {
+        webApplicationContextRunner
+            .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
+            .withPropertyValues(defaultProps)
+            .withPropertyValues("honeycomb.beeline.propagators=honey,w3c")
+            .run(context -> {
+                assertThat(context.getBean(BeelineProperties.class).getPropagators()).containsExactly("honey", "w3c");
+            });
     }
 }

@@ -41,6 +41,6 @@ public final class Propagation {
      * @return a codec.
      */
     public static PropagationCodec<Map<String,String>> w3c() {
-        return HttpHeaderV1PropagationCodec.getInstance();
+        return W3CPropagationCodec.getInstance();
     }
 }

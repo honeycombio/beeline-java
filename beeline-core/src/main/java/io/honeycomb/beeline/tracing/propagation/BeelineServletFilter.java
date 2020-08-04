@@ -87,9 +87,11 @@ public class BeelineServletFilter implements Filter {
                                    final List<String> excludePaths,
                                    final Function<HttpServletRequest, String> requestToRedispatchSpanName,
                                    final Function<io.honeycomb.beeline.tracing.propagation.HttpServerRequestAdapter, String> requestToSpanName,
-                                   final PathMatcher pathMatcher) {
+                                   final PathMatcher pathMatcher,
+                                   final PropagationCodec<Map<String, String>> propagationCodec) {
         Assert.notNull(serviceName, "Validation failed: serviceName must not be null");
         Assert.notNull(beeline, "Validation failed: beeline must not be null");
+        Assert.notNull(propagationCodec, "Validation failed: propagation");
 
         this.beeline = beeline;
         this.includePaths = includePaths;
@@ -99,7 +101,8 @@ public class BeelineServletFilter implements Filter {
         this.requestToRedispatchSpanName = requestToRedispatchSpanName;
         this.httpServerPropagator = new HttpServerPropagator(beeline,
             serviceName,
-            requestToSpanName);
+            requestToSpanName,
+            propagationCodec);
     }
 
     @Override
@@ -329,6 +332,7 @@ public class BeelineServletFilter implements Filter {
             requestToRedispatchSpanName = DEFAULT_REDISPATCH_SPAN_NAMING_FUNCTION;
         private Function<io.honeycomb.beeline.tracing.propagation.HttpServerRequestAdapter,
             String> requestToSpanName = DEFAULT_REQUEST_SPAN_NAMING_FUNCTION;
+        private PropagationCodec<Map<String, String>> propagationCodec = Propagation.honeycombHeaderV1();
 
         /**
          * Set the name of the service using the filter. Required.
@@ -410,9 +414,21 @@ public class BeelineServletFilter implements Filter {
             return this;
         }
 
+        /**
+         * Sets the propagation codec used to parse incoming trace data.
+         * <p>
+         * Optional. By default the {@link HttpHeaderV1PropagationCodec} will be used.
+         * @param propagationCodec the codec to parse with
+         * @return this
+         */
+        public Builder setPropagationCodec(PropagationCodec<Map<String, String>> propagationCodec) {
+            this.propagationCodec = propagationCodec;
+            return this;
+        }
+
         public BeelineServletFilter build() {
             return new BeelineServletFilter(serviceName, beeline, includePaths, excludePaths,
-                requestToRedispatchSpanName, requestToSpanName, pathMatcher);
+                requestToRedispatchSpanName, requestToSpanName, pathMatcher, propagationCodec);
         }
     }
 

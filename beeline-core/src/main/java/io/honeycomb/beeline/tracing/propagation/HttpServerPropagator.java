@@ -7,7 +7,6 @@ import io.honeycomb.libhoney.shaded.org.apache.http.HttpHeaders;
 import java.util.Map;
 import java.util.function.Function;
 
-import static io.honeycomb.beeline.tracing.propagation.HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER;
 import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.*;
 
 /**
@@ -57,6 +56,24 @@ public class HttpServerPropagator {
                                 final String serviceName,
                                 final Function<HttpServerRequestAdapter, String> requestToSpanName) {
         this(serviceName, requestToSpanName, new HttpServerRequestSpanCustomizer(), Propagation.honeycombHeaderV1(), beeline);
+    }
+
+    /**
+     * Create an HttpServerPropagator for tracing requests received by an HTTP server.
+     * <p>
+     * {@code requestToSpanName} allows you to dynamically name the HTTP server span such that the name
+     * reflects the operation, e.g. based on HTTP method or request path used.
+
+     * @param beeline the beeline
+     * @param serviceName the service name
+     * @param requestToSpanName a function from an HTTP request to a span name
+     * @param propagationCodec a propagation codec used to parse trace data from incoming requests
+     */
+    public HttpServerPropagator(final Beeline beeline,
+                                final String serviceName,
+                                final Function<HttpServerRequestAdapter, String> requestToSpanName,
+                                PropagationCodec<Map<String, String>> propagationCodec) {
+        this(serviceName, requestToSpanName, new HttpServerRequestSpanCustomizer(), propagationCodec, beeline);
     }
 
     // Exposed for unit testing
