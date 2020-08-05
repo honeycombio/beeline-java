@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("InstanceVariableMayNotBeInitialized")
@@ -106,6 +107,14 @@ public class BeelineProperties {
      */
     private List<String> excludePathPatterns = new ArrayList<>(0);
 
+    /**
+     * The list of propagators to use for parsing incoming and propagate out trace information.
+     * <p>
+     * default: honey
+     * </p>
+     */
+    private List<String> propagators = Collections.singletonList("honey");
+
     public String getDataset() {
         return dataset;
     }
@@ -194,6 +203,14 @@ public class BeelineProperties {
         this.excludePathPatterns = excludePathPatterns;
     }
 
+    public List<String> getPropagators() {
+        return propagators;
+    }
+
+    public void setPropagators(final List<String> propagators) {
+        this.propagators = propagators;
+    }
+
     public static class RestTemplateProperties {
         /**
          * When set to false, this will disable the configuration of beans related to RestTemplate instrumentation,
@@ -230,6 +247,7 @@ public class BeelineProperties {
                ", includePathPatterns=" + includePathPatterns +
                ", excludePathPatterns=" + excludePathPatterns +
                ", restTemplate=" + restTemplate +
+               ", propagators=" + String.join(",", propagators) +
                '}';
     }
 }

@@ -24,6 +24,7 @@ public class AWSPropagationCodec implements PropagationCodec<Map<String, String>
     private static final AWSPropagationCodec INSTANCE = new AWSPropagationCodec();
 
     // @formatter:off
+    protected static final String CODEC_NAME                    = "aws";
     protected static final String AWS_TRACE_HEADER          = "X-Amzn-Trace-Id";
 
     private static final String SEGMENT_SEPARATOR           = ";";
@@ -41,6 +42,13 @@ public class AWSPropagationCodec implements PropagationCodec<Map<String, String>
 
     public static AWSPropagationCodec getInstance() {
         return INSTANCE;
+    }
+
+    /**
+     * Gets the codec name.
+     */
+    public String getName() {
+        return CODEC_NAME;
     }
 
     /**
