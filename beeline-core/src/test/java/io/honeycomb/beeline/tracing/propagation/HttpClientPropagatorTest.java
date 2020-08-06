@@ -41,7 +41,9 @@ public class HttpClientPropagatorTest {
     @Before
     public void setUp() {
         stubFluentCalls(mockSpan);
-        httpClientPropagator = new HttpClientPropagator(mockTracer, mockPropagationCodec, r -> EXPECTED_SPAN_NAME, null);
+        httpClientPropagator = new HttpClientPropagator.Builder(mockTracer, r -> EXPECTED_SPAN_NAME)
+            .setPropagationCodec(mockPropagationCodec)
+            .build();
     }
 
     @Test
@@ -135,7 +137,9 @@ public class HttpClientPropagatorTest {
 
         when(mockEncodeFunc.apply(mockHttpRequest)).thenReturn(Optional.empty());
 
-        final HttpClientPropagator propagator = new HttpClientPropagator(mockTracer, mockPropagationCodec, r -> EXPECTED_SPAN_NAME, mockEncodeFunc);
+        final HttpClientPropagator propagator = new HttpClientPropagator.Builder(mockTracer, r -> EXPECTED_SPAN_NAME)
+            .setPropagateHook(mockEncodeFunc)
+            .build();
         propagator.startPropagation(mockHttpRequest);
         verify(mockEncodeFunc, times(1)).apply(mockHttpRequest);
         verify(mockPropagationCodec, times(0)).encode(any(PropagationContext.class));

@@ -147,4 +147,52 @@ public class HttpClientPropagator {
             childSpan.addField(CLIENT_REQUEST_ERROR_DETAIL_FIELD, ex.getMessage());
         }
     }
+
+    /**
+     * Builder for {@link HttpClientPropagator}.
+     */
+    public static class Builder {
+        private Tracer tracer;
+        private Function<HttpClientRequestAdapter, String> requestToSpanName;
+        private PropagationCodec<Map<String, String>> propagationCodec = Propagation.honeycombHeaderV1();
+        private Function<HttpClientRequestAdapter, Optional<Map<String, String>>> propagateHook = null;
+
+        /**
+         * Creates a new instance of {@link HttpClientPropagator.Builder}.
+         * @param tracer the tracer
+         * @param requestToSpanName a function from request to span name
+         */
+        public Builder(Tracer tracer, Function<HttpClientRequestAdapter, String> requestToSpanName) {
+            this.tracer = tracer;
+            this.requestToSpanName = requestToSpanName;
+        }
+
+        /**
+         * Set the {@link PropagationCodec} to encode/decode trace context via HTTP headers.
+         * @param propagationCodec
+         * @return this
+         */
+        public Builder setPropagationCodec(PropagationCodec<Map<String, String>> propagationCodec) {
+            this.propagationCodec = propagationCodec;
+            return this;
+        }
+
+        /**
+         * Set the custom function that
+         * @param propagationHook
+         * @return this
+         */
+        public Builder setPropagateHook(Function<HttpClientRequestAdapter, Optional<Map<String, String>>> propagationHook) {
+            this.propagateHook = propagationHook;
+            return this;
+        }
+
+        /**
+         * Builds a {@link HttpClientPropagator} using the parameters passed.
+         * @return a new instance of {@link HttpClientPropagator}
+         */
+        public HttpClientPropagator build() {
+            return new HttpClientPropagator(tracer, propagationCodec, requestToSpanName, propagateHook);
+        }
+    }
 }
