@@ -340,7 +340,7 @@ public class BeelineAutoconfigTest {
             .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
             .withPropertyValues(defaultProps)
             .run(context -> {
-                assertThat(context.getBean(BeelineProperties.class).getPropagators()).isEqualTo(Collections.singletonList("honey"));
+                assertThat(context.getBean(BeelineProperties.class).getPropagators()).isEqualTo(Collections.singletonList("hny"));
             });
     }
 
@@ -349,9 +349,9 @@ public class BeelineAutoconfigTest {
         webApplicationContextRunner
             .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
             .withPropertyValues(defaultProps)
-            .withPropertyValues("honeycomb.beeline.propagators=honey,w3c")
+            .withPropertyValues("honeycomb.beeline.propagators=hny,w3c")
             .run(context -> {
-                assertThat(context.getBean(BeelineProperties.class).getPropagators()).containsExactly("honey", "w3c");
+                assertThat(context.getBean(BeelineProperties.class).getPropagators()).containsExactly("hny", "w3c");
             });
     }
 }

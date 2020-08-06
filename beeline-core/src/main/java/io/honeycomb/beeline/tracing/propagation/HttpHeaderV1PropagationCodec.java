@@ -37,7 +37,7 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
     private static final HttpHeaderV1PropagationCodec INSTANCE = new HttpHeaderV1PropagationCodec();
 
     // @formatter:off
-    protected static final String CODEC_NAME                = "honey";
+    protected static final String CODEC_NAME                = "hny";
     protected static final String HONEYCOMB_TRACE_HEADER    = "x-honeycomb-trace";
 
     private static final String TRACE_CONTEXT_VERSION_ONE   = "1";
