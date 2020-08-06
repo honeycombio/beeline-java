@@ -12,6 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static io.honeycomb.beeline.tracing.propagation.MockSpanUtils.stubFluentCalls;
 import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.*;
@@ -38,7 +39,7 @@ public class HttpClientPropagatorTest {
     @Before
     public void setUp() {
         stubFluentCalls(mockSpan);
-        httpClientPropagator = new HttpClientPropagator(mockTracer, mockPropagationCodec, r -> EXPECTED_SPAN_NAME);
+        httpClientPropagator = new HttpClientPropagator(mockTracer, mockPropagationCodec, r -> EXPECTED_SPAN_NAME, null);
     }
 
     @Test
@@ -119,6 +120,25 @@ public class HttpClientPropagatorTest {
         verify(mockSpan).addField(CLIENT_REQUEST_ERROR_FIELD,"TestException");
         verify(mockSpan).addField(CLIENT_REQUEST_ERROR_DETAIL_FIELD, expectedMessage);
         verify(mockSpan).close();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void GIVEN_propagateIsNotNull_EXPECT_hookToBeUsedInsteadOfPropagationCodec() {
+
+        when(mockTracer.startChildSpan(EXPECTED_SPAN_NAME)).thenReturn(mockSpan);
+        when(mockHttpRequest.getFirstHeader(any(String.class))).thenReturn(Optional.empty());
+        when(mockHttpRequest.getPath()).thenReturn(Optional.empty());
+        when(mockHttpRequest.getContentLength()).thenReturn(0);
+        when(mockHttpRequest.getMethod()).thenReturn("GET");
+
+        final Function<HttpClientRequestAdapter, Optional<Map<String, String>>> mockEncodeFunc = (Function<HttpClientRequestAdapter, Optional<Map<String, String>>>) mock(Function.class);
+        when(mockEncodeFunc.apply(mockHttpRequest)).thenReturn(Optional.empty());
+
+        final HttpClientPropagator propagator = new HttpClientPropagator(mockTracer, mockPropagationCodec, r -> EXPECTED_SPAN_NAME, mockEncodeFunc);
+        propagator.startPropagation(mockHttpRequest);
+        verify(mockEncodeFunc, times(1)).apply(mockHttpRequest);
+        verify(mockPropagationCodec, times(0)).encode(any(PropagationContext.class));
     }
 
     private class TestException extends Exception {
