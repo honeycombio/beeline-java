@@ -113,7 +113,7 @@ public class BeelineProperties {
      * default: honey
      * </p>
      */
-    private List<String> propagators = Collections.singletonList("honey");
+    private List<String> propagators = Collections.singletonList("hny");
 
     public String getDataset() {
         return dataset;
