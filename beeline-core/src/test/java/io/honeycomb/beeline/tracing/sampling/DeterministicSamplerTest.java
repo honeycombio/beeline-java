@@ -36,7 +36,7 @@ public class DeterministicSamplerTest {
     public void testThatVariousSampleRatesAreWithinExpectedBounds() {
         final int[] testSampleRates = {2, 10, 20};
         final int numberOfRequestIDsToTest = 50000;
-        final Percentage acceptableMarginOfError = Percentage.withPercentage(5.0);
+        final double acceptableMarginOfError = 0.05;
 
         for (int sampleRate : testSampleRates) {
             sampler = new DeterministicTraceSampler(sampleRate);
@@ -50,8 +50,11 @@ public class DeterministicSamplerTest {
 
             // Sampling should be balanced across all request IDs regardless of sample rate.
             // If we cross this threshold, flunk the test.
-            double expectedNSampled = (double) numberOfRequestIDsToTest / (double) sampleRate;
-            assertThat((double) nSampled).isCloseTo(expectedNSampled, acceptableMarginOfError);
+            double expectedNSampled = numberOfRequestIDsToTest * (1 / (double) sampleRate);
+            int lower = (int) (expectedNSampled - (expectedNSampled * acceptableMarginOfError));
+            int upper = (int) (expectedNSampled + (expectedNSampled * acceptableMarginOfError));
+            assertThat(nSampled).isGreaterThanOrEqualTo(lower);
+            assertThat(nSampled).isLessThanOrEqualTo(upper);
         }
     }
 

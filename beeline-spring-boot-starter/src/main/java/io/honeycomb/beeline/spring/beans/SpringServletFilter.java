@@ -2,10 +2,13 @@ package io.honeycomb.beeline.spring.beans;
 
 import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.tracing.propagation.BeelineServletFilter;
+import io.honeycomb.beeline.tracing.propagation.Propagation;
+import io.honeycomb.beeline.tracing.propagation.PropagationCodec;
 import io.honeycomb.beeline.tracing.utils.PathMatcher;
 
 import javax.servlet.FilterConfig;
 import java.util.List;
+import java.util.Map;
 
 import static io.honeycomb.beeline.spring.utils.InstrumentationConstants.WEBMVC_INSTRUMENTATION_NAME;
 import static io.honeycomb.beeline.spring.utils.MoreTraceFieldConstants.SPRING_ASYNC_DISPATCH_FIELD;
@@ -13,10 +16,19 @@ import static io.honeycomb.beeline.spring.utils.MoreTraceFieldConstants.SPRING_D
 
 public class SpringServletFilter extends BeelineServletFilter implements BeelineInstrumentation {
     public SpringServletFilter(String serviceName, List<String> includePaths, List<String> excludePaths, Beeline beeline) {
+        this(serviceName, includePaths, excludePaths, beeline, Propagation.honeycombHeaderV1());
+    }
+
+    public SpringServletFilter(String serviceName,
+                               List<String> includePaths,
+                               List<String> excludePaths,
+                               Beeline beeline,
+                               PropagationCodec<Map<String, String>> propagationCodec) {
         super(serviceName, beeline, includePaths, excludePaths,
             BeelineServletFilter.DEFAULT_REDISPATCH_SPAN_NAMING_FUNCTION,
             BeelineServletFilter.DEFAULT_REQUEST_SPAN_NAMING_FUNCTION,
-            new SpringPathMatcherAdapter());
+            new SpringPathMatcherAdapter(),
+            propagationCodec);
     }
 
     /**

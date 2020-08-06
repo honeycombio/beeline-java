@@ -8,6 +8,8 @@ import io.honeycomb.beeline.tracing.SpanBuilderFactory;
 import io.honeycomb.beeline.tracing.SpanPostProcessor;
 import io.honeycomb.beeline.tracing.Tracer;
 import io.honeycomb.beeline.tracing.Tracing;
+import io.honeycomb.beeline.tracing.propagation.HttpHeaderPropagationCodecFactory;
+import io.honeycomb.beeline.tracing.propagation.PropagationCodec;
 import io.honeycomb.beeline.tracing.sampling.Sampling;
 import io.honeycomb.beeline.tracing.sampling.TraceSampler;
 import io.honeycomb.libhoney.EventPostProcessor;
@@ -34,7 +36,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.DispatcherType;
+
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Configuration
@@ -134,7 +138,8 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
             beelineProperties.getServiceName(),
             beelineProperties.getIncludePathPatterns(),
             beelineProperties.getExcludePathPatterns(),
-            beeline
+            beeline,
+            HttpHeaderPropagationCodecFactory.create(properties.getPropagators())
         );
     }
 
@@ -198,10 +203,9 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
 
     @Bean
     @ConditionalOnProperty(name = "honeycomb.beeline.rest-template.enabled", matchIfMissing = true)
-    public BeelineRestTemplateInterceptor defaultBeelineRestTemplateInterceptor(
-        final Tracer tracer
-    ) {
-        return new BeelineRestTemplateInterceptor(tracer);
+    public BeelineRestTemplateInterceptor defaultBeelineRestTemplateInterceptor(final Tracer tracer) {
+        PropagationCodec<Map<String, String>> propagationCodec = HttpHeaderPropagationCodecFactory.create(properties.getPropagators());
+        return new BeelineRestTemplateInterceptor(tracer, propagationCodec);
     }
 
     @Bean

@@ -16,6 +16,14 @@ import java.util.Optional;
  * @param <E> Type of the transmission format to be decoded/encoded.
  */
 public interface PropagationCodec<E> {
+
+    /**
+     * Returns the name of the codec.
+     *
+     * @return the codec name.
+     */
+    String getName();
+
     /**
      * Decode some transmission format into a propagation context.
      *
