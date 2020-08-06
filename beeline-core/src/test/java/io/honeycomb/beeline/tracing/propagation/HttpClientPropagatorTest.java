@@ -33,6 +33,8 @@ public class HttpClientPropagatorTest {
     private HttpClientResponseAdapter mockHttpResponse;
     @Mock
     private PropagationCodec<Map<String, String>> mockPropagationCodec;
+    @Mock
+    private Function<HttpClientRequestAdapter, Optional<Map<String, String>>> mockEncodeFunc;
 
     private HttpClientPropagator httpClientPropagator;
 
@@ -123,7 +125,6 @@ public class HttpClientPropagatorTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void GIVEN_propagateIsNotNull_EXPECT_hookToBeUsedInsteadOfPropagationCodec() {
 
         when(mockTracer.startChildSpan(EXPECTED_SPAN_NAME)).thenReturn(mockSpan);
@@ -132,7 +133,6 @@ public class HttpClientPropagatorTest {
         when(mockHttpRequest.getContentLength()).thenReturn(0);
         when(mockHttpRequest.getMethod()).thenReturn("GET");
 
-        final Function<HttpClientRequestAdapter, Optional<Map<String, String>>> mockEncodeFunc = (Function<HttpClientRequestAdapter, Optional<Map<String, String>>>) mock(Function.class);
         when(mockEncodeFunc.apply(mockHttpRequest)).thenReturn(Optional.empty());
 
         final HttpClientPropagator propagator = new HttpClientPropagator(mockTracer, mockPropagationCodec, r -> EXPECTED_SPAN_NAME, mockEncodeFunc);
