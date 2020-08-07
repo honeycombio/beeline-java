@@ -36,7 +36,7 @@ public class HttpServerPropagatorTest {
     @Mock
     private PropagationContext mockPropagationContext;
     @Mock
-    private Function<HttpServerRequestAdapter, PropagationContext> mockParseTraceHook;
+    private Function<HttpServerRequestAdapter, PropagationContext> mockTraceParserHook;
 
     private HttpServerPropagator httpServerPropagator;
 
@@ -130,7 +130,7 @@ public class HttpServerPropagatorTest {
     }
 
     @Test
-    public void GIVEN_parseTraceHookIsNotNull_EXPECT_hookToBeUsedInsteadOfPropagationCodec() {
+    public void GIVEN_traceParserHookHookIsNotNull_EXPECT_hookToBeUsedInsteadOfPropagationCodec() {
 
         // when(mockTracer.startChildSpan(EXPECTED_SPAN_NAME)).thenReturn(mockSpan);
         when(mockBeeline.startTrace(EXPECTED_SPAN_NAME, PropagationContext.emptyContext(), EXPECTED_SERVICE_NAME)).thenReturn(mockSpan);
@@ -139,14 +139,14 @@ public class HttpServerPropagatorTest {
         when(mockHttpRequest.getContentLength()).thenReturn(0);
         when(mockHttpRequest.getMethod()).thenReturn("GET");
 
-        when(mockParseTraceHook.apply(mockHttpRequest)).thenReturn(PropagationContext.emptyContext());
+        when(mockTraceParserHook.apply(mockHttpRequest)).thenReturn(PropagationContext.emptyContext());
 
         final HttpServerPropagator propagator = new HttpServerPropagator.Builder(mockBeeline, EXPECTED_SERVICE_NAME, REQUEST_TO_SPAN_NAME)
-            .setParseTraceHook(mockParseTraceHook)
+            .setTraceParserHook(mockTraceParserHook)
             .build();
         final Span span = propagator.startPropagation(mockHttpRequest);
         assertThat(span).isSameAs(mockSpan);
-        verify(mockParseTraceHook, times(1)).apply(mockHttpRequest);
+        verify(mockTraceParserHook, times(1)).apply(mockHttpRequest);
         verify(mockPropagationCodec, times(0)).encode(any(PropagationContext.class));
     }
 
