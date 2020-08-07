@@ -40,7 +40,7 @@ public class HttpClientPropagator {
     private final Tracer tracer;
     private final PropagationCodec<Map<String, String>> propagationCodec;
     private final Function<HttpClientRequestAdapter, String> requestToSpanName;
-    private Function<HttpClientRequestAdapter, Optional<Map<String, String>>> propagationHook = null;
+    private final Function<HttpClientRequestAdapter, Optional<Map<String, String>>> propagationHook;
 
     /**
      * Create an HttpClientPropagator for tracing HTTP client requests.
