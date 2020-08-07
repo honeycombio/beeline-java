@@ -99,10 +99,9 @@ public class BeelineServletFilter implements Filter {
         this.pathMatcher = pathMatcher;
         this.spanRequestFieldsCustomizer = new HttpServerRequestSpanCustomizer();
         this.requestToRedispatchSpanName = requestToRedispatchSpanName;
-        this.httpServerPropagator = new HttpServerPropagator(beeline,
-            serviceName,
-            requestToSpanName,
-            propagationCodec);
+        this.httpServerPropagator = new HttpServerPropagator.Builder(beeline, serviceName, requestToSpanName)
+                                        .setPropagationCodec(propagationCodec)
+                                        .build();
     }
 
     @Override

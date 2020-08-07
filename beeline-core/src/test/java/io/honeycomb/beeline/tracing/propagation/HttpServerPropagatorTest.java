@@ -16,6 +16,7 @@ import java.util.function.Function;
 
 import static io.honeycomb.beeline.tracing.propagation.MockSpanUtils.stubFluentCalls;
 import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,6 +35,8 @@ public class HttpServerPropagatorTest {
     private Beeline mockBeeline;
     @Mock
     private PropagationContext mockPropagationContext;
+    @Mock
+    private Function<HttpServerRequestAdapter, PropagationContext> mockParseTraceHook;
 
     private HttpServerPropagator httpServerPropagator;
 
@@ -44,8 +47,10 @@ public class HttpServerPropagatorTest {
     @Before
     public void setup() {
         stubFluentCalls(mockSpan);
-        httpServerPropagator = new HttpServerPropagator(EXPECTED_SERVICE_NAME, REQUEST_TO_SPAN_NAME,
-                                                        mockSpanCustomizer, mockPropagationCodec, mockBeeline);
+        httpServerPropagator = new HttpServerPropagator.Builder(mockBeeline, EXPECTED_SERVICE_NAME, REQUEST_TO_SPAN_NAME)
+                                                    .setSpanCustomizer(mockSpanCustomizer)
+                                                    .setPropagationCodec(mockPropagationCodec)
+                                                    .build();
     }
 
     @Test
@@ -124,6 +129,26 @@ public class HttpServerPropagatorTest {
         verify(mockSpan).close();
     }
 
+    @Test
+    public void GIVEN_parseTraceHookIsNotNull_EXPECT_hookToBeUsedInsteadOfPropagationCodec() {
+
+        // when(mockTracer.startChildSpan(EXPECTED_SPAN_NAME)).thenReturn(mockSpan);
+        when(mockBeeline.startTrace(EXPECTED_SPAN_NAME, PropagationContext.emptyContext(), EXPECTED_SERVICE_NAME)).thenReturn(mockSpan);
+        when(mockHttpRequest.getFirstHeader(any(String.class))).thenReturn(Optional.empty());
+        when(mockHttpRequest.getPath()).thenReturn(Optional.empty());
+        when(mockHttpRequest.getContentLength()).thenReturn(0);
+        when(mockHttpRequest.getMethod()).thenReturn("GET");
+
+        when(mockParseTraceHook.apply(mockHttpRequest)).thenReturn(PropagationContext.emptyContext());
+
+        final HttpServerPropagator propagator = new HttpServerPropagator.Builder(mockBeeline, EXPECTED_SERVICE_NAME, REQUEST_TO_SPAN_NAME)
+            .setParseTraceHook(mockParseTraceHook)
+            .build();
+        final Span span = propagator.startPropagation(mockHttpRequest);
+        assertThat(span).isSameAs(mockSpan);
+        verify(mockParseTraceHook, times(1)).apply(mockHttpRequest);
+        verify(mockPropagationCodec, times(0)).encode(any(PropagationContext.class));
+    }
 
     private static class TestException extends Exception {
         public TestException(String message) {

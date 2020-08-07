@@ -41,6 +41,7 @@ public class HttpServerPropagator {
     private final HttpServerRequestSpanCustomizer spanCustomizer;
     private final PropagationCodec<Map<String, String>> propagationCodec;
     private final Beeline beeline;
+    private final Function<HttpServerRequestAdapter, PropagationContext> parseTraceHook;
 
     /**
      * Create an HttpServerPropagator for tracing requests received by an HTTP server.
@@ -55,37 +56,21 @@ public class HttpServerPropagator {
     public HttpServerPropagator(final Beeline beeline,
                                 final String serviceName,
                                 final Function<HttpServerRequestAdapter, String> requestToSpanName) {
-        this(serviceName, requestToSpanName, new HttpServerRequestSpanCustomizer(), Propagation.honeycombHeaderV1(), beeline);
+        this(serviceName, requestToSpanName, new HttpServerRequestSpanCustomizer(), Propagation.honeycombHeaderV1(), null, beeline);
     }
 
-    /**
-     * Create an HttpServerPropagator for tracing requests received by an HTTP server.
-     * <p>
-     * {@code requestToSpanName} allows you to dynamically name the HTTP server span such that the name
-     * reflects the operation, e.g. based on HTTP method or request path used.
-
-     * @param beeline the beeline
-     * @param serviceName the service name
-     * @param requestToSpanName a function from an HTTP request to a span name
-     * @param propagationCodec a propagation codec used to parse trace data from incoming requests
-     */
-    public HttpServerPropagator(final Beeline beeline,
-                                final String serviceName,
-                                final Function<HttpServerRequestAdapter, String> requestToSpanName,
-                                PropagationCodec<Map<String, String>> propagationCodec) {
-        this(serviceName, requestToSpanName, new HttpServerRequestSpanCustomizer(), propagationCodec, beeline);
-    }
-
-    // Exposed for unit testing
+    // Used by builder
     protected HttpServerPropagator(final String serviceName,
                                 final Function<HttpServerRequestAdapter, String> requestToSpanName,
                                 final HttpServerRequestSpanCustomizer spanCustomizer,
                                 final PropagationCodec<Map<String, String>> propagationCodec,
+                                final Function<HttpServerRequestAdapter, PropagationContext> parseTraceHook,
                                 final Beeline beeline) {
         this.requestToSpanName = requestToSpanName;
         this.serviceName = serviceName;
         this.spanCustomizer = spanCustomizer;
         this.propagationCodec = propagationCodec;
+        this.parseTraceHook = parseTraceHook;
         this.beeline = beeline;
     }
 
@@ -97,7 +82,12 @@ public class HttpServerPropagator {
      */
     public Span startPropagation(final HttpServerRequestAdapter httpRequest) {
         //PropagationCodec#decode is null-safe
-        final PropagationContext decoded = propagationCodec.decode(httpRequest.getHeaders());
+        final PropagationContext decoded;
+        if (parseTraceHook == null) {
+            decoded = propagationCodec.decode(httpRequest.getHeaders());
+        } else {
+            decoded = parseTraceHook.apply(httpRequest);
+        }
 
         final String spanName = requestToSpanName.apply(httpRequest);
 
@@ -134,6 +124,69 @@ public class HttpServerPropagator {
             }
         } finally {
             span.close();
+        }
+    }
+
+    /**
+     * Builder for {@link HttpServerPropagator}.
+     */
+    public static class Builder {
+
+        private final Beeline beeline;
+        private final String serviceName;
+        private final Function<HttpServerRequestAdapter, String> requestToSpanName;
+        private HttpServerRequestSpanCustomizer spanCustomizer = new HttpServerRequestSpanCustomizer();
+        private PropagationCodec<Map<String, String>> propagationCodec = Propagation.honeycombHeaderV1();;
+        private Function<HttpServerRequestAdapter, PropagationContext> parseTraceHook = null;
+
+        /**
+         * Creates a new instance of {@link HttpServerPropagator.Builder}.
+         * @param beeline the beeline
+         * @param serviceName the service name
+         * @param requestToSpanName function to get a span name from a {@link HttpServerRequestAdapter}
+         */
+        public Builder(Beeline beeline, String serviceName, Function<HttpServerRequestAdapter, String> requestToSpanName) {
+            this.beeline = beeline;
+            this.serviceName = serviceName;
+            this.requestToSpanName = requestToSpanName;
+        }
+
+        /**
+         * Set the {@link HttpServerRequestSpanCustomizer} used to customize a span.
+         * @param spanCustomizer the span customizer
+         * @return the {@link HttpServerPropagator.Builder} to be used for chaining
+         */
+        public Builder setSpanCustomizer(HttpServerRequestSpanCustomizer spanCustomizer) {
+            this.spanCustomizer = spanCustomizer;
+            return this;
+        }
+
+        /**
+         * Set the {@link PropagationCodec} to encode/decode trace context via HTTP headers.
+         * @param propagationCodec the propagation codec
+         * @return the {@link HttpServerPropagator.Builder} to be used for chaining
+         */
+        public Builder setPropagationCodec(PropagationCodec<Map<String, String>> propagationCodec) {
+            this.propagationCodec = propagationCodec;
+            return this;
+        }
+
+        /**
+         * Set a custom function used to parse trace context on incoming HTTP requests.
+         * @param parseTraceHook the parse trace hook
+         * @return the {@link HttpServerPropagator.Builder} to be used for chaining
+         */
+        public Builder setParseTraceHook(Function<HttpServerRequestAdapter, PropagationContext> parseTraceHook) {
+            this.parseTraceHook = parseTraceHook;
+            return this;
+        }
+
+        /**
+         * Builds a {@link HttpServerPropagator} using the provided parameters.
+         * @return a new instance of {@link HttpServerPropagator}
+         */
+        public HttpServerPropagator build() {
+            return new HttpServerPropagator(serviceName, requestToSpanName, spanCustomizer, propagationCodec, parseTraceHook, beeline);
         }
     }
 }
