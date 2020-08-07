@@ -40,7 +40,7 @@ public class HttpClientPropagator {
     private final Tracer tracer;
     private final PropagationCodec<Map<String, String>> propagationCodec;
     private final Function<HttpClientRequestAdapter, String> requestToSpanName;
-    private final Function<HttpClientRequestAdapter, Optional<Map<String, String>>> propagationHook;
+    private final Function<HttpClientRequestAdapter, Optional<Map<String, String>>> tracePropagationHook;
 
     /**
      * Create an HttpClientPropagator for tracing HTTP client requests.
@@ -59,11 +59,11 @@ public class HttpClientPropagator {
     protected HttpClientPropagator(final Tracer tracer,
                                 final PropagationCodec<Map<String, String>> propagationCodec,
                                 final Function<HttpClientRequestAdapter, String> requestToSpanName,
-                                final Function<HttpClientRequestAdapter, Optional<Map<String, String>>> propagateHook) {
+                                final Function<HttpClientRequestAdapter, Optional<Map<String, String>>> tracePropagationHook) {
         this.tracer = tracer;
         this.propagationCodec = propagationCodec;
         this.requestToSpanName = requestToSpanName;
-        this.propagationHook = propagateHook;
+        this.tracePropagationHook = tracePropagationHook;
     }
 
     /**
@@ -113,13 +113,13 @@ public class HttpClientPropagator {
     }
 
     private void propagateTrace(final HttpClientRequestAdapter httpRequest, final Span childSpan) {
-        if (propagationHook == null) {
+        if (tracePropagationHook == null) {
             propagationCodec.encode(childSpan.getTraceContext())
                 .ifPresent(headers ->
                     headers.forEach((k,v) -> httpRequest.addHeader(k, v))
                 );
         } else {
-            propagationHook.apply(httpRequest)
+            tracePropagationHook.apply(httpRequest)
                 .ifPresent(headers ->
                     headers.forEach((k,v) -> httpRequest.addHeader(k, v))
                 );
@@ -147,7 +147,7 @@ public class HttpClientPropagator {
         private Tracer tracer;
         private Function<HttpClientRequestAdapter, String> requestToSpanName;
         private PropagationCodec<Map<String, String>> propagationCodec = Propagation.honeycombHeaderV1();
-        private Function<HttpClientRequestAdapter, Optional<Map<String, String>>> propagateHook = null;
+        private Function<HttpClientRequestAdapter, Optional<Map<String, String>>> tracePropagationHook = null;
 
         /**
          * Creates a new instance of {@link HttpClientPropagator.Builder}.
@@ -171,11 +171,11 @@ public class HttpClientPropagator {
 
         /**
          * Set a custom function used to parse trace context on incoming HTTP requests.
-         * @param propagationHook
+         * @param tracePropagationHook
          * @return the {@link HttpClientPropagator.Builder} to be used for chaining
          */
-        public Builder setPropagateHook(Function<HttpClientRequestAdapter, Optional<Map<String, String>>> propagationHook) {
-            this.propagateHook = propagationHook;
+        public Builder setTracePropagationHook(Function<HttpClientRequestAdapter, Optional<Map<String, String>>> tracePropagationHook) {
+            this.tracePropagationHook = tracePropagationHook;
             return this;
         }
 
@@ -184,7 +184,7 @@ public class HttpClientPropagator {
          * @return a new instance of {@link HttpClientPropagator}
          */
         public HttpClientPropagator build() {
-            return new HttpClientPropagator(tracer, propagationCodec, requestToSpanName, propagateHook);
+            return new HttpClientPropagator(tracer, propagationCodec, requestToSpanName, tracePropagationHook);
         }
     }
 }

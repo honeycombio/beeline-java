@@ -34,7 +34,7 @@ public class HttpClientPropagatorTest {
     @Mock
     private PropagationCodec<Map<String, String>> mockPropagationCodec;
     @Mock
-    private Function<HttpClientRequestAdapter, Optional<Map<String, String>>> mockEncodeFunc;
+    private Function<HttpClientRequestAdapter, Optional<Map<String, String>>> mockTracePropagationHook;
 
     private HttpClientPropagator httpClientPropagator;
 
@@ -134,14 +134,13 @@ public class HttpClientPropagatorTest {
         when(mockHttpRequest.getPath()).thenReturn(Optional.empty());
         when(mockHttpRequest.getContentLength()).thenReturn(0);
         when(mockHttpRequest.getMethod()).thenReturn("GET");
-
-        when(mockEncodeFunc.apply(mockHttpRequest)).thenReturn(Optional.empty());
+        when(mockTracePropagationHook.apply(mockHttpRequest)).thenReturn(Optional.empty());
 
         final HttpClientPropagator propagator = new HttpClientPropagator.Builder(mockTracer, r -> EXPECTED_SPAN_NAME)
-            .setPropagateHook(mockEncodeFunc)
+            .setTracePropagationHook(mockTracePropagationHook)
             .build();
         propagator.startPropagation(mockHttpRequest);
-        verify(mockEncodeFunc, times(1)).apply(mockHttpRequest);
+        verify(mockTracePropagationHook, times(1)).apply(mockHttpRequest);
         verify(mockPropagationCodec, times(0)).encode(any(PropagationContext.class));
     }
 
