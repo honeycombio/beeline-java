@@ -152,6 +152,7 @@ public class HttpClientPropagator {
      * Builder for {@link HttpClientPropagator}.
      */
     public static class Builder {
+
         private Tracer tracer;
         private Function<HttpClientRequestAdapter, String> requestToSpanName;
         private PropagationCodec<Map<String, String>> propagationCodec = Propagation.honeycombHeaderV1();
@@ -160,7 +161,7 @@ public class HttpClientPropagator {
         /**
          * Creates a new instance of {@link HttpClientPropagator.Builder}.
          * @param tracer the tracer
-         * @param requestToSpanName a function from request to span name
+         * @param requestToSpanName function to get a span name from a {@link HttpClientRequestAdapter}
          */
         public Builder(Tracer tracer, Function<HttpClientRequestAdapter, String> requestToSpanName) {
             this.tracer = tracer;
@@ -170,7 +171,7 @@ public class HttpClientPropagator {
         /**
          * Set the {@link PropagationCodec} to encode/decode trace context via HTTP headers.
          * @param propagationCodec
-         * @return this
+         * @return the {@link HttpClientPropagator.Builder} to be used for chaining
          */
         public Builder setPropagationCodec(PropagationCodec<Map<String, String>> propagationCodec) {
             this.propagationCodec = propagationCodec;
@@ -178,9 +179,9 @@ public class HttpClientPropagator {
         }
 
         /**
-         * Set the custom function that
+         * Set a custom function used to parse trace context on incoming HTTP requests.
          * @param propagationHook
-         * @return this
+         * @return the {@link HttpClientPropagator.Builder} to be used for chaining
          */
         public Builder setPropagateHook(Function<HttpClientRequestAdapter, Optional<Map<String, String>>> propagationHook) {
             this.propagateHook = propagationHook;
