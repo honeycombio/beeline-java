@@ -48,9 +48,9 @@ public class HttpServerPropagatorTest {
     public void setup() {
         stubFluentCalls(mockSpan);
         httpServerPropagator = new HttpServerPropagator.Builder(mockBeeline, EXPECTED_SERVICE_NAME, REQUEST_TO_SPAN_NAME)
-                                                    .setSpanCustomizer(mockSpanCustomizer)
-                                                    .setPropagationCodec(mockPropagationCodec)
-                                                    .build();
+            .setSpanCustomizer(mockSpanCustomizer)
+            .setPropagationCodec(mockPropagationCodec)
+            .build();
     }
 
     @Test
