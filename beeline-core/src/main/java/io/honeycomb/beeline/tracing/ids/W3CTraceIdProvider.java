@@ -1,6 +1,6 @@
 package io.honeycomb.beeline.tracing.ids;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 import static io.honeycomb.libhoney.utils.ObjectUtils.isNullOrEmpty;
 
@@ -13,7 +13,7 @@ import static io.honeycomb.libhoney.utils.ObjectUtils.isNullOrEmpty;
  */
 public class W3CTraceIdProvider implements TraceIdProvider {
     private static final TraceIdProvider INSTANCE = new W3CTraceIdProvider();
-    private static final Random RAND = new Random();
+    private static final SecureRandom RAND = new SecureRandom();
 
     private static final int TRACEID_BYTES_LENGTH = 16;
     private static final int SPANID_BYTES_LENGTH = 8;
