@@ -55,17 +55,8 @@ public class HttpClientPropagator {
         this(tracer, Propagation.honeycombHeaderV1(), requestToSpanName, null);
     }
 
-    /**
-     * Create an HttpClientPropagator for tracing HTTP client requests.
-     * {@code requestToSpanName} allows you to dynamically name the HTTP client spans such that the name
-     * reflects the operation, e.g. based on HTTP method or request path used.
-     *
-     * @param tracer the tracer
-     * @param propagationCodec the propagation codec to use for parsing and propagating trace data
-     * @param requestToSpanName a function from request to span name
-     * @param propagateHook a custom function to propagate the Propagation Context into HTTP headers
-     */
-    public HttpClientPropagator(final Tracer tracer,
+    // User by builder
+    protected HttpClientPropagator(final Tracer tracer,
                                 final PropagationCodec<Map<String, String>> propagationCodec,
                                 final Function<HttpClientRequestAdapter, String> requestToSpanName,
                                 final Function<HttpClientRequestAdapter, Optional<Map<String, String>>> propagateHook) {
