@@ -56,7 +56,7 @@ public class HttpClientPropagator {
         this(tracer, Propagation.honeycombHeaderV1(), requestToSpanName, null);
     }
 
-    // User by builder
+    // Used by builder
     protected HttpClientPropagator(final Tracer tracer,
                                 final PropagationCodec<Map<String, String>> propagationCodec,
                                 final Function<HttpClientRequestAdapter, String> requestToSpanName,
