@@ -6,6 +6,7 @@ import io.honeycomb.libhoney.shaded.org.apache.http.HttpHeaders;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.*;
@@ -40,7 +41,7 @@ public class HttpClientPropagator {
     private final Tracer tracer;
     private final PropagationCodec<Map<String, String>> propagationCodec;
     private final Function<HttpClientRequestAdapter, String> requestToSpanName;
-    private final Function<HttpClientRequestAdapter, Optional<Map<String, String>>> tracePropagationHook;
+    private final BiFunction<HttpClientRequestAdapter, PropagationContext, Optional<Map<String, String>>> tracePropagationHook;
 
     /**
      * Create an HttpClientPropagator for tracing HTTP client requests.
@@ -59,7 +60,7 @@ public class HttpClientPropagator {
     protected HttpClientPropagator(final Tracer tracer,
                                 final PropagationCodec<Map<String, String>> propagationCodec,
                                 final Function<HttpClientRequestAdapter, String> requestToSpanName,
-                                final Function<HttpClientRequestAdapter, Optional<Map<String, String>>> tracePropagationHook) {
+                                final BiFunction<HttpClientRequestAdapter, PropagationContext, Optional<Map<String, String>>> tracePropagationHook) {
         this.tracer = tracer;
         this.propagationCodec = propagationCodec;
         this.requestToSpanName = requestToSpanName;
@@ -119,7 +120,7 @@ public class HttpClientPropagator {
                     headers.forEach((k,v) -> httpRequest.addHeader(k, v))
                 );
         } else {
-            tracePropagationHook.apply(httpRequest)
+            tracePropagationHook.apply(httpRequest, childSpan.getTraceContext())
                 .ifPresent(headers ->
                     headers.forEach((k,v) -> httpRequest.addHeader(k, v))
                 );
@@ -147,7 +148,7 @@ public class HttpClientPropagator {
         private Tracer tracer;
         private Function<HttpClientRequestAdapter, String> requestToSpanName;
         private PropagationCodec<Map<String, String>> propagationCodec = Propagation.honeycombHeaderV1();
-        private Function<HttpClientRequestAdapter, Optional<Map<String, String>>> tracePropagationHook = null;
+        private BiFunction<HttpClientRequestAdapter, PropagationContext, Optional<Map<String, String>>> tracePropagationHook = null;
 
         /**
          * Creates a new instance of {@link HttpClientPropagator.Builder}.
@@ -174,7 +175,7 @@ public class HttpClientPropagator {
          * @param tracePropagationHook
          * @return the {@link HttpClientPropagator.Builder} to be used for chaining
          */
-        public Builder setTracePropagationHook(Function<HttpClientRequestAdapter, Optional<Map<String, String>>> tracePropagationHook) {
+        public Builder setTracePropagationHook(BiFunction<HttpClientRequestAdapter, PropagationContext, Optional<Map<String, String>>> tracePropagationHook) {
             this.tracePropagationHook = tracePropagationHook;
             return this;
         }

@@ -12,7 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import static io.honeycomb.beeline.tracing.propagation.MockSpanUtils.stubFluentCalls;
 import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.*;
@@ -34,7 +34,7 @@ public class HttpClientPropagatorTest {
     @Mock
     private PropagationCodec<Map<String, String>> mockPropagationCodec;
     @Mock
-    private Function<HttpClientRequestAdapter, Optional<Map<String, String>>> mockTracePropagationHook;
+    private BiFunction<HttpClientRequestAdapter, PropagationContext, Optional<Map<String, String>>> mockTracePropagationHook;
 
     private HttpClientPropagator httpClientPropagator;
 
@@ -134,13 +134,14 @@ public class HttpClientPropagatorTest {
         when(mockHttpRequest.getPath()).thenReturn(Optional.empty());
         when(mockHttpRequest.getContentLength()).thenReturn(0);
         when(mockHttpRequest.getMethod()).thenReturn("GET");
-        when(mockTracePropagationHook.apply(mockHttpRequest)).thenReturn(Optional.empty());
+        when(mockSpan.getTraceContext()).thenReturn(PropagationContext.emptyContext());
+        when(mockTracePropagationHook.apply(mockHttpRequest, PropagationContext.emptyContext())).thenReturn(Optional.empty());
 
         final HttpClientPropagator propagator = new HttpClientPropagator.Builder(mockTracer, r -> EXPECTED_SPAN_NAME)
             .setTracePropagationHook(mockTracePropagationHook)
             .build();
         propagator.startPropagation(mockHttpRequest);
-        verify(mockTracePropagationHook, times(1)).apply(mockHttpRequest);
+        verify(mockTracePropagationHook, times(1)).apply(mockHttpRequest, PropagationContext.emptyContext());
         verify(mockPropagationCodec, times(0)).encode(any(PropagationContext.class));
     }
 
