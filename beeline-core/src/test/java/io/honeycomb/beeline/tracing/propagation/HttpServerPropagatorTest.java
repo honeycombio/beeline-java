@@ -138,7 +138,6 @@ public class HttpServerPropagatorTest {
         when(mockHttpRequest.getPath()).thenReturn(Optional.empty());
         when(mockHttpRequest.getContentLength()).thenReturn(0);
         when(mockHttpRequest.getMethod()).thenReturn("GET");
-
         when(mockTraceParserHook.apply(mockHttpRequest)).thenReturn(PropagationContext.emptyContext());
 
         final HttpServerPropagator propagator = new HttpServerPropagator.Builder(mockBeeline, EXPECTED_SERVICE_NAME, REQUEST_TO_SPAN_NAME)
