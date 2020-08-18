@@ -32,7 +32,9 @@ public class BeelineRestTemplateInterceptor implements ClientHttpRequestIntercep
     public BeelineRestTemplateInterceptor(final Tracer tracer, PropagationCodec<Map<String, String>> propagationCodec) {
         Assert.notNull(tracer, "Validation failed: tracer must not be null");
         Assert.notNull(propagationCodec, "Validation failed: propagationCodec must not be null");
-        this.httpClientPropagator = new HttpClientPropagator(tracer, propagationCodec, r -> HTTP_CLIENT_SPAN_NAME);
+        this.httpClientPropagator = new HttpClientPropagator.Builder(tracer, r -> HTTP_CLIENT_SPAN_NAME)
+            .setPropagationCodec(propagationCodec)
+            .build();
     }
 
     @Override

@@ -12,6 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 import static io.honeycomb.beeline.tracing.propagation.MockSpanUtils.stubFluentCalls;
 import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.*;
@@ -32,13 +33,17 @@ public class HttpClientPropagatorTest {
     private HttpClientResponseAdapter mockHttpResponse;
     @Mock
     private PropagationCodec<Map<String, String>> mockPropagationCodec;
+    @Mock
+    private BiFunction<HttpClientRequestAdapter, PropagationContext, Optional<Map<String, String>>> mockTracePropagationHook;
 
     private HttpClientPropagator httpClientPropagator;
 
     @Before
     public void setUp() {
         stubFluentCalls(mockSpan);
-        httpClientPropagator = new HttpClientPropagator(mockTracer, mockPropagationCodec, r -> EXPECTED_SPAN_NAME);
+        httpClientPropagator = new HttpClientPropagator.Builder(mockTracer, r -> EXPECTED_SPAN_NAME)
+            .setPropagationCodec(mockPropagationCodec)
+            .build();
     }
 
     @Test
@@ -119,6 +124,25 @@ public class HttpClientPropagatorTest {
         verify(mockSpan).addField(CLIENT_REQUEST_ERROR_FIELD,"TestException");
         verify(mockSpan).addField(CLIENT_REQUEST_ERROR_DETAIL_FIELD, expectedMessage);
         verify(mockSpan).close();
+    }
+
+    @Test
+    public void GIVEN_propagateIsNotNull_EXPECT_hookToBeUsedInsteadOfPropagationCodec() {
+
+        when(mockTracer.startChildSpan(EXPECTED_SPAN_NAME)).thenReturn(mockSpan);
+        when(mockHttpRequest.getFirstHeader(any(String.class))).thenReturn(Optional.empty());
+        when(mockHttpRequest.getPath()).thenReturn(Optional.empty());
+        when(mockHttpRequest.getContentLength()).thenReturn(0);
+        when(mockHttpRequest.getMethod()).thenReturn("GET");
+        when(mockSpan.getTraceContext()).thenReturn(PropagationContext.emptyContext());
+        when(mockTracePropagationHook.apply(mockHttpRequest, PropagationContext.emptyContext())).thenReturn(Optional.empty());
+
+        final HttpClientPropagator propagator = new HttpClientPropagator.Builder(mockTracer, r -> EXPECTED_SPAN_NAME)
+            .setTracePropagationHook(mockTracePropagationHook)
+            .build();
+        propagator.startPropagation(mockHttpRequest);
+        verify(mockTracePropagationHook, times(1)).apply(mockHttpRequest, PropagationContext.emptyContext());
+        verify(mockPropagationCodec, times(0)).encode(any(PropagationContext.class));
     }
 
     private class TestException extends Exception {
