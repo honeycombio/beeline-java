@@ -1,5 +1,21 @@
 # Beeline Changelog
 
+## 1.3.0
+
+- Add parse and propagation hooks for HttpClientPropagator and HttpServerPropagator (#65)
+- Add config metadata JSON for spring boot for better IDE intellisense (#66)
+- Ensure AutoConfig happens before Sleuth is invoked (#68)
+- Use secure random in W3C trace ID generator for improved spread distribution (#62)
+- Use 'hny' for honeycomb propagation codec name (#64)
+- Simplify deterministic sampler tests to improve consistnecy (#63)
+- Add support for configuring multiple propagators via config (#61)
+- Add composite HTTP header propagator (#56)
+- Refactor AWS propagator codec to prefer self over parent when decoding (#60)
+- Add nightly builds (#58)
+- Add codewoners file (#57)
+- Update links to other repos to use main instead of master branch (#54)
+- Refactor propagator codec implementations to use map<string, string> for encode & decode (#53)
+
 ## 1.2.0
 
 This is a big release! New functionality:
