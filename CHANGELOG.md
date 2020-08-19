@@ -2,6 +2,9 @@
 
 ## 1.3.0
 
+- Tidy up pom files (#73)
+- Remove spring boot starter bin dir (#72)
+- Bump maven-javadoc-plugin to v3.2.0 (#71)
 - Add parse and propagation hooks for HttpClientPropagator and HttpServerPropagator (#65)
 - Add config metadata JSON for spring boot for better IDE intellisense (#66)
 - Ensure AutoConfig happens before Sleuth is invoked (#68)
