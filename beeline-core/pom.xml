@@ -9,6 +9,7 @@
         <artifactId>beeline-parent</artifactId>
         <version>1.2.0</version>
     </parent>
+
     <name>Beeline Java (Core)</name>
     <artifactId>beeline-core</artifactId>
     <packaging>jar</packaging>

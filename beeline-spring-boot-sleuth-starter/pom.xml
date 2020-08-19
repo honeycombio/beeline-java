@@ -3,12 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>io.honeycomb.beeline</groupId>
         <artifactId>beeline-parent</artifactId>
         <version>1.2.0</version>
     </parent>
-
 
     <name>Beeline Java (Spring Boot Sleuth Starter)</name>
     <artifactId>beeline-spring-boot-sleuth-starter</artifactId>
@@ -17,7 +17,6 @@
 
     <properties>
         <beelineVersion>1.2.0</beelineVersion>
-<!--        <spring-cloud.version>Greenwich.SR1</spring-cloud.version>-->
     </properties>
 
     <build>
