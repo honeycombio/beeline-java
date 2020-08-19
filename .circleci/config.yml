@@ -10,7 +10,7 @@ commands:
       # Download and cache dependencies
       - restore_cache:
           key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
-      - run: ./mvnw dependency:go-offline # gets the project dependencies
+      - run: ./mvnw package dependency:go-offline # gets the project dependencies
       - save_cache: # saves the project dependencies
           paths:
             - ~/.m2
