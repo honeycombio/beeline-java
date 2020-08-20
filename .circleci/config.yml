@@ -15,7 +15,6 @@ commands:
           paths:
             - ~/.m2
           key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
-      - run: ./mvnw package # run the actual tests
 executors:
   java:
     parameters:
