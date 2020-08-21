@@ -16,6 +16,15 @@ commands:
             - ~/.m2
           key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
       - run: ./mvnw package # run the actual tests
+  publish:
+    parameters:
+      javaversion:
+        type: string
+        default: "8"
+    steps:
+      - restore_cache:
+        key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
+      - run: ./mvnw -B deploy
 executors:
   java:
     parameters:
@@ -40,6 +49,16 @@ jobs:
       javaversion: "<< parameters.javaversion >>"
     steps:
       - build
+  publish:
+    parameters:
+      javaversion:
+        type: string
+        default: "8"
+    executor:
+      name: java
+      javaversion: "<< parameters.javaversion >>"
+    steps:
+      - publish
 workflows:
   version: 2
   nightly:
@@ -75,5 +94,10 @@ workflows:
           javaversion: "10"
           name: JDK-10
       - java:
+          javaversion: "11"
+          name: JDK-11
+  publish:
+    jobs:
+      - publish:
           javaversion: "11"
           name: JDK-11
