@@ -35,16 +35,6 @@ jobs:
       - image: circleci/openjdk:<< parameters.javaversion >>-jdk
     steps:
       - build
-  publish:
-    parameters:
-      javaversion:
-        type: string
-        default: "8"
-    executor:
-      name: java
-      javaversion: "<< parameters.javaversion >>"
-    steps:
-      - publish
   publish_github:
     docker:
       - image: cibuilds/github:0.13.0
