@@ -10,14 +10,17 @@ commands:
       - checkout
       - restore_cache:
           key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
-      - run: ./mvnw package dependency:go-offline # gets the project dependencies
-      - save_cache: # saves the project dependencies
+      - run: ./mvnw package dependency:go-offline
+      - save_cache:
           paths:
             - ~/.m2
           key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
-      # - run: ./mvnw package # run the actual tests
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./<< parameters.javaversion >>
       - store_artifacts:
-          path: target/*.jar
+          path: artifacts
   publish:
     parameters:
       javaversion:
@@ -28,29 +31,14 @@ commands:
         key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
       - run: ./mvnw -B deploy
 
-executors:
-  java:
-    parameters:
-      javaversion:
-        type: string
-        default: "8"
-    working_directory: ~/beeline-java
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
-      TERM: dumb
-    docker:
-      - image: circleci/openjdk:<< parameters.javaversion >>-jdk
-
 jobs:
   java:
     parameters:
       javaversion:
         type: string
         default: "8"
-    executor:
-      name: java
-      javaversion: "<< parameters.javaversion >>"
+    docker:
+      - image: circleci/openjdk:<< parameters.javaversion >>-jdk
     steps:
       - build
   publish:
@@ -63,6 +51,27 @@ jobs:
       javaversion: "<< parameters.javaversion >>"
     steps:
       - publish
+  # publish_github:
+  #   docker:
+  #     - image: cibuilds/github:0.13.0
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/
+  #     - run:
+  #         name: "Publish Release on GitHub"
+  #         command: |
+  #           echo "about to publish to tag ${CIRCLE_TAG}"
+  #           ls -l ~/artifacts/*
+  #           ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ~/artifacts
+  # publish_maven:
+  #   docker:
+  #     - image: circleci/openjdk:11-jdk
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/
+  #     - restore_cache:
+  #         key: beeline-java-{{ checksum "pom.xml" }}-11
+  #     - run: ./mvnw -B deploy -DskipTests
 
 workflows:
   version: 2
@@ -101,3 +110,22 @@ workflows:
       - java:
           javaversion: "11"
           name: JDK-11
+      # - publish_github:
+      #     context: Honeycomb Secrets
+      #     requires:
+      #       - java:
+      #         javaversion: "11"
+      #         name: JDK-11
+      #     filters:
+      #       tags:
+      #         only: /^v.*/
+      #       branches:
+      #         ignore: /.*/
+      # - publish_maven:
+      #     requires:
+      #       - build
+      #     filters:
+      #       tags:
+      #         only: /^v.*/
+      #       branches:
+      #         ignore: /.*/
