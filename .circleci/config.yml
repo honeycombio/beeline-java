@@ -19,8 +19,8 @@ commands:
           root: .
           paths:
             - ./<< parameters.javaversion >>
-      - store_artifacts:
-          path: artifacts
+      # - store_artifacts:
+      #     path: artifacts
   publish:
     parameters:
       javaversion:
