@@ -15,9 +15,9 @@ commands:
           paths:
             - ~/.m2
           key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
-      - run: ./mvnw package # run the actual tests
-      - run: mkdir -p ~/artifacts
-      - run: cp ./target ~/artifacts
+      # - run: ./mvnw package # run the actual tests
+      - store_artifacts:
+          path: target/*.jar
   publish:
     parameters:
       javaversion:
