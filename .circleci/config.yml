@@ -15,12 +15,6 @@ commands:
           paths:
             - ~/.m2
           key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./<< parameters.javaversion >>
-      # - store_artifacts:
-      #     path: artifacts
   publish:
     parameters:
       javaversion:
@@ -51,18 +45,16 @@ jobs:
       javaversion: "<< parameters.javaversion >>"
     steps:
       - publish
-  # publish_github:
-  #   docker:
-  #     - image: cibuilds/github:0.13.0
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run:
-  #         name: "Publish Release on GitHub"
-  #         command: |
-  #           echo "about to publish to tag ${CIRCLE_TAG}"
-  #           ls -l ~/artifacts/*
-  #           ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ~/artifacts
+  publish_github:
+    docker:
+      - image: cibuilds/github:0.13.0
+    steps:
+      - build
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            echo "about to publish to tag ${CIRCLE_TAG}"
+            ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG}
   # publish_maven:
   #   docker:
   #     - image: circleci/openjdk:11-jdk
@@ -110,17 +102,13 @@ workflows:
       - java:
           javaversion: "11"
           name: JDK-11
-      # - publish_github:
-      #     context: Honeycomb Secrets
-      #     requires:
-      #       - java:
-      #         javaversion: "11"
-      #         name: JDK-11
-      #     filters:
-      #       tags:
-      #         only: /^v.*/
-      #       branches:
-      #         ignore: /.*/
+      - publish_github:
+          context: Honeycomb Secrets
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       # - publish_maven:
       #     requires:
       #       - build
