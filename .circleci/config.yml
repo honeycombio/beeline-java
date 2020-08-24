@@ -24,6 +24,12 @@ commands:
       - restore_cache:
         key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
       - run: ./mvnw -B deploy
+  configure-gpg:
+    steps:
+      - run:
+          name: Configure GPG private key for signing project artifacts in OSS Sonatype
+          command: |
+            echo $GPG_BASE64 | base64 --decode | gpg --batch --no-tty --import --yes
 
 jobs:
   java:
@@ -45,15 +51,22 @@ jobs:
           command: |
             echo "about to publish to tag ${CIRCLE_TAG}"
             ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG}
-  # publish_maven:
-  #   docker:
-  #     - image: circleci/openjdk:11-jdk
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/
-  #     - restore_cache:
-  #         key: beeline-java-{{ checksum "pom.xml" }}-11
-  #     - run: ./mvnw -B deploy -DskipTests
+  publish_maven:
+    docker:
+      - image: circleci/openjdk:11-jdk
+    steps:
+      - restore_cache:
+          key: beeline-java--{{ checksum ".circleci/config.yml" }}
+      - configure-gpg
+      - run:
+          name: "Publish to Sonatype / Maven Central"
+          command: |
+            echo "Publishing tag ${CIRCLE_TAG} to Sontatype / Maven Central"
+            ./mvnw -s .circleci/maven-release-settings.xml clean deploy -DskipTests
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: beeline-java--{{ checksum ".circleci/config.yml" }}
 
 workflows:
   version: 2
