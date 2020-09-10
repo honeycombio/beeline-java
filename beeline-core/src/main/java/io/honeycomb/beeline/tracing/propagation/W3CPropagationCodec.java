@@ -1,6 +1,7 @@
 package io.honeycomb.beeline.tracing.propagation;
 
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -182,7 +183,7 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
         // If no dataset or tracefields, just return trace parent header
         if (context.getDataset() == null && context.getTraceFields().isEmpty()) {
             return Optional.of(
-                Map.of(W3C_TRACEPARENT_HEADER, traceParent)
+                Collections.singletonMap(W3C_TRACEPARENT_HEADER, traceParent)
             );
         }
 
@@ -206,12 +207,9 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
                 first[0] = false;
             });
 
-        // Return both traceparent and tracestate headers
-        return Optional.of(
-            Map.of(
-                W3C_TRACEPARENT_HEADER, traceParent,
-                W3C_TRACESTATE_HEADER, HONEYCOMB_VENDOR_PREFIX + Base64.getEncoder().encodeToString(traceState.toString().getBytes(UTF_8))
-            )
-        );
+        final Map<String, String> headers = new HashMap<>();
+        headers.put(W3C_TRACEPARENT_HEADER, traceParent);
+        headers.put(W3C_TRACESTATE_HEADER, HONEYCOMB_VENDOR_PREFIX + Base64.getEncoder().encodeToString(traceState.toString().getBytes(UTF_8)));
+        return Optional.of(headers);
     }
 }
