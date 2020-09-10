@@ -95,6 +95,9 @@ public class BeelineAutoconfigTest {
                 assertThat(Objects.requireNonNull(context.getBean(BeelineProperties.class).getApiHost()).toString()).isEqualTo("http://localhost:9111/events");
                 assertThat(context.getBean(BeelineProperties.class).getServiceName()).isEqualTo("TestService");
                 assertThat(context.getBean(BeelineProperties.class).isEnabled()).isTrue();
+                assertThat(context.getBean(BeelineProperties.class).getProxyHostname()).isEmpty();
+                assertThat(context.getBean(BeelineProperties.class).getProxyUsername()).isEmpty();
+                assertThat(context.getBean(BeelineProperties.class).getProxyPassword()).isEmpty();
             });
     }
 
@@ -352,6 +355,24 @@ public class BeelineAutoconfigTest {
             .withPropertyValues("honeycomb.beeline.propagators=hny,w3c")
             .run(context -> {
                 assertThat(context.getBean(BeelineProperties.class).getPropagators()).containsExactly("hny", "w3c");
+            });
+    }
+
+    @Test
+    public void GIVEN_proxySettings_EXPECT_providedProxySettingsToBeUsed() {
+        final String hostname = "http://my-proxy.local";
+        final String username = "my-username";
+        final String password = "my-password";
+        webApplicationContextRunner
+            .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
+            .withPropertyValues(defaultProps)
+            .withPropertyValues("honeycomb.beeline.proxyHostname=" + hostname)
+            .withPropertyValues("honeycomb.beeline.proxyUsername=" + username)
+            .withPropertyValues("honeycomb.beeline.proxyPassword=" + password)
+            .run(context -> {
+                assertThat(context.getBean(BeelineProperties.class).getProxyHostname()).isEqualTo(hostname);
+                assertThat(context.getBean(BeelineProperties.class).getProxyUsername()).isEqualTo(username);
+                assertThat(context.getBean(BeelineProperties.class).getProxyPassword()).isEqualTo(password);
             });
     }
 }
