@@ -173,12 +173,7 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
             return Optional.empty();
         }
 
-        final String traceParent = new StringBuilder(HEADER_LENGTH)
-            .append(DEFAULT_VERSION).append(SEGMENT_SEPARATOR)
-            .append(context.getTraceId()).append(SEGMENT_SEPARATOR)
-            .append(context.getSpanId()).append(SEGMENT_SEPARATOR)
-            .append(NOT_SAMPLED_TRACEFLAGS)
-            .toString();
+        final String traceParent = String.join(SEGMENT_SEPARATOR, DEFAULT_VERSION, context.getTraceId(), context.getSpanId(), NOT_SAMPLED_TRACEFLAGS);
 
         // If no dataset or tracefields, just return trace parent header
         if (context.getDataset() == null && context.getTraceFields().isEmpty()) {
