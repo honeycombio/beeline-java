@@ -111,13 +111,6 @@ public class W3CPropagationCodecTest {
         assertThat(context).isEqualTo(PropagationContext.emptyContext());
     }
 
-    // empty tracestate
-    // no hny vendor
-    // hny vendor with no dataset / fields
-    // hny vendor with dataset, no fields
-    // hny vendor with fields, no dataset
-    // multiple vendors
-
     @Test
     public void GIVEN_anEmptyTrateStateHeader_EXPECT_noDatasetOrFields() {
         final String traceParentHeader = "00-4cbc8d50f02449e887e8bc2aa8020d26-ace1ecab581fc069-01";
