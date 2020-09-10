@@ -1,6 +1,7 @@
 package io.honeycomb.beeline.tracing.propagation;
 
-import java.util.Collections;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import io.honeycomb.beeline.tracing.ids.W3CTraceIdProvider;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static io.honeycomb.libhoney.utils.ObjectUtils.isNullOrEmpty;
 
 /**
@@ -31,8 +33,9 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
     private static final W3CPropagationCodec INSTANCE = new W3CPropagationCodec();
 
     // @formatter:off
-    protected static final String CODEC_NAME                       = "w3c";
+    protected static final String CODEC_NAME                = "w3c";
     protected static final String W3C_TRACEPARENT_HEADER    = "traceparent";
+    protected static final String W3C_TRACESTATE_HEADER     = "tracestate";
 
     private static final String DEFAULT_VERSION             = "00";
     private static final String NOT_SAMPLED_TRACEFLAGS      = "00";
@@ -40,6 +43,11 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
     private static final String SEGMENT_SEPARATOR           = "-";
     private static final Pattern SPLIT_SEGMENTS_PATTERN     = Pattern.compile(SEGMENT_SEPARATOR);
     private static final int HEADER_LENGTH                  = 55; // {version:2}-{trace-id:32}-{parent-id:16}-{traceflags:2}
+    private static final String DATASET_STRING              = "dataset";
+    private static final String HONEYCOMB_TRACESTATE_VENDOR = "hny";
+    private static final String TRACESTATE_VENDOR_SEPARATOR = ",";
+    private static final String TRACESTATE_VALUE_SEPARATOR  = "=";
+    private static final String HONEYCOMB_VENDOR_PREFIX     = HONEYCOMB_TRACESTATE_VENDOR + TRACESTATE_VALUE_SEPARATOR;
     // @formatter:on
 
     public static W3CPropagationCodec getInstance() {
@@ -106,7 +114,38 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
             return PropagationContext.emptyContext();
         }
 
-        return new PropagationContext(segments[1], segments[2], null, null);
+        // try to parse dataset and other trace fields from tracestate header
+        String dataset = null;
+        Map<String, String> fields = null;
+        String encodedState = headers.get(W3C_TRACESTATE_HEADER);
+        if (encodedState != null) {
+            // check if we have a honeycomb value
+            int startPos = encodedState.indexOf(HONEYCOMB_VENDOR_PREFIX);
+            if (startPos >= 0) {
+                // get end position
+                int keyEndPos = encodedState.indexOf(TRACESTATE_VENDOR_SEPARATOR, startPos);
+                String honeycombState = keyEndPos == -1 ?
+                    encodedState.substring(startPos + 4) :
+                    encodedState.substring(startPos + 4, keyEndPos);
+
+                if (!honeycombState.isEmpty()) {
+                    String decodedState = new String(Base64.getDecoder().decode(honeycombState), UTF_8);
+                    for (String kvp : decodedState.split(TRACESTATE_VENDOR_SEPARATOR)) {
+                        String[] parts = kvp.split(TRACESTATE_VALUE_SEPARATOR);
+                        if (parts[0].equals(DATASET_STRING)) {
+                            dataset = parts[1];
+                        } else {
+                            if (fields == null) {
+                                fields = new HashMap<>();
+                            }
+                            fields.put(parts[0], parts[1]);
+                        }
+                    }
+                }
+            }
+        }
+
+        return new PropagationContext(segments[1], segments[2], dataset, fields);
     }
 
     /**
@@ -133,12 +172,46 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
             return Optional.empty();
         }
 
-        final StringBuilder builder = new StringBuilder(HEADER_LENGTH)
+        final String traceParent = new StringBuilder(HEADER_LENGTH)
             .append(DEFAULT_VERSION).append(SEGMENT_SEPARATOR)
             .append(context.getTraceId()).append(SEGMENT_SEPARATOR)
             .append(context.getSpanId()).append(SEGMENT_SEPARATOR)
-            .append(NOT_SAMPLED_TRACEFLAGS);
+            .append(NOT_SAMPLED_TRACEFLAGS)
+            .toString();
 
-        return Optional.of(Collections.singletonMap(W3C_TRACEPARENT_HEADER, builder.toString()));
+        // If no dataset or tracefields, just return trace parent header
+        if (context.getDataset() == null && context.getTraceFields().isEmpty()) {
+            return Optional.of(
+                Map.of(W3C_TRACEPARENT_HEADER, traceParent)
+            );
+        }
+
+        final boolean[] first = {true}; // trick for allowing scoped variables to be accessed inside lambda functions
+        final StringBuilder traceState = new StringBuilder();
+
+        // If not null, add dataset first
+        if (context.getDataset() != null && !context.getDataset().isEmpty()) {
+            traceState.append(String.join(TRACESTATE_VALUE_SEPARATOR, DATASET_STRING, context.getDataset()));
+            first[0] = false;
+        }
+
+        // Sort the fields by key and append
+        context.getTraceFields().entrySet().stream()
+            .sorted(Map.Entry.<String, Object>comparingByKey())
+            .forEach(field -> {
+                if (!first[0]) {
+                    traceState.append(TRACESTATE_VENDOR_SEPARATOR);
+                }
+                traceState.append(String.join(TRACESTATE_VALUE_SEPARATOR, field.getKey(), field.getValue().toString()));
+                first[0] = false;
+            });
+
+        // Return both traceparent and tracestate headers
+        return Optional.of(
+            Map.of(
+                W3C_TRACEPARENT_HEADER, traceParent,
+                W3C_TRACESTATE_HEADER, HONEYCOMB_VENDOR_PREFIX + Base64.getEncoder().encodeToString(traceState.toString().getBytes(UTF_8))
+            )
+        );
     }
 }

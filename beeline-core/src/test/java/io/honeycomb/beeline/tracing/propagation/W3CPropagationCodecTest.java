@@ -42,6 +42,7 @@ public class W3CPropagationCodecTest {
         assertThat(context.getTraceId()).isEqualTo("4cbc8d50f02449e887e8bc2aa8020d26");
         assertThat(context.getSpanId()).isEqualTo("ace1ecab581fc069");
         assertThat(context.getTraceFields().size()).isEqualTo(0);
+        assertThat(context.getDataset()).isEqualTo(null);
     }
 
     @Test
@@ -52,6 +53,7 @@ public class W3CPropagationCodecTest {
         assertThat(context.getTraceId()).isEqualTo("4cbc8d50f02449e887e8bc2aa8020d26");
         assertThat(context.getSpanId()).isEqualTo("ace1ecab581fc069");
         assertThat(context.getTraceFields().size()).isEqualTo(0);
+        assertThat(context.getDataset()).isEqualTo(null);
     }
 
     @Test
@@ -109,6 +111,107 @@ public class W3CPropagationCodecTest {
         assertThat(context).isEqualTo(PropagationContext.emptyContext());
     }
 
+    // empty tracestate
+    // no hny vendor
+    // hny vendor with no dataset / fields
+    // hny vendor with dataset, no fields
+    // hny vendor with fields, no dataset
+    // multiple vendors
+
+    @Test
+    public void GIVEN_anEmptyTrateStateHeader_EXPECT_noDatasetOrFields() {
+        final String traceParentHeader = "00-4cbc8d50f02449e887e8bc2aa8020d26-ace1ecab581fc069-01";
+        final String traceStateHeader = "";
+
+        final PropagationContext context = codec.decode(Map.of(W3CPropagationCodec.W3C_TRACEPARENT_HEADER, traceParentHeader, W3CPropagationCodec.W3C_TRACESTATE_HEADER, traceStateHeader));
+
+        assertThat(context.getTraceId()).isEqualTo("4cbc8d50f02449e887e8bc2aa8020d26");
+        assertThat(context.getSpanId()).isEqualTo("ace1ecab581fc069");
+        assertThat(context.getTraceFields().size()).isEqualTo(0);
+        assertThat(context.getDataset()).isEqualTo(null);
+    }
+
+    @Test
+    public void GIVEN_aTrateStateHeaderWithoutHnyVendor_EXPECT_noDatasetOrFields() {
+        final String traceParentHeader = "00-4cbc8d50f02449e887e8bc2aa8020d26-ace1ecab581fc069-01";
+        final String traceStateHeader = "vendor=123";
+
+        final PropagationContext context = codec.decode(Map.of(W3CPropagationCodec.W3C_TRACEPARENT_HEADER, traceParentHeader, W3CPropagationCodec.W3C_TRACESTATE_HEADER, traceStateHeader));
+
+        assertThat(context.getTraceId()).isEqualTo("4cbc8d50f02449e887e8bc2aa8020d26");
+        assertThat(context.getSpanId()).isEqualTo("ace1ecab581fc069");
+        assertThat(context.getTraceFields().size()).isEqualTo(0);
+        assertThat(context.getDataset()).isEqualTo(null);
+    }
+
+    @Test
+    public void GIVEN_aTrateStateHeaderWithemptyHnyVendor_EXPECT_noDatasetOrFields() {
+        final String traceParentHeader = "00-4cbc8d50f02449e887e8bc2aa8020d26-ace1ecab581fc069-01";
+        final String traceStateHeader = "hny=";
+
+        final PropagationContext context = codec.decode(Map.of(W3CPropagationCodec.W3C_TRACEPARENT_HEADER, traceParentHeader, W3CPropagationCodec.W3C_TRACESTATE_HEADER, traceStateHeader));
+
+        assertThat(context.getTraceId()).isEqualTo("4cbc8d50f02449e887e8bc2aa8020d26");
+        assertThat(context.getSpanId()).isEqualTo("ace1ecab581fc069");
+        assertThat(context.getTraceFields().size()).isEqualTo(0);
+        assertThat(context.getDataset()).isEqualTo(null);
+    }
+
+    @Test
+    public void GIVEN_aTrateStateHeaderWithDataset_EXPECT_datasetNoFields() {
+        final String traceParentHeader = "00-4cbc8d50f02449e887e8bc2aa8020d26-ace1ecab581fc069-01";
+        final String traceStateHeader = "hny=ZGF0YXNldD10ZXN0LWRhdGFzZXQ";
+
+        final PropagationContext context = codec.decode(Map.of(W3CPropagationCodec.W3C_TRACEPARENT_HEADER, traceParentHeader, W3CPropagationCodec.W3C_TRACESTATE_HEADER, traceStateHeader));
+
+        assertThat(context.getTraceId()).isEqualTo("4cbc8d50f02449e887e8bc2aa8020d26");
+        assertThat(context.getSpanId()).isEqualTo("ace1ecab581fc069");
+        assertThat(context.getTraceFields().size()).isEqualTo(0);
+        assertThat(context.getDataset()).isEqualTo("test-dataset");
+    }
+
+    @Test
+    public void GIVEN_aTrateStateHeaderWithFields_EXPECT_fieldsNoDataset() {
+        final String traceParentHeader = "00-4cbc8d50f02449e887e8bc2aa8020d26-ace1ecab581fc069-01";
+        final String traceStateHeader = "hny=Zm9vPWJhcg==";
+
+        final PropagationContext context = codec.decode(Map.of(W3CPropagationCodec.W3C_TRACEPARENT_HEADER, traceParentHeader, W3CPropagationCodec.W3C_TRACESTATE_HEADER, traceStateHeader));
+
+        assertThat(context.getTraceId()).isEqualTo("4cbc8d50f02449e887e8bc2aa8020d26");
+        assertThat(context.getSpanId()).isEqualTo("ace1ecab581fc069");
+        assertThat(context.getTraceFields().size()).isEqualTo(1);
+        assertThat(context.getTraceFields().get("foo")).isEqualTo("bar");
+        assertThat(context.getDataset()).isEqualTo(null);
+    }
+
+    @Test
+    public void GIVEN_aTrateStateHeaderDatasetandFields_EXPECT_datasetAndFieldsPopulated() {
+        final String traceParentHeader = "00-4cbc8d50f02449e887e8bc2aa8020d26-ace1ecab581fc069-01";
+        final String traceStateHeader = "hny=Zm9vPWJhcixkYXRhc2V0PXRlc3QtZGF0YXNldA==";
+
+        final PropagationContext context = codec.decode(Map.of(W3CPropagationCodec.W3C_TRACEPARENT_HEADER, traceParentHeader, W3CPropagationCodec.W3C_TRACESTATE_HEADER, traceStateHeader));
+
+        assertThat(context.getTraceId()).isEqualTo("4cbc8d50f02449e887e8bc2aa8020d26");
+        assertThat(context.getSpanId()).isEqualTo("ace1ecab581fc069");
+        assertThat(context.getTraceFields().size()).isEqualTo(1);
+        assertThat(context.getTraceFields().get("foo")).isEqualTo("bar");
+        assertThat(context.getDataset()).isEqualTo("test-dataset");
+    }
+
+    @Test
+    public void GIVEN_aTrateStateHeaderDatasetandFieldsWithOtherVendors_EXPECT_datasetAndFieldsPopulated() {
+        final String traceParentHeader = "00-4cbc8d50f02449e887e8bc2aa8020d26-ace1ecab581fc069-01";
+        final String traceStateHeader = "vendor1=123,hny=Zm9vPWJhcixkYXRhc2V0PXRlc3QtZGF0YXNldA==,vendor2=abc";
+
+        final PropagationContext context = codec.decode(Map.of(W3CPropagationCodec.W3C_TRACEPARENT_HEADER, traceParentHeader, W3CPropagationCodec.W3C_TRACESTATE_HEADER, traceStateHeader));
+
+        assertThat(context.getTraceId()).isEqualTo("4cbc8d50f02449e887e8bc2aa8020d26");
+        assertThat(context.getSpanId()).isEqualTo("ace1ecab581fc069");
+        assertThat(context.getTraceFields().size()).isEqualTo(1);
+        assertThat(context.getTraceFields().get("foo")).isEqualTo("bar");
+        assertThat(context.getDataset()).isEqualTo("test-dataset");
+    }
+
     // Encode
 
     @Test
@@ -126,6 +229,52 @@ public class W3CPropagationCodecTest {
 
         assertThat(encoded).isEqualTo(
             Collections.singletonMap(W3CPropagationCodec.W3C_TRACEPARENT_HEADER, String.join("-", "00", traceId, spanId, "00"))
+        );
+    }
+
+    @Test
+    public void GIVEN_aPopulatedContextWithDataset_EXPECT_aValidHeaderValueWithTraceState() {
+        String traceId = "4cbc8d50f02449e887e8bc2aa8020d26";
+        String spanId = "ace1ecab581fc069";
+        String dataset = "test-dataset";
+        final Map<String, String> encoded = codec.encode(new PropagationContext(traceId, spanId, dataset, null)).get();
+
+        assertThat(encoded).isEqualTo(
+            Map.of(
+                W3CPropagationCodec.W3C_TRACEPARENT_HEADER, String.join("-", "00", traceId, spanId, "00"),
+                W3CPropagationCodec.W3C_TRACESTATE_HEADER, "hny=ZGF0YXNldD10ZXN0LWRhdGFzZXQ="
+            )
+        );
+    }
+
+    @Test
+    public void GIVEN_aPopulatedContextWithFields_EXPECT_aValidHeaderValueWithTraceState() {
+        String traceId = "4cbc8d50f02449e887e8bc2aa8020d26";
+        String spanId = "ace1ecab581fc069";
+        Map<String, Object> fields = Map.of("foo", "bar", "one", "two");
+        final Map<String, String> encoded = codec.encode(new PropagationContext(traceId, spanId, null, fields)).get();
+
+        assertThat(encoded).isEqualTo(
+            Map.of(
+                W3CPropagationCodec.W3C_TRACEPARENT_HEADER, String.join("-", "00", traceId, spanId, "00"),
+                W3CPropagationCodec.W3C_TRACESTATE_HEADER, "hny=Zm9vPWJhcixvbmU9dHdv"
+            )
+        );
+    }
+
+    @Test
+    public void GIVEN_aPopulatedContextWithDatasetAndFields_EXPECT_aValidHeaderValueWithTraceState() {
+        String traceId = "4cbc8d50f02449e887e8bc2aa8020d26";
+        String spanId = "ace1ecab581fc069";
+        String dataset = "test-dataset";
+        Map<String, Object> fields = Map.of("foo", "bar", "one", "two");
+        final Map<String, String> encoded = codec.encode(new PropagationContext(traceId, spanId, dataset, fields)).get();
+
+        assertThat(encoded).isEqualTo(
+            Map.of(
+                W3CPropagationCodec.W3C_TRACEPARENT_HEADER, String.join("-", "00", traceId, spanId, "00"),
+                W3CPropagationCodec.W3C_TRACESTATE_HEADER, "hny=ZGF0YXNldD10ZXN0LWRhdGFzZXQsZm9vPWJhcixvbmU9dHdv"
+            )
         );
     }
 }
