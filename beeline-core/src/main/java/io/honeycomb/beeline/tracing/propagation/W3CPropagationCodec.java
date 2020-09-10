@@ -188,11 +188,11 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
         }
 
         final boolean[] first = {true}; // trick for allowing scoped variables to be accessed inside lambda functions
-        final StringBuilder traceState = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
 
         // If not null, add dataset first
         if (context.getDataset() != null && !context.getDataset().isEmpty()) {
-            traceState.append(String.join(TRACESTATE_VALUE_SEPARATOR, DATASET_STRING, context.getDataset()));
+            builder.append(String.join(TRACESTATE_VALUE_SEPARATOR, DATASET_STRING, context.getDataset()));
             first[0] = false;
         }
 
@@ -201,15 +201,16 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
             .sorted(Map.Entry.<String, Object>comparingByKey())
             .forEach(field -> {
                 if (!first[0]) {
-                    traceState.append(TRACESTATE_VENDOR_SEPARATOR);
+                    builder.append(TRACESTATE_VENDOR_SEPARATOR);
                 }
-                traceState.append(String.join(TRACESTATE_VALUE_SEPARATOR, field.getKey(), field.getValue().toString()));
+                builder.append(String.join(TRACESTATE_VALUE_SEPARATOR, field.getKey(), field.getValue().toString()));
                 first[0] = false;
             });
 
+        final String traceState = HONEYCOMB_VENDOR_PREFIX + Base64.getEncoder().encodeToString(builder.toString().getBytes(UTF_8));
         final Map<String, String> headers = new HashMap<>();
         headers.put(W3C_TRACEPARENT_HEADER, traceParent);
-        headers.put(W3C_TRACESTATE_HEADER, HONEYCOMB_VENDOR_PREFIX + Base64.getEncoder().encodeToString(traceState.toString().getBytes(UTF_8)));
+        headers.put(W3C_TRACESTATE_HEADER, traceState);
         return Optional.of(headers);
     }
 }
