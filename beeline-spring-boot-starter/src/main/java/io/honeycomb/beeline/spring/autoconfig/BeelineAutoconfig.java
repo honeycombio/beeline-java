@@ -15,9 +15,9 @@ import io.honeycomb.beeline.tracing.sampling.TraceSampler;
 import io.honeycomb.libhoney.EventPostProcessor;
 import io.honeycomb.libhoney.HoneyClient;
 import io.honeycomb.libhoney.LibHoney;
-import io.honeycomb.libhoney.Options;
 import io.honeycomb.libhoney.ResponseObserver;
 import io.honeycomb.libhoney.TransportOptions;
+import io.honeycomb.libhoney.builders.HoneyClientBuilder;
 import io.honeycomb.libhoney.transport.Transport;
 import io.honeycomb.libhoney.transport.impl.BatchingHttpTransport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +37,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.DispatcherType;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -90,23 +91,45 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
                                                  final Optional<ResponseObserver> maybeObserver,
                                                  final Optional<EventPostProcessor> maybePostProcessor) {
         // Spring will handle shutdown of the client, see javadoc of the Bean#destroyMethod annotation parameter
-        final Options.Builder optionsBuilder = LibHoney.options();
 
+        final HoneyClientBuilder builder = new HoneyClientBuilder()
+            .dataSet(beelineProperties.getDataset())
+            .writeKey(beelineProperties.getWriteKey())
+            .transport(transport);
+
+        // set apiHost if not empty
         if (beelineProperties.getApiHost() != null) {
-            optionsBuilder.setApiHost(beelineProperties.getApiHost());
+            // TODO: allow raw URI to be passed into LibHoneyBuilder to avoid re-parsing URI
+            try {
+                builder.apiHost(beelineProperties.getApiHost().toString());
+            } catch (URISyntaxException e) {
+                // eat error for now
+            }
         }
 
-        maybePostProcessor.ifPresent(optionsBuilder::setEventPostProcessor);
+        // map static and dynamic fields
+        metaFieldProvider.getStaticFields().forEach((key, value) -> builder.addGlobalField(key, value));
+        metaFieldProvider.getDynamicFields().forEach((key, value) -> builder.addGlobalDynamicFields(key, value));
 
-        final Options options = optionsBuilder
-            .setDataset(beelineProperties.getDataset())
-            .setWriteKey(beelineProperties.getWriteKey())
-            .setGlobalFields(metaFieldProvider.getStaticFields())
-            .setGlobalDynamicFields(metaFieldProvider.getDynamicFields())
-            .build();
+        // if we have a proxy hostname
+        if (!beelineProperties.getProxyHostname().isEmpty()) {
+            // if either username or password are empty
+            if (beelineProperties.getProxyUsername().isEmpty() || beelineProperties.getProxyPassword().isEmpty()) {
+                // add proxy without username & password
+                builder.addProxy(beelineProperties.getProxyHostname());
+            } else {
+                // add proxy with username & password
+                builder.addProxy(
+                    beelineProperties.getProxyHostname(),
+                    beelineProperties.getProxyUsername(),
+                    beelineProperties.getProxyPassword());
+            }
+        }
 
-        final HoneyClient honeyClient = new HoneyClient(options, transport);
+        maybePostProcessor.ifPresent(builder::eventPostProcessor);
 
+        // final HoneyClient honeyClient = new HoneyClient(options, transport);
+        final HoneyClient honeyClient = builder.build();
         maybeObserver.ifPresent(honeyClient::addResponseObserver);
 
         return honeyClient;

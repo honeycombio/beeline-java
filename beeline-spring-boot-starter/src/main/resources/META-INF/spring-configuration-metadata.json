@@ -80,6 +80,24 @@
       "type":"java.lang.Boolean",
       "description":"Toggles whether the JDBC instrumentation is enabled.",
       "defaultValue":"true"
+    },
+    {
+      "name":"honeycomb.beeline.proxyHostname",
+      "type":"java.lang.String",
+      "description":"The hostname of a proxy to be used to send events to Honeycomb. An empty value means the Beeline does not configure a proxy and sends events directly to Honeycomb.",
+      "defaultValue":""
+    },
+    {
+      "name":"honeycomb.beeline.proxyUsername",
+      "type":"java.lang.String",
+      "description":"The username to be used for connecting to a proxy.",
+      "defaultValue":""
+    },
+    {
+      "name":"honeycomb.beeline.proxyPassword",
+      "type":"java.lang.String",
+      "description":"The password to be used for connecting to a proxy.",
+      "defaultValue":""
     }
   ]
 }

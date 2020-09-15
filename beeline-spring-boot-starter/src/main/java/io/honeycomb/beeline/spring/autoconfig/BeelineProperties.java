@@ -115,6 +115,21 @@ public class BeelineProperties {
      */
     private List<String> propagators = Collections.singletonList("hny");
 
+    /**
+     * The hostname of a HTTP proxy if one is to be used with the Beeline to send events.
+     */
+    private String proxyHostname = "";
+
+    /**
+     * The username for a HTTP proxy if one is to be used with the Beeline to send events.
+     */
+    private String proxyUsername = "";
+
+    /**
+     * The password for a HTTP proxy if one is to be used with the Beeline to send events.
+     */
+    private String proxyPassword = "";
+
     public String getDataset() {
         return dataset;
     }
@@ -211,6 +226,30 @@ public class BeelineProperties {
         this.propagators = propagators;
     }
 
+    public String getProxyHostname() {
+        return proxyHostname;
+    }
+
+    public void setProxyHostname(String hostname) {
+        this.proxyHostname = hostname;
+    }
+
+    public String getProxyUsername() {
+        return proxyUsername;
+    }
+
+    public void setProxyUsername(String username) {
+        this.proxyUsername = username;
+    }
+
+    public String getProxyPassword() {
+        return proxyPassword;
+    }
+
+    public void setProxyPassword(String password) {
+        this.proxyPassword = password;
+    }
+
     public static class RestTemplateProperties {
         /**
          * When set to false, this will disable the configuration of beans related to RestTemplate instrumentation,
@@ -248,6 +287,9 @@ public class BeelineProperties {
                ", excludePathPatterns=" + excludePathPatterns +
                ", restTemplate=" + restTemplate +
                ", propagators=" + String.join(",", propagators) +
+               ", proxyHostname='" + proxyHostname + "'" +
+               ", proxyUsername='" + proxyUsername + "'" +
+               ", proxyPassword='" + proxyPassword + "'" +
                '}';
     }
 }
