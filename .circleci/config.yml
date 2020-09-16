@@ -1,4 +1,5 @@
 version: 2.1
+
 commands:
   build:
     parameters:
@@ -7,39 +8,57 @@ commands:
         default: "8"
     steps:
       - checkout
-      # Download and cache dependencies
       - restore_cache:
           key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
-      - run: ./mvnw package dependency:go-offline # gets the project dependencies
-      - save_cache: # saves the project dependencies
+      - run: ./mvnw package dependency:go-offline
+      - save_cache:
           paths:
             - ~/.m2
           key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
-      - run: ./mvnw package # run the actual tests
-executors:
-  java:
-    parameters:
-      javaversion:
-        type: string
-        default: "8"
-    working_directory: ~/beeline-java
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
-      TERM: dumb
-    docker:
-      - image: circleci/openjdk:<< parameters.javaversion >>-jdk
+  configure-gpg:
+    steps:
+      - run:
+          name: Configure GPG private key for signing project artifacts in OSS Sonatype
+          command: |
+            echo $GPG_BASE64 | base64 --decode | gpg --batch --no-tty --import --yes
+
 jobs:
   java:
     parameters:
       javaversion:
         type: string
         default: "8"
-    executor:
-      name: java
-      javaversion: "<< parameters.javaversion >>"
+    docker:
+      - image: circleci/openjdk:<< parameters.javaversion >>-jdk
     steps:
       - build
+  publish_github:
+    docker:
+      - image: cibuilds/github:0.13.0
+    steps:
+      - build
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            echo "about to publish to tag ${CIRCLE_TAG}"
+            ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG}
+  publish_maven:
+    docker:
+      - image: circleci/openjdk:11-jdk
+    steps:
+      - restore_cache:
+          key: beeline-java-{{ checksum ".circleci/config.yml" }}
+      - configure-gpg
+      - run:
+          name: "Publish to Sonatype / Maven Central"
+          command: |
+            echo "Publishing tag ${CIRCLE_TAG} to Sontatype / Maven Central"
+            ./mvnw -s .circleci/maven-release-settings.xml clean deploy -DskipTests
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: beeline-java-{{ checksum ".circleci/config.yml" }}
+
 workflows:
   version: 2
   nightly:
@@ -77,3 +96,16 @@ workflows:
       - java:
           javaversion: "11"
           name: JDK-11
+      - publish_github:
+          context: Honeycomb Secrets
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - publish_maven:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
