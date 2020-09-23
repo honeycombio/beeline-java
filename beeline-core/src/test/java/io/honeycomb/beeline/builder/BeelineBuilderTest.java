@@ -13,8 +13,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.net.ssl.SSLContext;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -231,6 +233,11 @@ public class BeelineBuilderTest {
 
     private void completeNegativeVerification(){
         verify(mockBuilder, times(1)).build();
+        try {
+            verify(mockBuilder, times(1)).apiHost(any(URI.class));
+        } catch (URISyntaxException e) {
+            fail(e.toString());
+        }
         verifyNoMoreInteractions(mockBuilder);
     }
 }
