@@ -1,5 +1,10 @@
 # Beeline Changelog
 
+## 1.4.0
+
+- Update CircleCI to publish to maven when creating tag (#74)
+- Add support for configuring a proxy via spring boot AutoConf settings (#77)
+
 ## 1.3.0
 
 - Tidy up pom files (#73)
