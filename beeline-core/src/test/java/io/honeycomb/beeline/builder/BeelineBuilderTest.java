@@ -13,6 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.net.ssl.SSLContext;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -69,6 +70,7 @@ public class BeelineBuilderTest {
     public void apiHost() throws URISyntaxException {
         final Beeline beeline = builder.apiHost("host:80").build();
         verify(mockBuilder, times(1)).apiHost("host:80");
+        verify(mockBuilder, times(1)).apiHost(any(URI.class));
         completeNegativeVerification();
     }
 
