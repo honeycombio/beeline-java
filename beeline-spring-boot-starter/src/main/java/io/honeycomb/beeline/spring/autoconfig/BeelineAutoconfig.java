@@ -99,7 +99,12 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
 
         // set apiHost if not empty
         if (beelineProperties.getApiHost() != null) {
-            builder.apiHost(beelineProperties.getApiHost());
+            // TODO: allow raw URI to be passed into LibHoneyBuilder to avoid re-parsing URI
+            try {
+                builder.apiHost(beelineProperties.getApiHost().toString());
+            } catch (URISyntaxException e) {
+                // eat error for now
+            }
         }
 
         // map static and dynamic fields
