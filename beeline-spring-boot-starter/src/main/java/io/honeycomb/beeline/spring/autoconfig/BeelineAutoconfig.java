@@ -37,6 +37,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.DispatcherType;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
@@ -99,9 +100,8 @@ public class BeelineAutoconfig implements WebMvcConfigurer {
 
         // set apiHost if not empty
         if (beelineProperties.getApiHost() != null) {
-            // TODO: allow raw URI to be passed into LibHoneyBuilder to avoid re-parsing URI
             try {
-                builder.apiHost(beelineProperties.getApiHost().toString());
+                builder.apiHost(beelineProperties.getApiHost());
             } catch (URISyntaxException e) {
                 // eat error for now
             }
