@@ -7,10 +7,7 @@ import io.honeycomb.beeline.spring.autoconfig.BeelineProperties;
 import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.tracing.SpanBuilderFactory;
 import io.honeycomb.beeline.tracing.propagation.PropagationContext;
-import io.honeycomb.beeline.tracing.utils.TraceFieldConstants;
 import io.honeycomb.libhoney.Event;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import zipkin2.Span;
 import zipkin2.reporter.Reporter;
 
