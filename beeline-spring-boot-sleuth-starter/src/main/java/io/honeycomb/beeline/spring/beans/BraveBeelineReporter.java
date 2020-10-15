@@ -40,11 +40,6 @@ public class BraveBeelineReporter implements Reporter<Span> {
     }
 
     private void adaptBraveModelToHoneycombModel(final Span span, final io.honeycomb.beeline.tracing.Span hcRootSpan) {
-        final long startTime = span.timestampAsLong();
-        if (startTime > 0) {
-            // Brave uses 0 for no timestamp while Honeycomb uses -1L
-            hcRootSpan.markStart(startTime, startTime);
-        }
         adaptBraveAnnotationToHoneycombSpanEvent(span, hcRootSpan);
         ExtraFieldPropagation.getAll().forEach(hcRootSpan::addField);
         span.tags().forEach(hcRootSpan::addField);
