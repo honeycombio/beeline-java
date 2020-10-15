@@ -130,7 +130,7 @@ public class BraveBeelineReporterTest {
 
     @Test
     public void GIVEN_spanWithDuration_EXPECT_eventWithDuration() {
-        final Span span = spanBuilder.duration(10760L).build(); // 10.76 millis in micros
+        final Span span = spanBuilder.duration(494L).build(); // 0.494 millis in micros
         reporter.report(span);
         verify(mockTransport, times(1)).submit((ResolvedEvent) captor.capture());
         final Object captured = captor.getValue();
@@ -138,7 +138,7 @@ public class BraveBeelineReporterTest {
         final ResolvedEvent event = (ResolvedEvent) captured;
         final Map<String, Object> actualFields = event.getFields();
         Assert.assertTrue("Expected duration on event", actualFields.containsKey(TraceFieldConstants.DURATION_FIELD));
-        Assert.assertEquals("10.76", String.valueOf(actualFields.get(TraceFieldConstants.DURATION_FIELD)));
+        Assert.assertEquals("0.494", String.valueOf(actualFields.get(TraceFieldConstants.DURATION_FIELD)));
     }
 
     @Test
