@@ -23,6 +23,8 @@ import zipkin2.reporter.Reporter;
  */
 public class BraveBeelineReporter implements Reporter<Span> {
 
+    private static final Short MICROS_IN_MILLISECOND = 1000;
+
     private final Beeline beeline;
     private final BeelineProperties properties;
 
@@ -68,7 +70,7 @@ public class BraveBeelineReporter implements Reporter<Span> {
         }
         if (span.durationAsLong() > 0) {
             // Brave uses zero for no timestamp
-            hcRootSpan.setDuration((double) span.durationAsLong() / 1000);
+            hcRootSpan.setDuration((double) span.durationAsLong() / MICROS_IN_MILLISECOND);
         }
         return hcRootSpan;
     }
