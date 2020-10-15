@@ -79,6 +79,11 @@ public class TracerSpan extends Span {
     }
 
     @Override
+    public Span setDuration(final double duration) {
+        return delegate.setDuration(duration);
+    }
+
+    @Override
     public String getParentSpanId() {
         return delegate.getParentSpanId();
     }
