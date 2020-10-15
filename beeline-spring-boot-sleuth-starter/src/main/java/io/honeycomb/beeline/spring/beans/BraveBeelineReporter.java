@@ -66,7 +66,8 @@ public class BraveBeelineReporter implements Reporter<Span> {
     }
 
     private io.honeycomb.beeline.tracing.Span transformBraveSpanToHoneycombSpan(final Span span) {
-        final io.honeycomb.beeline.tracing.Span hcRootSpan = beeline.startTrace(span.name(), PropagationContext.emptyContext(), properties.getServiceName());
+        final PropagationContext propagationContext = new PropagationContext(span.traceId(), span.id(), null, null);
+        final io.honeycomb.beeline.tracing.Span hcRootSpan = beeline.startTrace(span.name(), propagationContext, properties.getServiceName());
         final long startTimestamp = span.timestamp();
         if (startTimestamp > 0) {
             hcRootSpan.markStart(startTimestamp, startTimestamp);
