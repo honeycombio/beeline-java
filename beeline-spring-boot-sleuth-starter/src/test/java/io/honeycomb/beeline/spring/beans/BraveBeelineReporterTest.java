@@ -72,13 +72,13 @@ public class BraveBeelineReporterTest {
         Assert.assertEquals("testKey", captured.getWriteKey());
         Assert.assertEquals("testSet", captured.getDataset());
 
-        Map<String, Object> fields = captured.getFields();
+        final Map<String, Object> fields = captured.getFields();
         Assert.assertEquals("testspan", fields.get(TraceFieldConstants.SPAN_NAME_FIELD)); // note: zipkin span names are automatically lower-cased
         Assert.assertEquals("000000abcdef0123", fields.get(TraceFieldConstants.TRACE_ID_FIELD)); // trace IDs are padded to 16 chars
         Assert.assertEquals("00000000000004d2", fields.get(TraceFieldConstants.PARENT_ID_FIELD)); // span IDs are converted to hex and padded to 16 chars
 
         // check span ID is populated
-        Object spanId = fields.get(TraceFieldConstants.PARENT_ID_FIELD);
+        final Object spanId = fields.get(TraceFieldConstants.PARENT_ID_FIELD);
         Assert.assertTrue(spanId != null && spanId != "");
     }
 
