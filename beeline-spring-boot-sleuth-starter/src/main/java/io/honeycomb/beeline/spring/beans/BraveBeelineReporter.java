@@ -7,10 +7,7 @@ import io.honeycomb.beeline.spring.autoconfig.BeelineProperties;
 import io.honeycomb.beeline.tracing.Beeline;
 import io.honeycomb.beeline.tracing.SpanBuilderFactory;
 import io.honeycomb.beeline.tracing.propagation.PropagationContext;
-import io.honeycomb.beeline.tracing.utils.TraceFieldConstants;
 import io.honeycomb.libhoney.Event;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import zipkin2.Span;
 import zipkin2.reporter.Reporter;
 
@@ -22,6 +19,8 @@ import zipkin2.reporter.Reporter;
  * @see io.honeycomb.libhoney.transport.Transport
  */
 public class BraveBeelineReporter implements Reporter<Span> {
+
+    private static final Short MICROS_IN_MILLISECOND = 1000;
 
     private final Beeline beeline;
     private final BeelineProperties properties;
@@ -40,11 +39,6 @@ public class BraveBeelineReporter implements Reporter<Span> {
     }
 
     private void adaptBraveModelToHoneycombModel(final Span span, final io.honeycomb.beeline.tracing.Span hcRootSpan) {
-        final long startTime = span.timestampAsLong();
-        if (startTime > 0) {
-            // Brave uses 0 for no timestamp while Honeycomb uses -1L
-            hcRootSpan.markStart(startTime, startTime);
-        }
         adaptBraveAnnotationToHoneycombSpanEvent(span, hcRootSpan);
         ExtraFieldPropagation.getAll().forEach(hcRootSpan::addField);
         span.tags().forEach(hcRootSpan::addField);
@@ -74,7 +68,7 @@ public class BraveBeelineReporter implements Reporter<Span> {
         }
         if (span.durationAsLong() > 0) {
             // Brave uses zero for no timestamp
-            hcRootSpan.addField(TraceFieldConstants.DURATION_FIELD, span.durationAsLong());
+            hcRootSpan.setDuration((double) span.durationAsLong() / MICROS_IN_MILLISECOND);
         }
         return hcRootSpan;
     }
