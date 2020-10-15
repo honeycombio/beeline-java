@@ -88,6 +88,7 @@ public class Span implements AutoCloseable {
     private static final long ABSENT_TIME = -1L;
     private long startTimestamp = ABSENT_TIME;
     private long startOfElapsedTime = ABSENT_TIME;
+    private double durationMs = ABSENT_TIME;
 
     /**
      * Flag to indicate whether close has already been called.
@@ -252,6 +253,20 @@ public class Span implements AutoCloseable {
         return this;
     }
 
+    /**
+     * Sets the duration using a double with sub-millis in the fractional part. This overrides the default
+     * behaviour of calculating the elasped duration using the start time (monotonic JVM time).
+     *
+     * @param duration in milliseconds.
+     * @return this Span.
+     */
+    public Span setDuration(final double duration) {
+        if (isNoop()) return this;
+
+        this.durationMs = duration;
+        return this;
+    }
+
     public String getParentSpanId() {
         return parentSpanId;
     }
@@ -306,11 +321,19 @@ public class Span implements AutoCloseable {
     }
 
     /**
-     * @return the time elapsed since "markStart" as a double with sub-millis in the fractional part.
+     * @return the time elapsed since "markStart" as a double with sub-millis in the fractional part and is
+     * calcualted using the start time (monotonic JVM time).
+     * <p>
+     * This can be overwritten by called "setDuration" and will be used in place of calculating the value.
      * @see #markStart()
+     * @see #setDuration(long)
      */
     public double elapsedTimeMs() {
         if (isNoop()) return 0.0;
+
+        if (durationMs != ABSENT_TIME) {
+            return durationMs;
+        }
 
         return (double) (clock.getMonotonicTime() - startOfElapsedTime) / NANOS_TO_MILLIS_DIVISOR;
     }

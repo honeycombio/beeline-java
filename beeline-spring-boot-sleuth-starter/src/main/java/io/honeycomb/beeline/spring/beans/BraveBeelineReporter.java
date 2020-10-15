@@ -73,7 +73,7 @@ public class BraveBeelineReporter implements Reporter<Span> {
         }
         if (span.durationAsLong() > 0) {
             // Brave uses zero for no timestamp
-            hcRootSpan.addField(TraceFieldConstants.DURATION_FIELD, span.durationAsLong());
+            hcRootSpan.setDuration(span.durationAsLong());
         }
         return hcRootSpan;
     }

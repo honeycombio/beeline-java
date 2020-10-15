@@ -139,6 +139,20 @@ public class SendingSpanTest {
     }
 
     @Test
+    public void GIVEN_anInitialisedSpan_WHEN_callingMarkStartWithValues_EXPECT_elapsedTimeToBeReset() {
+        clock = mock(ClockProvider.class);
+        when(clock.getMonotonicTime()).thenReturn(100_000_000L, 1_000_000_000L);
+        final PropagationContext context = new PropagationContext("abc", "123", null, traceFields);
+        final SendingSpan span = new SendingSpan("span1", "service1", "$$$",  fields, context, processor, clock, 1);
+
+        span.markStart(0L, 300_000_000L);
+
+        assertThat(span.elapsedTimeMs()).isEqualTo(700L);
+        verify(clock, times(2)).getMonotonicTime();
+        verify(clock, times(1)).getWallTime();
+    }
+
+    @Test
     public void GIVEN_anInitialisedSpan_WHEN_setTimes_EXPECT_parametersToBeSet() {
         clock = mock(ClockProvider.class);
         when(clock.getMonotonicTime()).thenReturn(100_000_000L, 300_000_000L, 1_000_000_000L);
@@ -320,6 +334,19 @@ public class SendingSpanTest {
 
         assertThat(span.getInitialSampleRate()).isEqualTo(0);
         verifyZeroInteractions(mockTransport);
+    }
+
+    @Test
+    public void GIVEN_anInitialisedSpan_WHEN_callingSetDuation_EXPECT_elapsedTimeToUseDuration() {
+        clock = mock(ClockProvider.class);
+        final PropagationContext context = new PropagationContext("abc", "123", null, traceFields);
+        final SendingSpan span = new SendingSpan("span1", "service1", "$$$",  fields, context, processor, clock, 1);
+
+        span.setDuration(500);
+
+        assertThat(span.elapsedTimeMs()).isEqualTo(500);
+        verify(clock, times(1)).getMonotonicTime(); // once for initial setup
+        verify(clock, times(1)).getWallTime(); // once for initial setup
     }
 
     private Transport mockTransport() {
