@@ -71,7 +71,7 @@ public class BraveBeelineReporter implements Reporter<Span> {
         );
         final Long startTimestamp = span.timestamp();
         if (startTimestamp != null && startTimestamp > 0) {
-            hcRootSpan.markStart(startTimestamp/1000, startTimestamp/1000);
+            hcRootSpan.markStart(startTimestamp / MICROS_IN_MILLISECOND, startTimestamp / MICROS_IN_MILLISECOND);
         }
         if (span.durationAsLong() > 0) {
             // Brave uses zero for no timestamp
