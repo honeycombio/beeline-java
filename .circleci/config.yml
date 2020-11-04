@@ -70,14 +70,14 @@ workflows:
               only:
                 - main
     jobs:
-      java: &java
-        matrix:
-          parameters:
-            javaversion:
-              - "8"
-              - "9"
-              - "10"
-              - "11"
+      - java: &java
+          matrix:
+            parameters:
+              javaversion:
+                - "8"
+                - "9"
+                - "10"
+                - "11"
   build:
     jobs:
       - java: *java
