@@ -80,7 +80,11 @@ workflows:
                 - "11"
   build:
     jobs:
-      - java: *java
+      - java:
+          <<: *java
+          filters:
+            tags:
+              only: /.*/
       - publish_github:
           context: Honeycomb Secrets
           filters:
