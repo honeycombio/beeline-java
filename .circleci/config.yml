@@ -12,7 +12,7 @@ commands:
             echo $GPG_BASE64 | base64 --decode | gpg --batch --no-tty --import --yes
 
 jobs:
-  test:
+  java:
     parameters:
       java-version:
         type: string
