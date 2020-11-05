@@ -47,11 +47,15 @@ jobs:
     docker:
       - image: cibuilds/github:0.13.0
     steps:
+      - attach_workspace:
+          at: ~/
       - run:
           name: "Publish Release on GitHub"
           command: |
             echo "about to publish to tag ${CIRCLE_TAG}"
-            ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG}
+            ls -l ~/artifacts/*
+            ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ~/artifacts
+
   publish_maven:
     docker:
       - image: circleci/openjdk:11-jdk
@@ -98,7 +102,9 @@ workflows:
             - test
           filters:
             tags:
-              only: /.*/
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - publish_github:
           context: Honeycomb Secrets
           requires:
@@ -110,7 +116,7 @@ workflows:
               ignore: /.*/
       - publish_maven:
           requires:
-            - package
+            - test
           filters:
             tags:
               only: /^v.*/
