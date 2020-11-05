@@ -57,21 +57,15 @@ jobs:
             ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ~/artifacts
 
   publish_maven:
-    docker:
-      - image: circleci/openjdk:11-jdk
     steps:
-      - restore_cache:
-          key: beeline-java-{{ checksum ".circleci/config.yml" }}
-      - configure-gpg
-      - run:
-          name: "Publish to Sonatype / Maven Central"
-          command: |
-            echo "Publishing tag ${CIRCLE_TAG} to Sontatype / Maven Central"
-            ./mvnw -s .circleci/maven-release-settings.xml clean deploy -DskipTests
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: beeline-java-{{ checksum ".circleci/config.yml" }}
+      - checkout
+      - maven/with_cache:
+          steps:
+            - run:
+                name: Configure GPG private key for signing project artifacts in OSS Sonatype
+                command: |
+                  echo $GPG_BASE64 | base64 --decode | gpg --batch --no-tty --import --yes
+            - run: mvn -s .circleci/maven-release-settings.xml clean deploy -Dmaven.test.skip=true
 
 workflows:
   version: 2
