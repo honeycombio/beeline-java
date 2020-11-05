@@ -26,9 +26,6 @@ jobs:
             - run: mvn clean test
 
   package:
-    executor:
-      name: maven/default
-      tag: "11.0"
     steps:
       - checkout
       - maven/with_cache:
