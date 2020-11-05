@@ -66,10 +66,10 @@ workflows:
           matrix:
             parameters:
               java-version:
-                - "8"
-                - "9"
-                - "10"
-                - "11"
+                - "8.0"
+                - "9.0"
+                - "10.0"
+                - "11.0"
   build:
     jobs:
       - java:
