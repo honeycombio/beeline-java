@@ -12,7 +12,7 @@ commands:
             echo $GPG_BASE64 | base64 --decode | gpg --batch --no-tty --import --yes
 
 jobs:
-  java:
+  test:
     parameters:
       java-version:
         type: string
@@ -23,7 +23,17 @@ jobs:
       - checkout
       - maven/with_cache:
           steps:
-            - run: mvn package dependency:go-offline
+            - run: mvn clean test
+
+  package:
+    executor:
+      name: maven/default
+      tag: "11.0"
+    steps:
+      - checkout
+      - maven/with_cache:
+          steps:
+            - run: mvn clean package -Dmaven.test.skip=true
 
   publish_github:
     docker:
@@ -62,7 +72,7 @@ workflows:
               only:
                 - main
     jobs:
-      - java: &java
+      - test: &test
           matrix:
             parameters:
               java-version:
@@ -70,19 +80,29 @@ workflows:
                 - "11.0"
   build:
     jobs:
-      - java:
-          <<: *java
+      - test:
+          <<: *test
+          filters:
+            tags:
+              only: /.*/
+      - package:
+          requires:
+            - test
           filters:
             tags:
               only: /.*/
       - publish_github:
           context: Honeycomb Secrets
+          requires:
+            - package
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
       - publish_maven:
+          requires:
+            - package
           filters:
             tags:
               only: /^v.*/
