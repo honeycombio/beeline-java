@@ -18,6 +18,9 @@ jobs:
             - run: mvn clean test
 
   package:
+    executor: &default_executor
+      name: maven/default
+      tag: "11.0"
     steps:
       - checkout
       - maven/with_cache:
@@ -46,6 +49,7 @@ jobs:
             ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ~/artifacts
 
   publish_maven:
+    executor: *default_executor
     steps:
       - checkout
       - maven/with_cache:
