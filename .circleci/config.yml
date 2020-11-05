@@ -3,14 +3,6 @@ version: 2.1
 orbs:
   maven: circleci/maven@1.0.3
 
-commands:
-  configure-gpg:
-    steps:
-      - run:
-          name: Configure GPG private key for signing project artifacts in OSS Sonatype
-          command: |
-            echo $GPG_BASE64 | base64 --decode | gpg --batch --no-tty --import --yes
-
 jobs:
   test:
     parameters:
