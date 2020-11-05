@@ -29,7 +29,6 @@ jobs:
     docker:
       - image: cibuilds/github:0.13.0
     steps:
-      - build
       - run:
           name: "Publish Release on GitHub"
           command: |
