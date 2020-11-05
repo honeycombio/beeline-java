@@ -23,7 +23,7 @@ jobs:
       - checkout
       - maven/with_cache:
           steps:
-            - run: package dependency:go-offline
+            - run: mvn package dependency:go-offline
 
   publish_github:
     docker:
