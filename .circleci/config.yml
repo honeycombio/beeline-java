@@ -17,7 +17,7 @@ jobs:
       java-version:
         type: string
     executor:
-      name: java/default
+      name: maven/default
       tag: << parameters.java-version >>
     steps:
       - checkout
