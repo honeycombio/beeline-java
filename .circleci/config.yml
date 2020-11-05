@@ -33,7 +33,14 @@ jobs:
       - checkout
       - maven/with_cache:
           steps:
-            - run: mvn clean package -Dmaven.test.skip=true
+            - run: mkdir -p ~/artifacts
+            - run: mvn clean package -Dmaven.test.skip=true -DoutputDirectory=~/artifacts
+            - persist_to_workspace:
+                root: ~/
+                paths:
+                  - artifacts
+            - store_artifacts:
+                path: ~/artifacts
 
   publish_github:
     docker:
