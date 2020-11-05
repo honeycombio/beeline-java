@@ -1,20 +1,9 @@
 version: 2.1
 
+orbs:
+  maven: circleci/maven@1.0.3
+
 commands:
-  build:
-    parameters:
-      javaversion:
-        type: string
-        default: "8"
-    steps:
-      - checkout
-      - restore_cache:
-          key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
-      - run: ./mvnw package dependency:go-offline
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
   configure-gpg:
     steps:
       - run:
@@ -23,15 +12,19 @@ commands:
             echo $GPG_BASE64 | base64 --decode | gpg --batch --no-tty --import --yes
 
 jobs:
-  java:
+  test:
     parameters:
-      javaversion:
+      java-version:
         type: string
-        default: "8"
-    docker:
-      - image: circleci/openjdk:<< parameters.javaversion >>-jdk
+    executor:
+      name: java/default
+      tag: << parameters.java-version >>
     steps:
-      - build
+      - checkout
+      - maven/with_cache:
+          steps:
+            - run: package dependency:go-offline
+
   publish_github:
     docker:
       - image: cibuilds/github:0.13.0
@@ -73,7 +66,7 @@ workflows:
       - java: &java
           matrix:
             parameters:
-              javaversion:
+              java-version:
                 - "8"
                 - "9"
                 - "10"
