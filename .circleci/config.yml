@@ -99,6 +99,7 @@ workflows:
             - package
           filters: *tag_filters
       - publish_maven:
+          context: java_beeline
           requires:
             - test
           filters: *tag_filters
