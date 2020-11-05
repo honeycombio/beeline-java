@@ -34,7 +34,8 @@ jobs:
       - maven/with_cache:
           steps:
             - run: mkdir -p ~/artifacts
-            - run: mvn clean package -Dmaven.test.skip=true -DoutputDirectory=~/artifacts
+            - run: mvn clean package -Dmaven.test.skip=true
+            - run: cp */target/*.jar ~/artifacts
             - persist_to_workspace:
                 root: ~/
                 paths:
