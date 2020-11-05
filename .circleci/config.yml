@@ -1,63 +1,64 @@
 version: 2.1
 
-commands:
-  build:
-    parameters:
-      javaversion:
-        type: string
-        default: "8"
-    steps:
-      - checkout
-      - restore_cache:
-          key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
-      - run: ./mvnw package dependency:go-offline
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: beeline-java-{{ checksum "pom.xml" }}-<< parameters.javaversion >>
-  configure-gpg:
-    steps:
-      - run:
-          name: Configure GPG private key for signing project artifacts in OSS Sonatype
-          command: |
-            echo $GPG_BASE64 | base64 --decode | gpg --batch --no-tty --import --yes
+orbs:
+  maven: circleci/maven@1.0.3
 
 jobs:
-  java:
+  test:
     parameters:
-      javaversion:
+      java-version:
         type: string
-        default: "8"
-    docker:
-      - image: circleci/openjdk:<< parameters.javaversion >>-jdk
+    executor:
+      name: maven/default
+      tag: << parameters.java-version >>
     steps:
-      - build
+      - checkout
+      - maven/with_cache:
+          steps:
+            - run: mvn clean test
+
+  package:
+    executor: &default_executor
+      name: maven/default
+      tag: "11.0"
+    steps:
+      - checkout
+      - maven/with_cache:
+          steps:
+            - run: mkdir -p ~/artifacts
+            - run: mvn clean package -Dmaven.test.skip=true
+            - run: cp */target/*.jar ~/artifacts
+            - persist_to_workspace:
+                root: ~/
+                paths:
+                  - artifacts
+            - store_artifacts:
+                path: ~/artifacts
+
   publish_github:
     docker:
       - image: cibuilds/github:0.13.0
     steps:
-      - build
+      - attach_workspace:
+          at: ~/
       - run:
           name: "Publish Release on GitHub"
           command: |
             echo "about to publish to tag ${CIRCLE_TAG}"
-            ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG}
+            ls -l ~/artifacts/*
+            ghr -draft -n ${CIRCLE_TAG} -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ~/artifacts
+
   publish_maven:
-    docker:
-      - image: circleci/openjdk:11-jdk
+    executor: *default_executor
     steps:
-      - restore_cache:
-          key: beeline-java-{{ checksum ".circleci/config.yml" }}
-      - configure-gpg
-      - run:
-          name: "Publish to Sonatype / Maven Central"
-          command: |
-            echo "Publishing tag ${CIRCLE_TAG} to Sontatype / Maven Central"
-            ./mvnw -s .circleci/maven-release-settings.xml clean deploy -DskipTests
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: beeline-java-{{ checksum ".circleci/config.yml" }}
+      - checkout
+      - maven/with_cache:
+          steps:
+            - run:
+                name: Configure GPG private key for signing project artifacts in OSS Sonatype
+                command: |
+                  echo $GPG_BASE64 | base64 --decode | gpg --batch --no-tty --import --yes
+            - run: mvn -s .circleci/maven-release-settings.xml clean deploy -Dmaven.test.skip=true
 
 workflows:
   version: 2
@@ -70,42 +71,34 @@ workflows:
               only:
                 - main
     jobs:
-      - java:
-          javaversion: "8"
-          name: JDK-8
-      - java:
-          javaversion: "9"
-          name: JDK-9
-      - java:
-          javaversion: "10"
-          name: JDK-10
-      - java:
-          javaversion: "11"
-          name: JDK-11
+      - test: &test
+          matrix:
+            parameters:
+              java-version:
+                - "8.0"
+                - "11.0"
+                - "13.0"
   build:
     jobs:
-      - java:
-          javaversion: "8"
-          name: JDK-8
-      - java:
-          javaversion: "9"
-          name: JDK-9
-      - java:
-          javaversion: "10"
-          name: JDK-10
-      - java:
-          javaversion: "11"
-          name: JDK-11
+      - test:
+          <<: *test
+          filters:
+            tags:
+              only: /.*/
+      - package:
+          requires:
+            - test
+          filters: &tag_filters
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - publish_github:
           context: Honeycomb Secrets
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+          requires:
+            - package
+          filters: *tag_filters
       - publish_maven:
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+          requires:
+            - test
+          filters: *tag_filters
