@@ -16,7 +16,7 @@
     <description>Spring Boot Starter module to auto-configure Spring Boot with the Honeycomb Beeline for Java</description>
 
     <properties>
-        <beelineVersion>1.4.0</beelineVersion>
+        <beelineVersion>1.5.0</beelineVersion>
     </properties>
 
     <build>
