@@ -20,7 +20,7 @@ import static io.honeycomb.libhoney.utils.ObjectUtils.isNullOrEmpty;
  * <li><em>Optional</em> - The name of the dataset to send the Spans to.
  * This acts as an override for the application's configured dataset.</li>
  * </ol>
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Instances of this class are thread-safe.
  */
 public class PropagationContext {

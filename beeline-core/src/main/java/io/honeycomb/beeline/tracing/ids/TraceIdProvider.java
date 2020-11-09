@@ -3,7 +3,7 @@ package io.honeycomb.beeline.tracing.ids;
 /**
  * Interface that produces IDs for traces and spans.
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Implementations must be thread-safe and so that they can be shared.
  */
 public interface TraceIdProvider {

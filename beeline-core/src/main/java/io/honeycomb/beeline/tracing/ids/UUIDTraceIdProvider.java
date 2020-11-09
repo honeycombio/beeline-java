@@ -6,7 +6,7 @@ import java.util.UUID;
  * Produces a random UUID (v4) string as trace IDs.
  * This is inline with Beeline instrumentations in other programming languages.
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Instances of this class are thread-safe and can be shared.
  */
 @Deprecated

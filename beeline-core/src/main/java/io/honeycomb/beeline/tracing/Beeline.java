@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * closing the span} pops it back off. <em>Take care to always close the Spans you create</em> to ensure correct
  * measurements of duration and timely submission to Honeycomb.
  *
- * <h1>Instrumentation</h1>
+ * <p>Instrumentation</p>
  * When using this class, it is assumed that your framework instrumentation would have initialized an initial "root"
  * Span, alleviating the burden of having to manage low-level details.
  * For example, the <b>Spring Beeline</b> creates a "root" span for all incoming HTTP requests and closes it when the
@@ -28,7 +28,7 @@ import java.util.ArrayList;
  * {@link #getSpanBuilderFactory()}. The Beeline class is essentially a façade to those delegates,
  * narrowing and bundling lower-level APIs to target the most common use-cases.
  *
- * <h1>Sampling</h1>
+ * <p>Sampling</p>
  * Sampling of traces and Spans can be done in two ways.
  * <p>
  * Firstly, the {@link SpanBuilderFactory} is configured with a "global" sampler
@@ -47,16 +47,16 @@ import java.util.ArrayList;
  * However, note that you do not have to use either of the sampling mechanisms and can always configure either one or
  * both to "always sample" with a {@code sampleRate} of 1 (e.g. {@link Sampling#alwaysSampler()} does this).
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * See {@link Tracer Tracer's notes on thread-safety}, as the same rules apply to this class.
  *
- * <h1>Propagation to other threads</h1>
+ * <p>Propagation to other threads</p>
  * Because of the use of thread-local context you might find traces breaking as you execute code asynchronously.
  * <p>
  * See {@link Tracer the Tracer's notes on propagation}, which details how to use its API to propagate your traces to
  * other threads.
  *
- * <h1>Propagation to other processes</h1>
+ * <p>Propagation to other processes</p>
  * For example, the <b>Spring Beeline</b> automatically accepts traces by decoding the Honeycomb trace header.
  * It also continues traces downstream when using Spring's RestTemplate.
  * <p>
@@ -85,7 +85,7 @@ public class Beeline {
      * Note, this method is null-safe - a "noop" span is returned if no trace is currently active. This may be due to
      * the current execution not being instrumented or because the trace was not sampled.
      *
-     * <h1>Example</h1>
+     * <p>Example</p>
      * <pre>
      * if (underAttack) {
      *      final Span currentSpan = beeline.getActiveSpan()
@@ -110,7 +110,7 @@ public class Beeline {
      * Because of the parent and child being linked by reference, the child's lifetime is tied and limited to that
      * of the parent.
      *
-     * <h1>Example</h1>
+     * <p>Example</p>
      * <pre>
      * // try-with-resources statement automatically closes the span
      * try (Span childSpan = beeline.startChildSpan("http-call")) {
@@ -134,7 +134,7 @@ public class Beeline {
      * This is to avoid clashes and distinguish it from standard fields provided by automatic instrumentations like
      * the "Spring Beeline".
      *
-     * <h1>Example</h1>
+     * <p>Example</p>
      * <pre>
      * if (underAttack) {
      *      beeline.addField("alert-message", "We are under attack!");

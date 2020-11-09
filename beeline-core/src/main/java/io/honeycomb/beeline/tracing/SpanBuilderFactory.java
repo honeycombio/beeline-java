@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <h1>Sampling</h1>
+ * <p>Sampling</p>
  * See the {@link Beeline} javadoc for details on sampling.
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Instances of this class are thread-safe and can be shared. The SpanBuilder that it creates is not.
  */
 public class SpanBuilderFactory {
@@ -144,7 +144,7 @@ public class SpanBuilderFactory {
      * <p>
      * Spans are sampled on {@link #build}, based on the implementation of the configured {@link TraceSampler}.
      *
-     * <h1>Thread-safety</h1>
+     * <p>Thread-safety</p>
      * Instances of this class are not thread-safe.
      */
     @SuppressWarnings("ClassWithTooManyFields")

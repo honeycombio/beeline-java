@@ -16,7 +16,7 @@ import static io.honeycomb.libhoney.utils.ObjectUtils.isNullOrEmpty;
  * The design of this class avoids throwing exceptions in favour of logging warnings and returning null on encode
  * or an "empty context" on decode.
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Instances of this class are thread-safe and can be shared.
  */
 public class AWSPropagationCodec implements PropagationCodec<Map<String, String>> {

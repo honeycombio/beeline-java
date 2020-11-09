@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  * "https://docs.spring.io/spring/docs/current/spring-framework-reference/core.html#aop-understanding-aop-proxies">
  * "Understanding AOP Proxies</a> explains this mechanism.
  *
- * <h1>Example 1</h1>
+ * <p>Example 1</p>
  * <pre>
  * {@code @ChildSpan}
  *  public void doStuff({@code @SpanField} final String id,

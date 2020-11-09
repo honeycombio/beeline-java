@@ -10,7 +10,7 @@ import io.honeycomb.libhoney.utils.Assert;
  * This applies post processing to Spans that are ready to be sent. Namely, it can apply the {@code samplerHook} and
  * convert {@linkplain Span Spans} into {@link Event Events} that can be submitted to Honeycomb.
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Instances of this class are thread-safe and can be shared.
  */
 public class SpanPostProcessor {
