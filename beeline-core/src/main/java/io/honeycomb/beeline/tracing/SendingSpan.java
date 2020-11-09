@@ -18,7 +18,7 @@ import java.util.Map;
  * <p>
  * If you need to construct Spans of this type, you can make use {@link SpanBuilderFactory}.
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Instances of this class are not thread-safe.
  */
 public class SendingSpan extends Span {

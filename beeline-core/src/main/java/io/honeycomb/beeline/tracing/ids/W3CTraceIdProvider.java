@@ -8,7 +8,7 @@ import static io.honeycomb.libhoney.utils.ObjectUtils.isNullOrEmpty;
  * Creates Trace and Span IDs that conform to the W3C specification.
  * This is inline with Beeline instrumentations in other programming languages.
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Instances of this class are thread-safe and can be shared.
  */
 public class W3CTraceIdProvider implements TraceIdProvider {

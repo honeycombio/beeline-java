@@ -16,7 +16,7 @@ import java.util.Map;
  * A Span represents an operation over its duration and associates the attributes contained within this class with it.
  * Subclasses of Span transparently implement the mechanism by which a Span is "closed" and submitted to Honeycomb.
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Instances of this class are not thread-safe.
  */
 @SuppressWarnings({"ClassWithTooManyFields", "ClassWithTooManyMethods"})

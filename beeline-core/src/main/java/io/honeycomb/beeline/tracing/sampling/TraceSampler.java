@@ -3,7 +3,7 @@ package io.honeycomb.beeline.tracing.sampling;
 /**
  * Simple interface to test a given input and decide whether to sample it.
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Implementations must be thread-safe and so that they can be shared.
  *
  * @param <T> type of input.

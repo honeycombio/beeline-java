@@ -9,7 +9,7 @@ import java.util.Optional;
  * Codec that encompasses one or more codec implementations and applies each codec on
  * each call to encode and decode.
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Instances of this class are thread-safe and can be shared.
  */
 public class CompositeHttpHeaderPropagator implements PropagationCodec<Map<String, String>> {

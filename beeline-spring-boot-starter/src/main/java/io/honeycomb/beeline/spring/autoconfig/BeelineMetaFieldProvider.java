@@ -20,7 +20,7 @@ import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.*;
  * This class class helps setting various "meta.*" fields so that all Spans and Events sent through the Beeline's
  * HoneyClient contain them.
  *
- * <h1>Laziness</h1>
+ * <p>Laziness</p>
  * Laziness here is used to avoid a circular dependency issue. Namely, this provider is required by the Beelines's
  * HoneyClient. But the provider requires itself a list of all BeelineInstrumentations. BeelineInstrumentations in turn
  * require HoneyClient to be already initialised.

@@ -17,7 +17,7 @@ import java.util.Map;
  * closed prior to invoking close on the delegate Span. This ensures that the TracerSpan can detach itself from the
  * Tracer context and perform any necessary cleanup.
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Instances of this class are not thread-safe. See the notes on the {@link Tracer}'s javadoc for details.
  */
 @SuppressWarnings("ClassWithTooManyMethods") // We override all methods of Span, thus the method count is high.

@@ -19,7 +19,7 @@ import java.security.NoSuchAlgorithmException;
  * This implementation is based on the implementations (and necessarily needs to be in line with) the other Beeline
  * implementations.
  *
- * <h1>Thread-safety</h1>
+ * <p>Thread-safety</p>
  * Instances of this class are thread-safe and can be shared.
  *
  * @see <a href="https://github.com/honeycombio/beeline-go/blob/main/sample/deterministic_sampler.go">

@@ -21,7 +21,7 @@ import java.util.function.Supplier;
  * This class is meant to be used in conjunction with {@link SpanBuilderFactory}, which is capable of constructing the Span
  * arguments that must be passed into methods like {@link #startTrace(Span)}.
  *
- * <h1>Span vs. TracerSpan</h1>
+ * <p>Span vs. TracerSpan</p>
  * Some methods in this class return {@link TracerSpan}. This is done to clarify that such instances are now managed by
  * the Tracer and user code should no longer interact with the argument. in fact, TracerSpans generally act as
  * decorators around the Span arguments.
@@ -29,7 +29,7 @@ import java.util.function.Supplier;
  * <p>
  * On the other hand, where a method returns just Span, expect the instance to longer be managed by the tracer.
  *
- * <h1 id="thread-safety">Thread-safety</h1>
+ * <p id="thread-safety">Thread-safety</p>
  * This class is thread-safe so that it can be shared across the application. <strong>In fact, it is recommended to use
  * it as a singleton (e.g. as a singleton bean in Spring application), since thread-local state is tied to the instance
  * (it's an instance variable) and not the class (it is not static).</strong>. This state is the hierarchy of Spans
@@ -221,7 +221,7 @@ public class Tracer {
      * Note, this method is null-safe - a "noop" span is returned if no trace is currently active. This may be due to
      * startTrace not having been called, or because the trace was not sampled (see {@link SpanBuilderFactory}.
      *
-     * <h1>Example</h1>
+     * <p>Example</p>
      * <pre>
      * if (underAttack) {
      *      final Span currentSpan = tracer.getActiveSpan()
@@ -250,7 +250,7 @@ public class Tracer {
      * Because of the parent and child being linked by reference, the child's lifetime is tied and limited to that
      * of the parent.
      *
-     * <h1>Example</h1>
+     * <p>Example</p>
      * <pre>
      * // try-with-resources statement automatically closes the span
      * try (Span childSpan = tracer.startChildSpan("http-call")) {
@@ -283,7 +283,7 @@ public class Tracer {
      * <p>
      * If your computation does not cross thread boundaries {@link #startChildSpan(String)} may be more convenient.
      *
-     * <h1>Example</h1>
+     * <p>Example</p>
      * <pre>
      * final Span httpServiceSpan = tracer.startDetachedChildSpan("http-call");
      * httpServiceSpan.addField("http-url", url);
@@ -328,7 +328,7 @@ public class Tracer {
      * If run on the same thread while the current trace is still active this will simply start a new child span within
      * the current thread's context.
      *
-     * <h1>Example</h1>
+     * <p>Example</p>
      * <pre>
      * CompletableFuture.runAsync(tracer.traceRunnable("http-call", (){@code ->} httpClient.get(url)));
      * </pre>
@@ -408,7 +408,7 @@ public class Tracer {
      * If run on the same thread while the current trace is still active this will simply start a new child span within
      * the current thread's context.
      *
-     * <h1>Example</h1>
+     * <p>Example</p>
      * <pre>
      * Future{@code <Response>} responseFuture =
      *      executor.submit(tracer.traceCallable("http-call", (){@code ->} httpClient.get(url)));
@@ -468,7 +468,7 @@ public class Tracer {
      * If run on the same thread while the current trace is still active this will simply start a new child span within
      * the current thread's context.
      *
-     * <h1>Example</h1>
+     * <p>Example</p>
      * <pre>
      * CompletableFuture.supplyAsync(tracer.traceSupplier("http-call", (){@code ->} httpClient.get(url)))
      * </pre>
@@ -526,7 +526,7 @@ public class Tracer {
      * If run on the same thread while the current trace is still active this will simply start a new child span within
      * the current thread's context.
      *
-     * <h1>Example</h1>
+     * <p>Example</p>
      * <pre>
      * completableFuture.thenApply(tracer.traceFunction("handle-response", Converter::convertResponse));
      * </pre>
@@ -587,7 +587,7 @@ public class Tracer {
      * If run on the same thread while the current trace is still active this will simply start a new child span within
      * the current thread's context.
      *
-     * <h1>Example</h1>
+     * <p>Example</p>
      * <pre>
      * completableFuture.thenAccept(
      *      tracer.traceConsumer("handle-response", (response){@code ->} handleResponse(response)));

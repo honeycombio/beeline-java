@@ -107,7 +107,7 @@ public class DefaultBeeline {
      * This is to avoid clashes and distinguish it from standard fields provided by automatic instrumentations like
      * the "Spring Beeline".
      *
-     * <h1>Example</h1>
+     * <b>Example</b>
      * <pre>
      * if (underAttack) {
      *      beeline.addField("alert-message", "We are under attack!");
@@ -128,7 +128,7 @@ public class DefaultBeeline {
      * Note, this method is null-safe - a "noop" span is returned if no trace is currently active. This may be due to
      * the current execution not being instrumented or because the trace was not sampled.
      *
-     * <h1>Example</h1>
+     * <p>Example</p>
      * <pre>
      * if (underAttack) {
      *      final Span currentSpan = beeline.getActiveSpan()
