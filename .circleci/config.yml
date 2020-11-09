@@ -3,6 +3,21 @@ version: 2.1
 orbs:
   maven: circleci/maven@1.0.3
 
+commands:
+  with_cache:
+    parameters:
+      steps:
+        type: steps
+    steps:
+      - run: find . -name 'pom.xml' | sort | xargs cat > /tmp/maven_cache_seed
+      - restore_cache:
+          key: maven-{{ checksum "/tmp/maven_cache_seed" }}
+      - steps: << parameters.steps >>
+      - save_cache:
+          paths:
+            - ~/.m2/repository
+          key: maven-{{ checksum "/tmp/maven_cache_seed" }}
+
 jobs:
   test:
     parameters:
@@ -13,14 +28,9 @@ jobs:
       tag: << parameters.java-version >>
     steps:
       - checkout
-      - run: find . -name 'pom.xml' | sort | xargs cat > /tmp/maven_cache_seed
-      - restore_cache:
-          key: maven-{{ checksum "/tmp/maven_cache_seed" }}
-      - run: mvn clean test dependency:go-offline
-      - save_cache:
-          paths:
-            - ~/.m2/repository
-          key: maven-{{ checksum "/tmp/maven_cache_seed" }}
+      - with_cache:
+          steps:
+            - run: mvn verify dependency:go-offline
 
   package:
     executor: &default_executor
@@ -28,22 +38,17 @@ jobs:
       tag: "11.0"
     steps:
       - checkout
-      - run: find . -name 'pom.xml' | sort | xargs cat > /tmp/maven_cache_seed
-      - restore_cache:
-          key: maven-{{ checksum "/tmp/maven_cache_seed" }}
-      - run: mkdir -p ~/artifacts
-      - run: mvn clean package -Dmaven.test.skip=true
-      - run: cp */target/*.jar ~/artifacts
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - artifacts
-      - store_artifacts:
-          path: ~/artifacts
-      - save_cache:
-          paths:
-            - ~/.m2/repository
-          key: maven-{{ checksum "/tmp/maven_cache_seed" }}
+      - with_cache:
+          steps:
+            - run: mkdir -p ~/artifacts
+            - run: mvn clean package -Dmaven.test.skip=true
+            - run: cp */target/*.jar ~/artifacts
+            - persist_to_workspace:
+                root: ~/
+                paths:
+                  - artifacts
+            - store_artifacts:
+                path: ~/artifacts
 
   publish_github:
     docker:
