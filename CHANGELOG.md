@@ -1,5 +1,19 @@
 # Beeline Changelog
 
+## 1.5.0
+
+Improvements:
+
+- Use brave span's trace and span ID as parent context (#85)
+- Allow span duration to be set directly (#84)
+- Add tracestate parsing / propagation to W3C codec (#78)
+- Use HoneyClientBuilder.apiHost URI overload  (#80)
+
+Maintenance:
+
+- Rework build, add matrix and use orb, fix tag filters (#90)
+- add .vscode to gitignore (#86)
+
 ## 1.4.0
 
 - Update CircleCI to publish to maven when creating tag (#74)
