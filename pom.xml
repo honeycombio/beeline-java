@@ -75,7 +75,7 @@
         <springBootVersion>2.1.1.RELEASE</springBootVersion>
 
         <!-- TEST dependency versions  -->
-        <junitVersion>4.12</junitVersion>
+        <junitVersion>4.13.1</junitVersion>
         <mockitoVersion>3.3.3</mockitoVersion>
         <assertjVersion>3.11.1</assertjVersion>
         <wiremockVersion>2.26.0</wiremockVersion>
