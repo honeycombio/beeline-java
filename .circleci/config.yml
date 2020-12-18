@@ -109,7 +109,7 @@ workflows:
             branches:
               ignore: /.*/
       - publish_github:
-          context: Honeycomb Secrets
+          context: Honeycomb Secrets for Public Repos
           requires:
             - package
           filters: *tag_filters
