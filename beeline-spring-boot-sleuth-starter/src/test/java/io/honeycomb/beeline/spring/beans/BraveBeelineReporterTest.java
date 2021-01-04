@@ -38,8 +38,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class BraveBeelineReporterTest {
-    private static final long SPAN_TIMESTAMP = 324234L;
-    private static final long TIMESTAMP_AFTER_SPAN = SPAN_TIMESTAMP + 1;
+    private static final long SPAN_TIMESTAMP_NANOS = 324234L;
+    private static final long SPAN_TIMESTAMP_MILLIS = SPAN_TIMESTAMP_NANOS / 1000;
+    private static final long TIMESTAMP_AFTER_SPAN = SPAN_TIMESTAMP_MILLIS + 1;
 
     @Mock
     BeelineProperties properties;
@@ -59,7 +60,7 @@ public class BraveBeelineReporterTest {
         final BeelineBuilder beelineBuilder = new BeelineBuilder();
         beeline = spy(beelineBuilder.transport(mockTransport).writeKey("testKey").dataSet("testSet").build());
         reporter = new BraveBeelineReporter(beeline, properties);
-        spanBuilder = Span.newBuilder().name("testSpan").traceId("abcdef0123").id(1234L).timestamp(SPAN_TIMESTAMP);
+        spanBuilder = Span.newBuilder().name("testSpan").traceId("abcdef0123").id(1234L).parentId(5678L).timestamp(SPAN_TIMESTAMP_NANOS);
     }
 
     @Test
@@ -75,11 +76,8 @@ public class BraveBeelineReporterTest {
         final Map<String, Object> fields = captured.getFields();
         Assert.assertEquals("testspan", fields.get(TraceFieldConstants.SPAN_NAME_FIELD)); // note: zipkin span names are automatically lower-cased
         Assert.assertEquals("000000abcdef0123", fields.get(TraceFieldConstants.TRACE_ID_FIELD)); // trace IDs are padded to 16 chars
-        Assert.assertEquals("00000000000004d2", fields.get(TraceFieldConstants.PARENT_ID_FIELD)); // span IDs are converted to hex and padded to 16 chars
-
-        // check span ID is populated
-        final Object spanId = fields.get(TraceFieldConstants.PARENT_ID_FIELD);
-        Assert.assertTrue(spanId != null && spanId != "");
+        Assert.assertEquals("00000000000004d2", fields.get(TraceFieldConstants.SPAN_ID_FIELD)); // span IDs are converted to hex and padded to 16 chars
+        Assert.assertEquals("000000000000162e", fields.get(TraceFieldConstants.PARENT_ID_FIELD)); // parent span IDs are converted to hex and padded to 16 chars
     }
 
     @Test
@@ -102,9 +100,9 @@ public class BraveBeelineReporterTest {
         final Set<String> foundAnnotationValues = new HashSet<>();
         for (ResolvedEvent event : capturedValues) {
             final long timestamp = event.getTimestamp();
-            if (timestamp == SPAN_TIMESTAMP) {
+            if (timestamp == SPAN_TIMESTAMP_MILLIS) {
                 foundAnnotationValues.add("rootSpan");
-            } else if (timestamp > SPAN_TIMESTAMP) {
+            } else if (timestamp > SPAN_TIMESTAMP_MILLIS) {
                 final Map<String, Object> fields = event.getFields();
                 foundAnnotationValues.add((String) fields.get(TraceFieldConstants.SPAN_NAME_FIELD));
             } else {
@@ -161,11 +159,18 @@ public class BraveBeelineReporterTest {
         final SpanBuilderFactory factory = mock(SpanBuilderFactory.class);
         final SpanBuilderFactory.SpanBuilder spanBuilder = mock(SpanBuilderFactory.SpanBuilder.class);
         final io.honeycomb.beeline.tracing.Span mockSpan = mock(io.honeycomb.beeline.tracing.Span.class);
+        doReturn("000000000000000001").when(mockSpan).getSpanId();
 
         //configure mocks
         doReturn(factory).when(beeline).getSpanBuilderFactory();
         doReturn(spanBuilder).when(factory).createBuilderFromParent(any());
-        when(spanBuilder.getProcessor()).thenReturn(postProcessor);
+        doReturn(spanBuilder).when(factory).createBuilder();
+        doReturn(postProcessor).when(spanBuilder).getProcessor();
+        doReturn(spanBuilder).when(spanBuilder).setSpanId(any());
+        doReturn(spanBuilder).when(spanBuilder).setSpanName(any());
+        doReturn(spanBuilder).when(spanBuilder).setServiceName(any());
+        doReturn(spanBuilder).when(spanBuilder).setParentContext(any());
+        doReturn(mockSpan).when(spanBuilder).build();
         doReturn(0).when(postProcessor).runSamplerHook(any());
         doReturn(mockSpan).when(beeline).startTrace(anyString(), any(PropagationContext.class), anyString());
 
