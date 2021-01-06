@@ -11,6 +11,8 @@ import io.honeycomb.libhoney.utils.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -105,6 +107,7 @@ public class BeelineServletFilter implements Filter {
     }
 
     @Override
+    @SuppressFBWarnings
     public void doFilter(final ServletRequest request,
                          final ServletResponse response,
                          final FilterChain chain) throws IOException, ServletException {
