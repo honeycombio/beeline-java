@@ -60,11 +60,18 @@ public class BraveBeelineReporter implements Reporter<Span> {
     }
 
     private io.honeycomb.beeline.tracing.Span transformBraveSpanToHoneycombSpan(final Span span) {
-        final PropagationContext propagationContext = new PropagationContext(span.traceId(), span.id(), null, null);
-        final io.honeycomb.beeline.tracing.Span hcRootSpan = beeline.startTrace(span.name(), propagationContext, properties.getServiceName());
-        final long startTimestamp = span.timestamp();
-        if (startTimestamp > 0) {
-            hcRootSpan.markStart(startTimestamp, startTimestamp);
+        final PropagationContext propagationContext = new PropagationContext(span.traceId(), span.parentId(), null, null);
+        final io.honeycomb.beeline.tracing.Span hcRootSpan = beeline.getTracer().startTrace(
+            beeline.getSpanBuilderFactory().createBuilder()
+                .setSpanName(span.name())
+                .setServiceName(properties.getServiceName())
+                .setParentContext(propagationContext)
+                .setSpanId(span.id())
+                .build()
+        );
+        final Long startTimestamp = span.timestamp();
+        if (startTimestamp != null && startTimestamp > 0) {
+            hcRootSpan.markStart(startTimestamp/MICROS_IN_MILLISECOND, startTimestamp/MICROS_IN_MILLISECOND);
         }
         if (span.durationAsLong() > 0) {
             // Brave uses zero for no timestamp
