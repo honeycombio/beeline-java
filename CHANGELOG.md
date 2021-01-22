@@ -1,5 +1,21 @@
 # Beeline Changelog
 
+## 1.5.1
+
+### Fixes:
+
+- Default w3c sampled flag to 01 so the OTEL collector does not ignore the spans (#105)
+- Change Brave span transforming to properly associate spans (#95)
+- Suppress spotbug warning for volatile array (#96)
+
+### Maintenance
+
+- Add dependabot config (#97)
+- Use public CircleCI context for build secrets (#94)
+- Bump spotbugs-maven-plugin from 3.1.12.2 to 4.2.0 (#103)
+- Bump pmdCoreVersion from 6.3.0 to 6.30.0 (#102)
+- Bump junit from 4.12 to 4.13.1 (#83)
+
 ## 1.5.0
 
 Improvements:
