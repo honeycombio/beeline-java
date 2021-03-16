@@ -71,7 +71,7 @@
         <jdkVersion>1.8</jdkVersion>
 
         <!-- COMPILE dependency versions  -->
-        <libhoneyVersion>1.3.0</libhoneyVersion>
+        <libhoneyVersion>1.3.1</libhoneyVersion>
         <springBootVersion>2.1.1.RELEASE</springBootVersion>
 
         <!-- TEST dependency versions  -->
@@ -90,7 +90,7 @@
         <mavenWrapperPluginVersion>0.6.0</mavenWrapperPluginVersion>
         <pmdPluginVersion>3.9.0</pmdPluginVersion>
         <pmdCoreVersion>6.30.0</pmdCoreVersion>
-        <spotbugsVersion>4.0.0-beta4</spotbugsVersion>
+        <spotbugsVersion>4.2.2</spotbugsVersion>
         <shadeVersion>3.1.0</shadeVersion>
         <surefireVersion>2.22.1</surefireVersion>
     </properties>
