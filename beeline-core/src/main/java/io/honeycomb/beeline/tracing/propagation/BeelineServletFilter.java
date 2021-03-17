@@ -43,7 +43,7 @@ import static java.util.stream.Collectors.toList;
  * spans. By default the {@link #DEFAULT_REQUEST_SPAN_NAMING_FUNCTION} and {@link #DEFAULT_REDISPATCH_SPAN_NAMING_FUNCTION}
  * are used.
  * <p>
- * Optionally, the filter can be parameterized with a whitelist and/or a blacklist of request path patterns.
+ * Optionally, the filter can be parameterized with a allowlist and/or a denylist of request path patterns.
  * These are used to determine whether a request is included or excluded from being a candidate for tracing.
  * The patterns must be Ant-style path patterns. If no include patterns are specified then, by default, all requests are
  * included. If no exclude patterns are specified then, by default, no requests are excluded.
@@ -160,7 +160,7 @@ public class BeelineServletFilter implements Filter {
             uri = new URI(request.getRequestURL().toString());
         } catch (final URISyntaxException e) {
             LOG.debug(
-                "Exception parsing URI for white/blacklist check, so not tracing request - URI: '{}', Exception reason: '{}'",
+                "Exception parsing URI for white/denylist check, so not tracing request - URI: '{}', Exception reason: '{}'",
                 request.getRequestURL(), e.getReason());
             return false;
         }

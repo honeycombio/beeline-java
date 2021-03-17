@@ -49,32 +49,32 @@ public class PathPatternTest {
     }
 
     @Test
-    public void GIVEN_pathIsOnWhitelist_EXPECT_requestToProduceSpans() {
+    public void GIVEN_pathIsOnAllowlist_EXPECT_requestToProduceSpans() {
         // WHEN hitting an instrumented web service with a trace header
-        get("/whitelist/basic-get").then().statusCode(OK.value()).body(is("hello"));
+        get("/allowlist/basic-get").then().statusCode(OK.value()).body(is("hello"));
 
         final Map<String, Object> eventFields = captureNoOfEvents(1).get(0).getFields();
 
         assertThat(eventFields).containsEntry("response.status_code", 200);
-        assertThat(eventFields).containsEntry("endpoint", "whitelist");
+        assertThat(eventFields).containsEntry("endpoint", "allowlist");
     }
 
     @Test
-    public void GIVEN_pathIsOnBlacklist_EXPECT_requestToNotProduceAnySpans() {
-        get("/blacklist/basic-get").then().statusCode(OK.value()).body(is("olleh"));
+    public void GIVEN_pathIsOnDenylist_EXPECT_requestToNotProduceAnySpans() {
+        get("/denylist/basic-get").then().statusCode(OK.value()).body(is("olleh"));
 
         verify(transport, after(200).never()).submit(any(ResolvedEvent.class));
     }
 
     @Test
-    public void GIVEN_whitelistedRndpointForwardsToBlacklistedEndpoints_EXPECT_blacklistToNotApplyToForwarding() {
-        get("/whitelist/forward-to-blacklist").then().statusCode(OK.value()).body(is("olleh"));
+    public void GIVEN_allowlistedRndpointForwardsToDenylistedEndpoints_EXPECT_denylistToNotApplyToForwarding() {
+        get("/allowlist/forward-to-denylist").then().statusCode(OK.value()).body(is("olleh"));
 
         final List<ResolvedEvent> eventFields = captureNoOfEvents(2);
         final ResolvedEvent forwardEvent = eventFields.get(0);
         final ResolvedEvent requestEvent = eventFields.get(1);
 
-        assertThat(forwardEvent.getFields()).containsEntry("endpoint", "blacklist");
+        assertThat(forwardEvent.getFields()).containsEntry("endpoint", "denylist");
         assertThat(requestEvent.getFields()).containsEntry("endpoint", "forward");
     }
 
