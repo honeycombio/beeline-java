@@ -160,7 +160,7 @@ public class BeelineServletFilter implements Filter {
             uri = new URI(request.getRequestURL().toString());
         } catch (final URISyntaxException e) {
             LOG.debug(
-                "Exception parsing URI for white/denylist check, so not tracing request - URI: '{}', Exception reason: '{}'",
+                "Exception parsing URI for allow/denylist check, so not tracing request - URI: '{}', Exception reason: '{}'",
                 request.getRequestURL(), e.getReason());
             return false;
         }

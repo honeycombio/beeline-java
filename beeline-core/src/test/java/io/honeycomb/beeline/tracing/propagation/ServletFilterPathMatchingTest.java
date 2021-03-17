@@ -48,7 +48,7 @@ public class ServletFilterPathMatchingTest {
     }
 
     @Test
-    public void whenNoBlackOrAllowlisting_thenAllSpansCollected() throws Exception {
+    public void whenNoDenyOrAllowlisting_thenAllSpansCollected() throws Exception {
         initServerWithFilterPathMatching(Collections.emptyList(), Collections.emptyList());
         callAllPaths();
 
