@@ -84,7 +84,7 @@
         <!-- Maven plugin versions  -->
         <compilerPluginVersion>3.7.0</compilerPluginVersion>
         <reportsPluginVersion>2.9</reportsPluginVersion>
-        <mavenSourcePluginVersion>3.0.1</mavenSourcePluginVersion>
+        <mavenSourcePluginVersion>3.2.1</mavenSourcePluginVersion>
         <javadocPluginVersion>3.2.0</javadocPluginVersion>
         <xrefPluginVersion>2.5</xrefPluginVersion>
         <mavenWrapperPluginVersion>0.6.0</mavenWrapperPluginVersion>
@@ -217,7 +217,7 @@
                    <plugin>
                        <groupId>org.apache.maven.plugins</groupId>
                        <artifactId>maven-gpg-plugin</artifactId>
-                       <version>1.5</version>
+                       <version>1.6</version>
                        <executions>
                            <execution>
                                <id>sign-artifacts</id>
