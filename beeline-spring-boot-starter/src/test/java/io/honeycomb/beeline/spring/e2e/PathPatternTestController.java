@@ -11,23 +11,23 @@ public class PathPatternTestController {
     @Autowired
     private Beeline beeline;
 
-    @GetMapping("/whitelist/basic-get")
+    @GetMapping("/allowlist/basic-get")
     @ResponseBody
-    public String basicGetWhitelist() {
-        beeline.getActiveSpan().addField("endpoint", "whitelist");
+    public String basicGetAllowlist() {
+        beeline.getActiveSpan().addField("endpoint", "allowlist");
         return "hello";
     }
 
-    @GetMapping("/blacklist/basic-get")
+    @GetMapping("/denylist/basic-get")
     @ResponseBody
-    public String basicGetBlacklist() {
-        beeline.getActiveSpan().addField("endpoint", "blacklist");
+    public String basicGetDenylist() {
+        beeline.getActiveSpan().addField("endpoint", "denylist");
         return "olleh";
     }
 
-    @GetMapping("/whitelist/forward-to-blacklist")
-    public String forwardToBlacklist() {
+    @GetMapping("/allowlist/forward-to-denylist")
+    public String forwardToDenylist() {
         beeline.getActiveSpan().addField("endpoint", "forward");
-        return "forward:/blacklist/basic-get";
+        return "forward:/denylist/basic-get";
     }
 }

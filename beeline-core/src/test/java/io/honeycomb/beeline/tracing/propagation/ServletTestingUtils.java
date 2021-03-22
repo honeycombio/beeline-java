@@ -53,11 +53,11 @@ public class ServletTestingUtils {
         addBeelineFilterToServletContext(servletContextHandler, beeline, Collections.emptyList(), Collections.emptyList());
     }
 
-    public static void addBeelineFilterToServletContext(final ServletContextHandler servletContextHandler, final Beeline beeline, final List<String> filterWhitelist, final List<String> filterBlacklist) {
+    public static void addBeelineFilterToServletContext(final ServletContextHandler servletContextHandler, final Beeline beeline, final List<String> filterAllowlist, final List<String> filterDenylist) {
         final BeelineServletFilter beelineServletFilter = new BeelineServletFilter.Builder()
                                                                 .setServiceName(SERVICE_NAME)
-                                                                .setIncludePaths(filterWhitelist)
-                                                                .setExcludePaths(filterBlacklist)
+                                                                .setIncludePaths(filterAllowlist)
+                                                                .setExcludePaths(filterDenylist)
                                                                 .setBeeline(beeline)
                                                                 .build();
         servletContextHandler.addFilter(new FilterHolder(beelineServletFilter), "/*", EnumSet.of(DispatcherType.REQUEST,

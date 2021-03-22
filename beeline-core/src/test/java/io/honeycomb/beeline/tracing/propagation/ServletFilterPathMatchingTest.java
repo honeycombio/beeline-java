@@ -48,7 +48,7 @@ public class ServletFilterPathMatchingTest {
     }
 
     @Test
-    public void whenNoBlackOrWhitelisting_thenAllSpansCollected() throws Exception {
+    public void whenNoDenyOrAllowlisting_thenAllSpansCollected() throws Exception {
         initServerWithFilterPathMatching(Collections.emptyList(), Collections.emptyList());
         callAllPaths();
 
@@ -61,7 +61,7 @@ public class ServletFilterPathMatchingTest {
     }
 
     @Test
-    public void whenWhitelistingOfPathOneGreedily_thenTwoSpansCollected() throws Exception {
+    public void whenAllowlistingOfPathOneGreedily_thenTwoSpansCollected() throws Exception {
         initServerWithFilterPathMatching(Collections.singletonList("/api/one/**"), Collections.emptyList());
 
         callAllPaths();
@@ -74,7 +74,7 @@ public class ServletFilterPathMatchingTest {
     }
 
     @Test
-    public void whenBlacklistExactPathOne_thenTwoSpansCollected() throws Exception {
+    public void whenDenylistExactPathOne_thenTwoSpansCollected() throws Exception {
         initServerWithFilterPathMatching(Collections.emptyList(), Collections.singletonList("/api/one"));
         callAllPaths();
 
@@ -86,14 +86,14 @@ public class ServletFilterPathMatchingTest {
     }
 
     @Test
-    public void whenBlacklistRootGreedily_thenNoSpansCollected() throws Exception {
+    public void whenDenylistRootGreedily_thenNoSpansCollected() throws Exception {
         initServerWithFilterPathMatching(Collections.emptyList(), Collections.singletonList("/api/**"));
         callAllPaths();
         verify(mockTransport, never()).submit(any());
     }
 
     @Test
-    public void whenWhitelistPathOneGreedily_andBlacklistChildPathTwo_thenOnlyPathOneCollected() throws Exception {
+    public void whenAllowlistPathOneGreedily_andDenylistChildPathTwo_thenOnlyPathOneCollected() throws Exception {
         initServerWithFilterPathMatching(Collections.singletonList("/api/one/**"), Collections.singletonList("/api/one/two"));
         callAllPaths();
         verify(mockTransport, times(1)).submit(resolvedEventCaptor.capture());
@@ -102,7 +102,7 @@ public class ServletFilterPathMatchingTest {
         assertSpanExistsWithPath(fullPath(PATH_1), resolvedEvents);
     }
 
-    private void initServerWithFilterPathMatching(final List<String> whitelist, final List<String> blacklist) throws Exception {
+    private void initServerWithFilterPathMatching(final List<String> allowlist, final List<String> denylist) throws Exception {
         stubMockTransport(mockTransport);
         final HoneyClient honeyClient = createHoneyClient(mockTransport);
         final Beeline beeline = createBeeline(honeyClient);
@@ -113,7 +113,7 @@ public class ServletFilterPathMatchingTest {
         servletContext.addServlet(TestServlet.class, PATH_2);
         servletContext.addServlet(TestServlet.class, PATH_1_2);
 
-        addBeelineFilterToServletContext(servletContext, beeline, whitelist, blacklist);
+        addBeelineFilterToServletContext(servletContext, beeline, allowlist, denylist);
 
         server = new ServletTestingUtils.Server(servletContext, honeyClient);
         port = server.getPort();
