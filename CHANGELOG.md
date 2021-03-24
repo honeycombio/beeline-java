@@ -1,5 +1,27 @@
 # Beeline Changelog
 
+## 1.6.0
+
+### Changes
+
+- Replace black/white with allow/deny lists (#109)
+
+### Maintenance
+
+- Bump maven-compiler-plugin from 3.7.0 to 3.8.1 (#116)
+- Bump assertj-core from 3.11.1 to 3.19.0 (#115)
+- Bump maven-jar-plugin from 3.1.1 to 3.2.0 (#117)
+- Bump pmdCoreVersion from 6.30.0 to 6.32.0 (#113)
+- Bump wiremock from 2.26.0 to 2.27.2 (#100)
+- Bump slf4j-simple from 1.7.25 to 1.7.30 (#101)
+- Bump maven-gpg-plugin from 1.5 to 1.6 (#112)
+- Bump junit from 4.13.1 to 4.13.2 (#111)
+- Bump nexus-staging-maven-plugin from 1.6.7 to 1.6.8 (#110)
+- Bump maven-source-plugin from 3.0.1 to 3.2.1 (#98)
+- Bump datasource-proxy from 1.6 to 1.7 (#104)
+- Bump spotbugsVersion from 4.0.0-beta4 to 4.2.2 (#108)
+- Bump libhoney-java from 1.3.0 to 1.3.1 (#99)
+
 ## 1.5.1
 
 ### Fixes:
