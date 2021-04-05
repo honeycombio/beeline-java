@@ -79,7 +79,7 @@
         <mockitoVersion>3.3.3</mockitoVersion>
         <assertjVersion>3.19.0</assertjVersion>
         <wiremockVersion>2.27.2</wiremockVersion>
-        <restAssuredVersion>3.3.0</restAssuredVersion>
+        <restAssuredVersion>4.3.3</restAssuredVersion>
 
         <!-- Maven plugin versions  -->
         <compilerPluginVersion>3.8.1</compilerPluginVersion>
@@ -92,7 +92,7 @@
         <pmdCoreVersion>6.33.0</pmdCoreVersion>
         <spotbugsVersion>4.2.2</spotbugsVersion>
         <shadeVersion>3.1.0</shadeVersion>
-        <surefireVersion>2.22.1</surefireVersion>
+        <surefireVersion>2.22.2</surefireVersion>
     </properties>
 
     <dependencies>
