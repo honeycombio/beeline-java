@@ -79,7 +79,7 @@
         <mockitoVersion>3.3.3</mockitoVersion>
         <assertjVersion>3.19.0</assertjVersion>
         <wiremockVersion>2.27.2</wiremockVersion>
-        <restAssuredVersion>3.3.0</restAssuredVersion>
+        <restAssuredVersion>4.4.0</restAssuredVersion>
 
         <!-- Maven plugin versions  -->
         <compilerPluginVersion>3.8.1</compilerPluginVersion>
