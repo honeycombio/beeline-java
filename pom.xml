@@ -86,7 +86,7 @@
         <reportsPluginVersion>2.9</reportsPluginVersion>
         <mavenSourcePluginVersion>3.2.1</mavenSourcePluginVersion>
         <javadocPluginVersion>3.2.0</javadocPluginVersion>
-        <xrefPluginVersion>2.5</xrefPluginVersion>
+        <xrefPluginVersion>3.1.1</xrefPluginVersion>
         <mavenWrapperPluginVersion>0.6.0</mavenWrapperPluginVersion>
         <pmdPluginVersion>3.14.0</pmdPluginVersion>
         <pmdCoreVersion>6.33.0</pmdCoreVersion>
