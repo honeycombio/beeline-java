@@ -89,7 +89,7 @@
         <xrefPluginVersion>2.5</xrefPluginVersion>
         <mavenWrapperPluginVersion>0.7.7</mavenWrapperPluginVersion>
         <pmdPluginVersion>3.14.0</pmdPluginVersion>
-        <pmdCoreVersion>6.33.0</pmdCoreVersion>
+        <pmdCoreVersion>6.37.0</pmdCoreVersion>
         <spotbugsVersion>4.2.2</spotbugsVersion>
         <shadeVersion>3.1.0</shadeVersion>
         <surefireVersion>2.22.2</surefireVersion>
@@ -390,7 +390,7 @@
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>4.2.0</version>
+                    <version>4.3.0</version>
                     <configuration>
                         <effort>Max</effort>
                         <threshold>Low</threshold>
