@@ -1,5 +1,7 @@
 # Honeycomb Beeline for Java
 
+[![OSS Lifecycle](https://img.shields.io/osslifecycle/honeycombio/REPO)](https://github.com/honeycombio/home/blob/main/honeycomb-oss-lifecycle-and-practices.md)
+
 [![CircleCI](https://circleci.com/gh/honeycombio/beeline-java.svg?style=shield)](https://circleci.com/gh/honeycombio/beeline-java) [![Beeline Core](https://img.shields.io/maven-central/v/io.honeycomb.beeline/beeline-core.svg)](https://search.maven.org/search?q=a:beeline-core) [![Beeline Spring Boot Starter](https://img.shields.io/maven-central/v/io.honeycomb.beeline/beeline-spring-boot-starter.svg)](https://search.maven.org/search?q=a:beeline-spring-boot-starter)
 
 This package makes it easy to instrument your Java web application to send useful events to
