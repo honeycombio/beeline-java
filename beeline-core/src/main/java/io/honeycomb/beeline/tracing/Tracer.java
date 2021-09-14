@@ -204,8 +204,10 @@ public class Tracer {
             If all child spans have been closed properly, we should end up back at the "root" span, so stack size should
             be 1. This is because TracerSpan#close always sets the parentSpan as the new active span.
             The child spans will be closed as a result of calling close on the root.
+            While there may be multiple nested open spans, just log the most nested to allow the user to track it down.
             */
-            LOG.warn("Called #endTrace while the root span had active child spans.");
+            final String childSpan = tracingContext.peekFirst().getSpanName();
+            LOG.warn("Called #endTrace while the root span had active child spans. Open span name: {}", childSpan);
         }
         if (tracingContext.size() >= 1) {
             LOG.debug("Ending trace");
