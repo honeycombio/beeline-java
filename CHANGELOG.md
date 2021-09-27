@@ -1,5 +1,32 @@
 # Beeline Changelog
 
+## [1.6.1] - 2021-09-27
+
+### Added
+
+- Improve end trace logging (#148) | [@big-andy-coates](https://github.com/big-andy-coates)
+
+### Maintenance
+
+- Change maintenance badge to maintained (#153)
+- Adds Stalebot (#154)
+- Add issue and PR templates (#144)
+- Add OSS lifecycle badge (#143)
+- Updates Github Action Workflows (#135)
+- Updates Dependabot Config (#134)
+- Switches CODEOWNERS to telemetry-team (#133)
+- Bump maven-javadoc-plugin from 3.2.0 to 3.3.1 (#142, #151)
+- Bump maven-gpg-plugin from 1.6 to 3.0.1 (#141)
+- Bump slf4j-simple from 1.7.30 to 1.7.32 (#140)
+- Bump mockito-core from 3.3.3 to 3.12.4 (#137, #145)
+- Bump spotbugs-maven-plugin from 4.2.0 to 4.4.1 (#136, #152)
+- Bump maven from 0.6.0 to 0.7.7 (#123)
+- Bump assertj-core from 3.19.0 to 3.21.0 (#132, #149)
+- Bump rest-assured from 3.3.0 to 4.4.0 (#128)
+- Bump maven-surefire-plugin from 2.22.1 to 2.22.2 (#122)
+- Bump maven-pmd-plugin from 3.9.0 to 3.15.0 (#120, #150)
+- Bump pmdCoreVersion from 6.32.0 to 6.38.0 (#119, #138, #147)
+
 ## 1.6.0
 
 ### Changes
