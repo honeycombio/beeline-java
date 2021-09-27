@@ -9,7 +9,7 @@
 
     <profiles>
         <profile>
-            <id>gpg</id>
+            <id>release</id>
             <properties>
                 <gpg.executable>gpg</gpg.executable>
                 <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
@@ -17,6 +17,6 @@
         </profile>
     </profiles>
     <activeProfiles>
-        <activeProfile>gpg</activeProfile>
+        <activeProfile>release</activeProfile>
     </activeProfiles>
 </settings>
