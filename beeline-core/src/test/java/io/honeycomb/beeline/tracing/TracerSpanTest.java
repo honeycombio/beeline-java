@@ -236,7 +236,7 @@ public class TracerSpanTest {
         tracerSpan.close();
 
         verify(mockSpan).isNoop();
-        verifyZeroInteractions(mockTracer, mockSpan);
+        verifyNoMoreInteractions(mockTracer, mockSpan);
     }
 
     @Test

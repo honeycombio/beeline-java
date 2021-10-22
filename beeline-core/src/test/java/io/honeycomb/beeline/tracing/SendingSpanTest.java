@@ -4,7 +4,6 @@ import io.honeycomb.beeline.tracing.propagation.PropagationContext;
 import io.honeycomb.beeline.tracing.sampling.Sampling;
 import io.honeycomb.libhoney.HoneyClient;
 import io.honeycomb.libhoney.LibHoney;
-import io.honeycomb.libhoney.Options;
 import io.honeycomb.libhoney.eventdata.ResolvedEvent;
 import io.honeycomb.libhoney.responses.ResponseObservable;
 import io.honeycomb.libhoney.transport.Transport;
@@ -20,7 +19,13 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class SendingSpanTest {
 
@@ -321,7 +326,7 @@ public class SendingSpanTest {
         span.close();
 
         assertThat(span.getInitialSampleRate()).isEqualTo(2);
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
     }
 
     @Test
@@ -333,7 +338,7 @@ public class SendingSpanTest {
         span.close();
 
         assertThat(span.getInitialSampleRate()).isEqualTo(0);
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
     }
 
     @Test
