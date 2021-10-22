@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 public class BeelineTest {
@@ -20,7 +19,7 @@ public class BeelineTest {
 
         assertThat(beeline.getTracer()).isEqualTo(tracer);
         assertThat(beeline.getSpanBuilderFactory()).isEqualTo(factory);
-        verifyZeroInteractions(tracer, factory);
+        verifyNoMoreInteractions(tracer, factory);
     }
 
     @Test

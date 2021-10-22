@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @SuppressWarnings("unchecked")
 @RunWith(MockitoJUnitRunner.class)
@@ -155,7 +155,7 @@ public class HttpHeaderV1PropagationCodecTest {
         codec.decode(Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
         verify(deserializer).deserialize(jsonString.getBytes("utf-8"));
-        verifyZeroInteractions(serializer);
+        verifyNoMoreInteractions(serializer);
     }
 
     @Test

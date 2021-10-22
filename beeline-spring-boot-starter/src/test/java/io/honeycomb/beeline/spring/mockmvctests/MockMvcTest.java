@@ -47,7 +47,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -346,7 +346,7 @@ public class MockMvcTest {
             .andExpect(request().asyncResult(notNullValue()))
             .andReturn();
 
-        verifyZeroInteractions(transport);
+        verifyNoMoreInteractions(transport);
 
         mvc.perform(asyncDispatch(asyncResult)).andExpect(content().string("hello"));
 
@@ -366,7 +366,7 @@ public class MockMvcTest {
             .andExpect(request().asyncResult(notNullValue()))
             .andReturn();
 
-        verifyZeroInteractions(transport);
+        verifyNoMoreInteractions(transport);
 
         mvc.perform(asyncDispatch(asyncResult)).andExpect(content().string("hello"));
 
@@ -386,7 +386,7 @@ public class MockMvcTest {
             .andExpect(request().asyncResult(notNullValue()))
             .andReturn();
 
-        verifyZeroInteractions(transport);
+        verifyNoMoreInteractions(transport);
 
         mvc.perform(asyncDispatch(asyncResult)).andExpect(content().string("hello"));
 
@@ -419,7 +419,7 @@ public class MockMvcTest {
             .andExpect(request().asyncResult(notNullValue()))
             .andReturn();
 
-        verifyZeroInteractions(transport);
+        verifyNoMoreInteractions(transport);
 
         // This behaviour of having to catch the exception is specific to the mockmvc environment
         // - on a real server (like tomcat) this would turn into an unhandled 500 error

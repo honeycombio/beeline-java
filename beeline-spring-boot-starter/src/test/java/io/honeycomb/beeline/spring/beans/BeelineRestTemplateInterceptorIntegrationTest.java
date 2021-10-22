@@ -134,7 +134,7 @@ public class BeelineRestTemplateInterceptorIntegrationTest {
         final String response = template.getForObject("/span-test", String.class);
 
         assertThat(response).isEqualTo("Success!");
-        verifyZeroInteractions(transport);
+        verifyNoMoreInteractions(transport);
         server.verify();
     }
 

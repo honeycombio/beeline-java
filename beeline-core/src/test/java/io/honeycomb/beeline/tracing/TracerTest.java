@@ -78,14 +78,14 @@ public class TracerTest {
     public void GIVEN_noActiveTrace_WHEN_endingTrace_EXPECT_NoEventToBeSent() {
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
     }
 
     @Test
     public void GIVEN_aCallToStartTraceOnly_EXPECT_NoEventToBeSent() {
         tracer.startTrace(factory.createBuilder().setSpanName("span").setServiceName("service").build());
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
     }
 
     @Test
@@ -296,7 +296,7 @@ public class TracerTest {
         tracer.startTrace(Span.getNoopInstance());
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
     }
 
     @Test
@@ -304,7 +304,7 @@ public class TracerTest {
         final Span rootSpan = tracer.startTrace(Span.getNoopInstance());
         rootSpan.close();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
     }
 
     @Test
@@ -442,7 +442,7 @@ public class TracerTest {
         childSpan.close();
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
         assertThat(childSpan.isNoop()).isTrue();
     }
 
@@ -453,7 +453,7 @@ public class TracerTest {
         noopSpan.close();
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
     }
 
     @Test
@@ -464,7 +464,7 @@ public class TracerTest {
         tracer.endTrace();
 
         assertThat(childSpan.isNoop()).isTrue();
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
     }
 
     @Test
@@ -638,7 +638,7 @@ public class TracerTest {
         childSpanB.run();
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
         assertThatNoSpanIsActive();
     }
 
@@ -652,7 +652,7 @@ public class TracerTest {
         childSpanB.join();
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
         assertThatNoSpanIsActive();
     }
 
@@ -804,7 +804,7 @@ public class TracerTest {
         childSpanB.call();
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
         assertThatNoSpanIsActive();
     }
 
@@ -818,7 +818,7 @@ public class TracerTest {
         submit.get();
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
         assertThatNoSpanIsActive();
     }
 
@@ -970,7 +970,7 @@ public class TracerTest {
         childSpanB.get();
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
         assertThatNoSpanIsActive();
     }
 
@@ -984,7 +984,7 @@ public class TracerTest {
         submit.join();
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
         assertThatNoSpanIsActive();
     }
 
@@ -1139,7 +1139,7 @@ public class TracerTest {
         childSpanB.apply("test");
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
         assertThatNoSpanIsActive();
     }
 
@@ -1157,7 +1157,7 @@ public class TracerTest {
         submit.join();
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
         assertThatNoSpanIsActive();
     }
 
@@ -1301,7 +1301,7 @@ public class TracerTest {
         childSpanB.accept("test");
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
         assertThatNoSpanIsActive();
     }
 
@@ -1317,7 +1317,7 @@ public class TracerTest {
         submit.join();
         tracer.endTrace();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
         assertThatNoSpanIsActive();
     }
 
@@ -1340,7 +1340,7 @@ public class TracerTest {
 
         CompletableFuture.runAsync(() -> {
             tracer.startTrace(factory.createBuilder().setSpanName("other-span").setServiceName("service").build());
-            verifyZeroInteractions(mockTransport);
+            verifyNoMoreInteractions(mockTransport);
             rootSpan.close();
         }).join();
 
@@ -1378,7 +1378,7 @@ public class TracerTest {
 
         CompletableFuture.runAsync(() -> assertThat(tracer.getActiveSpan().isNoop()).isTrue()).join();
 
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
     }
 
     @Test
@@ -1388,7 +1388,7 @@ public class TracerTest {
         CompletableFuture.runAsync(() -> tracer.endTrace()).join();
 
         assertThat(tracer.getActiveSpan()).isSameAs(rootSpan);
-        verifyZeroInteractions(mockTransport);
+        verifyNoMoreInteractions(mockTransport);
     }
 
     private <V> void assertThatEventHasFields(final Map<String, V> map) {
