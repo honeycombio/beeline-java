@@ -18,29 +18,42 @@ public final class Propagation {
     }
 
     /**
-     * Codec that can decode/encode trace context based on Version 1 of the Honeycomb http header ('x-honeycomb-trace').
+     * Codec that can decode/encode trace context based on Version 1 of the
+     * Honeycomb http header ('x-honeycomb-trace').
      *
      * @return a codec.
      */
-    public static PropagationCodec<Map<String,String>> honeycombHeaderV1() {
+    public static PropagationCodec<Map<String, String>> honeycombHeaderV1() {
         return HttpHeaderV1PropagationCodec.getInstance();
     }
 
     /**
-     * Codec that can decode/encode trace context based on the AWS http header ('X-Amzn-Trace-Id').
+     * Codec that can decode/encode trace context based on the AWS http header
+     * ('X-Amzn-Trace-Id').
      *
      * @return a codec.
      */
-    public static PropagationCodec<Map<String,String>> aws() {
+    public static PropagationCodec<Map<String, String>> aws() {
         return AWSPropagationCodec.getInstance();
     }
 
     /**
-     * Codec that can decode/encode trace context based on Version 1 of the W3C http header ('traceparent').
+     * Codec that can decode/encode trace context based on Version 1 of the W3C http
+     * header ('traceparent').
      *
      * @return a codec.
      */
-    public static PropagationCodec<Map<String,String>> w3c() {
+    public static PropagationCodec<Map<String, String>> w3c() {
         return W3CPropagationCodec.getInstance();
+    }
+
+    /**
+     * Codec that can decode/encode trace context based on Version 1 of the W3C http
+     * header ('traceparent').
+     *
+     * @return a codec.
+     */
+    public static PropagationCodec<Map<String, String>> defaultHeader() {
+        return DefaultPropagationCodec.getInstance();
     }
 }

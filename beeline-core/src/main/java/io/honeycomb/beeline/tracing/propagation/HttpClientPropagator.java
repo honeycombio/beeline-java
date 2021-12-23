@@ -53,7 +53,7 @@ public class HttpClientPropagator {
      * @param requestToSpanName a function from request to span name
      */
     public HttpClientPropagator(final Tracer tracer, final Function<HttpClientRequestAdapter, String> requestToSpanName) {
-        this(tracer, Propagation.honeycombHeaderV1(), requestToSpanName, null);
+        this(tracer, Propagation.defaultHeader(), requestToSpanName, null);
     }
 
     // Used by builder
@@ -147,7 +147,7 @@ public class HttpClientPropagator {
 
         private Tracer tracer;
         private Function<HttpClientRequestAdapter, String> requestToSpanName;
-        private PropagationCodec<Map<String, String>> propagationCodec = Propagation.honeycombHeaderV1();
+        private PropagationCodec<Map<String, String>> propagationCodec = Propagation.defaultHeader();
         private BiFunction<HttpClientRequestAdapter, PropagationContext, Optional<Map<String, String>>> tracePropagationHook = null;
 
         /**

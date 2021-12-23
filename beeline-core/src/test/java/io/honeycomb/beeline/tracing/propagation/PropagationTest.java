@@ -9,4 +9,9 @@ public class PropagationTest {
     public void honeycombHeaderV1() {
         assertThat(Propagation.honeycombHeaderV1()).isInstanceOf(HttpHeaderV1PropagationCodec.class);
     }
+
+    @Test
+    public void defaultHeader() {
+        assertThat(Propagation.defaultHeader()).isInstanceOf(DefaultPropagationCodec.class);
+    }
 }

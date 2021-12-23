@@ -10,18 +10,20 @@ import org.junit.Test;
 
 public class HttpHeaderPropagationCodecFactoryTest {
     @Test
-    public void GIVEN_nullPropagtorNames_EXPECT_honeycombV1Propagator() {
-        assertThat(HttpHeaderPropagationCodecFactory.create(null)).isEqualTo(Propagation.honeycombHeaderV1());
+    public void GIVEN_nullPropagatorNames_EXPECT_defaultPropagator() {
+        assertThat(HttpHeaderPropagationCodecFactory.create(null)).isEqualTo(Propagation.defaultHeader());
     }
 
     @Test
-    public void GIVEN_emptyPropagatorNames_EXPECT_honeycombV1Propagator() {
-        assertThat(HttpHeaderPropagationCodecFactory.create(Collections.emptyList())).isEqualTo(Propagation.honeycombHeaderV1());
+    public void GIVEN_emptyPropagatorNames_EXPECT_defaultPropagator() {
+        assertThat(HttpHeaderPropagationCodecFactory.create(Collections.emptyList()))
+                .isEqualTo(Propagation.defaultHeader());
     }
 
     @Test
-    public void GIVEN_invalidPropagatorNames_EXPECT_honeycombV1Propagator() {
-        assertThat(HttpHeaderPropagationCodecFactory.create(Collections.singletonList("unknown"))).isEqualTo(Propagation.honeycombHeaderV1());
+    public void GIVEN_invalidPropagatorNames_EXPECT_defaultPropagator() {
+        assertThat(HttpHeaderPropagationCodecFactory.create(Collections.singletonList("unknown")))
+                .isEqualTo(Propagation.defaultHeader());
     }
 
     @Test
@@ -37,6 +39,13 @@ public class HttpHeaderPropagationCodecFactoryTest {
     @Test
     public void GIVEN_w3cAsPropagatorName_EXPECT_singleImplementationOfPropagator() {
         assertThat(HttpHeaderPropagationCodecFactory.create(Collections.singletonList(W3CPropagationCodec.CODEC_NAME))).isEqualTo(Propagation.w3c());
+    }
+
+    @Test
+    public void GIVEN_defaultAsPropagatorName_EXPECT_singleImplementationOfPropagator() {
+        assertThat(
+                HttpHeaderPropagationCodecFactory.create(Collections.singletonList(DefaultPropagationCodec.CODEC_NAME)))
+                        .isEqualTo(Propagation.defaultHeader());
     }
 
     @Test

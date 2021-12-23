@@ -334,7 +334,7 @@ public class BeelineServletFilter implements Filter {
             requestToRedispatchSpanName = DEFAULT_REDISPATCH_SPAN_NAMING_FUNCTION;
         private Function<io.honeycomb.beeline.tracing.propagation.HttpServerRequestAdapter,
             String> requestToSpanName = DEFAULT_REQUEST_SPAN_NAMING_FUNCTION;
-        private PropagationCodec<Map<String, String>> propagationCodec = Propagation.honeycombHeaderV1();
+        private PropagationCodec<Map<String, String>> propagationCodec = Propagation.defaultHeader();
 
         /**
          * Set the name of the service using the filter. Required.
