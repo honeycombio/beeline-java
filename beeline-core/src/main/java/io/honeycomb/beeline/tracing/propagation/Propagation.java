@@ -38,7 +38,7 @@ public final class Propagation {
     }
 
     /**
-     * Codec that can decode/encode trace context based on Version 1 of the W3C http
+     * Codec that can decode/encode trace context based on the W3C http
      * header ('traceparent').
      *
      * @return a codec.
@@ -48,7 +48,8 @@ public final class Propagation {
     }
 
     /**
-     * Codec that can decode/encode trace context based on Version 1 of the W3C http
+     * Codec that can decode/encode trace context based on Version 1 of the
+     * Honeycomb http header ('x-honeycomb-trace') or the W3C http
      * header ('traceparent').
      *
      * @return a codec.
