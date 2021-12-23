@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.honeycomb.beeline</groupId>
         <artifactId>beeline-parent</artifactId>
-        <version>1.6.1</version>
+        <version>1.7.0</version>
     </parent>
 
     <name>Beeline Java (Spring Boot Starter)</name>
@@ -16,7 +16,7 @@
     <description>Spring Boot Starter module to auto-configure Spring Boot with the Honeycomb Beeline for Java</description>
 
     <properties>
-        <beelineVersion>1.5.0</beelineVersion>
+        <beelineVersion>1.7.0</beelineVersion>
     </properties>
 
     <build>
