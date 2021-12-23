@@ -1,5 +1,25 @@
 # Beeline Changelog
 
+## [1.7.0] - 2021-12-23
+
+### Improvements
+
+- feat: parse both w3c and honeycomb propagation headers by default (#170) | [@JamieDanielson](https://github.com/JamieDanielson)
+
+### Maintenance
+
+- Bump pmdCoreVersion from 6.40.0 to 6.41.0 (#169) | [dependabot](https://github.com/dependabot)
+- Update dependabot.yml (#168) | [@vreynolds](https://github.com/vreynolds)
+- Bump pmdCoreVersion from 6.39.0 to 6.40.0 (#163) | [dependabot](https://github.com/dependabot)
+- Bump mockito-core from 4.0.0 to 4.1.0 (#167) | [dependabot](https://github.com/dependabot)
+- Bump spotbugs-maven-plugin from 4.4.2.1 to 4.5.0.0 (#166) | [dependabot](https://github.com/dependabot)
+- empower apply-labels action to apply labels (#164) | [Robb Kidd](https://github.com/)
+- ci: add java 17 to test matrix (#161) | [@vreynolds](https://github.com/vreynolds)
+- Bump mockito-core from 3.12.4 to 4.0.0 (#159) | [dependabot](https://github.com/dependabot)
+- Bump spotbugs-maven-plugin from 4.4.1 to 4.4.2.1 (#160) | [dependabot](https://github.com/dependabot)
+- Bump pmdCoreVersion from 6.38.0 to 6.39.0 (#156) | [dependabot](https://github.com/dependabot)
+- ci: fix meven release (#158) | [@vreynolds](https://github.com/vreynolds)
+
 ## [1.6.1] - 2021-09-27
 
 ### Added
