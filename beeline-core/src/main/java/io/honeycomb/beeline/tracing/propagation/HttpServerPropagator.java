@@ -20,7 +20,7 @@ import static io.honeycomb.beeline.tracing.utils.TraceFieldConstants.*;
  *
  * <pre>
  * {
- *     &#64;code
+ *     @code
  *     HttpServerRequestAdapter adaptedHttpRequest = new HttpServerRequestAdapter(actualHttpRequest);
  *     HttpServerResponseAdapter adaptedHttpResponse = null;
  *     Throwable error = null;
