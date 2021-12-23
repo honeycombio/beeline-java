@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.honeycomb.beeline.tracing.propagation.HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER;
+import static io.honeycomb.beeline.tracing.propagation.W3CPropagationCodec.W3C_TRACEPARENT_HEADER;
 import static io.honeycomb.beeline.tracing.propagation.ServletTestingUtils.*;
 import static io.restassured.RestAssured.*;
 import static org.junit.Assert.*;
@@ -299,7 +300,7 @@ public class BeelineServletFilterTest {
     }
 
     @Test
-    public void testContinuingExternalTrace() {
+    public void testContinuingExternalTraceFromHoneycombHeader() {
         final String traceId = "current-trace-1";
         final String parentId = "parent-span-1";
         final PropagationContext context = new PropagationContext(traceId, parentId, null, Collections.singletonMap("trace-field", "abc"));
@@ -315,6 +316,59 @@ public class BeelineServletFilterTest {
         assertEquals(traceId, resolvedEvent.getFields().get(TraceFieldConstants.TRACE_ID_FIELD));
         assertEquals(parentId, resolvedEvent.getFields().get(TraceFieldConstants.PARENT_ID_FIELD));
         checkCoreFields(resolvedEvent,"REQUEST", 200, HELLO_PATH);
+    }
+
+    @Test
+    public void testContinuingExternalTraceFromW3CHeader() {
+        final String traceId = "0af7651916cd43dd8448eb211c80319c";
+        final String parentId = "b7ad6b7169203331";
+        final PropagationContext context = new PropagationContext(traceId, parentId, null,
+                Collections.singletonMap("trace-field", "abc"));
+        final Map<String, String> headers = Propagation.w3c()
+                .encode(context)
+                .orElseThrow(() -> new AssertionError("Propagation context test setup errored"));
+
+        final String headerValue = headers.get(W3C_TRACEPARENT_HEADER);
+        given().header(W3C_TRACEPARENT_HEADER, headerValue).when().get(fullPath(HELLO_PATH)).then().assertThat()
+                .statusCode(200);
+        verify(mockTransport).submit(resolvedEventCaptor.capture());
+        final ResolvedEvent resolvedEvent = resolvedEventCaptor.getValue();
+        assertEquals("http_get", resolvedEvent.getFields().get(TraceFieldConstants.SPAN_NAME_FIELD));
+        assertEquals(traceId, resolvedEvent.getFields().get(TraceFieldConstants.TRACE_ID_FIELD));
+        assertEquals(parentId, resolvedEvent.getFields().get(TraceFieldConstants.PARENT_ID_FIELD));
+        checkCoreFields(resolvedEvent, "REQUEST", 200, HELLO_PATH);
+    }
+
+    @Test
+    public void testContinuingExternalTraceFromHoneycombWhenW3CAlsoPresent() {
+        final String w3cTraceId = "0af7651916cd43dd8448eb211c812345";
+        final String w3cParentId = "b7ad6b7169212345";
+        final PropagationContext w3cContext = new PropagationContext(w3cTraceId, w3cParentId, null,
+                Collections.singletonMap("trace-field", "abc"));
+        final Map<String, String> w3cHeaders = Propagation.w3c()
+                .encode(w3cContext)
+                .orElseThrow(() -> new AssertionError("Propagation context test setup errored"));
+
+        final String honeycombTraceId = "0af7651916cd43dd8448eb211c856789";
+        final String honeycombParentId = "b7ad6b7169256789";
+        final PropagationContext honeycombContext = new PropagationContext(honeycombTraceId, honeycombParentId, null,
+                Collections.singletonMap("trace-field", "abc"));
+        final Map<String, String> honeycombHeaders = Propagation.honeycombHeaderV1()
+                .encode(honeycombContext)
+                .orElseThrow(() -> new AssertionError("Propagation context test setup errored"));
+
+        final String w3cHeaderValue = w3cHeaders.get(W3C_TRACEPARENT_HEADER);
+        final String honeycombHeaderValue = honeycombHeaders.get(HONEYCOMB_TRACE_HEADER);
+        given().header(W3C_TRACEPARENT_HEADER, w3cHeaderValue)
+                .header(HONEYCOMB_TRACE_HEADER, honeycombHeaderValue).when().get(fullPath(HELLO_PATH)).then()
+                .assertThat()
+                .statusCode(200);
+        verify(mockTransport).submit(resolvedEventCaptor.capture());
+        final ResolvedEvent resolvedEvent = resolvedEventCaptor.getValue();
+        assertEquals("http_get", resolvedEvent.getFields().get(TraceFieldConstants.SPAN_NAME_FIELD));
+        assertEquals(honeycombTraceId, resolvedEvent.getFields().get(TraceFieldConstants.TRACE_ID_FIELD));
+        assertEquals(honeycombParentId, resolvedEvent.getFields().get(TraceFieldConstants.PARENT_ID_FIELD));
+        checkCoreFields(resolvedEvent, "REQUEST", 200, HELLO_PATH);
     }
 
     @Test
