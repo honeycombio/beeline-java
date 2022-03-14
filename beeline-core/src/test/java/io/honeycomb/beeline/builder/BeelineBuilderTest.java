@@ -16,6 +16,7 @@ import javax.net.ssl.SSLContext;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -42,6 +43,7 @@ public class BeelineBuilderTest {
     public void addGlobalField() {
         final Beeline beeline = builder.addGlobalField("name", "value").build();
         verify(mockBuilder, times(1)).addGlobalField("name", "value");
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -49,6 +51,7 @@ public class BeelineBuilderTest {
     public void addGlobalDynamicFields() {
         final Beeline beeline = builder.addGlobalDynamicFields("name", mock(ValueSupplier.class)).build();
         verify(mockBuilder, times(1)).addGlobalDynamicFields(eq("name"), any(ValueSupplier.class));
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -56,6 +59,7 @@ public class BeelineBuilderTest {
     public void addProxyCredential() {
         final Beeline beeline = builder.addProxy("proxy.domain.com:8443", "user", "secret").build();
         verify(mockBuilder, times(1)).addProxy("proxy.domain.com:8443", "user", "secret");
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -71,6 +75,7 @@ public class BeelineBuilderTest {
         final Beeline beeline = builder.apiHost("host:80").build();
         verify(mockBuilder, times(1)).apiHost("host:80");
         verify(mockBuilder, times(1)).apiHost(any(URI.class));
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -78,6 +83,7 @@ public class BeelineBuilderTest {
     public void writeKey() {
         final Beeline beeline = builder.writeKey("key").build();
         verify(mockBuilder, times(1)).writeKey("key");
+        verify(mockBuilder, times(1)).dataSet("unknown_service");
         completeNegativeVerification();
     }
 
@@ -85,12 +91,14 @@ public class BeelineBuilderTest {
     public void testDebugEnabled() {
         final Beeline beeline = builder.debug(true).build();
         verify(mockBuilder, times(1)).debug(true);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
     @Test
     public void testDebugDisabled() {
         final Beeline beeline = builder.debug(false).build();
         verify(mockBuilder, times(1)).debug(false);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -98,6 +106,7 @@ public class BeelineBuilderTest {
     public void sampleRate() {
         final Beeline beeline = builder.sampleRate(123).build();
         verify(mockBuilder, times(1)).sampleRate(123);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -105,6 +114,7 @@ public class BeelineBuilderTest {
     public void batchSize() {
         final Beeline beeline = builder.batchSize(123).build();
         verify(mockBuilder, times(1)).batchSize(123);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -112,6 +122,7 @@ public class BeelineBuilderTest {
     public void batchTimeoutMillis() {
         final Beeline beeline = builder.batchTimeoutMillis(123).build();
         verify(mockBuilder, times(1)).batchTimeoutMillis(123);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -119,6 +130,7 @@ public class BeelineBuilderTest {
     public void queueCapacity() {
         builder.queueCapacity(123).build();
         verify(mockBuilder, times(1)).queueCapacity(123);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -126,6 +138,7 @@ public class BeelineBuilderTest {
     public void maxPendingBatchRequests() {
         builder.maxPendingBatchRequests(123).build();
         verify(mockBuilder, times(1)).maxPendingBatchRequests(123);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -133,6 +146,7 @@ public class BeelineBuilderTest {
     public void maxConnections() {
         builder.maxConnections(123).build();
         verify(mockBuilder, times(1)).maxConnections(123);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -140,6 +154,7 @@ public class BeelineBuilderTest {
     public void maxConnectionsPerApiHost() {
         builder.maxConnectionsPerApiHost(123).build();
         verify(mockBuilder, times(1)).maxConnectionsPerApiHost(123);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -147,6 +162,7 @@ public class BeelineBuilderTest {
     public void connectionTimeout() {
         final Beeline beeline = builder.connectionTimeout(123).build();
         verify(mockBuilder, times(1)).connectionTimeout(123);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -154,6 +170,7 @@ public class BeelineBuilderTest {
     public void connectionRequestTimeout() {
         builder.connectionRequestTimeout(123).build();
         verify(mockBuilder, times(1)).connectionRequestTimeout(123);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -161,6 +178,7 @@ public class BeelineBuilderTest {
     public void socketTimeout() {
         builder.socketTimeout(123).build();
         verify(mockBuilder, times(1)).socketTimeout(123);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -168,6 +186,7 @@ public class BeelineBuilderTest {
     public void bufferSize() {
         builder.bufferSize(5_000).build();
         verify(mockBuilder, times(1)).bufferSize(5_000);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -175,6 +194,7 @@ public class BeelineBuilderTest {
     public void ioThreadCount() {
         builder.ioThreadCount(1).build();
         verify(mockBuilder, times(1)).ioThreadCount(1);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -182,6 +202,7 @@ public class BeelineBuilderTest {
     public void maximumHttpRequestShutdownWait() {
         builder.maximumHttpRequestShutdownWait(345L).build();
         verify(mockBuilder, times(1)).maximumHttpRequestShutdownWait(345L);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -189,6 +210,7 @@ public class BeelineBuilderTest {
     public void additionalUserAgent() {
         builder.additionalUserAgent("agent").build();
         verify(mockBuilder, times(1)).additionalUserAgent("agent");
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -196,6 +218,7 @@ public class BeelineBuilderTest {
     public void addProxyNoCredentials() {
         builder.addProxy("proxyHost").build();
         verify(mockBuilder, times(1)).addProxy(anyString());
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -204,6 +227,7 @@ public class BeelineBuilderTest {
         final SSLContext mockContext = mock(SSLContext.class);
         builder.sslContext(mockContext).build();
         verify(mockBuilder, times(1)).sslContext(any(SSLContext.class));
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -211,6 +235,7 @@ public class BeelineBuilderTest {
     public void addResponseObserver() {
         builder.addResponseObserver(mock(ResponseObserver.class)).build();
         verify(mockBuilder, times(1)).addResponseObserver(any(ResponseObserver.class));
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -218,6 +243,7 @@ public class BeelineBuilderTest {
     public void eventPostProcessor() {
         builder.eventPostProcessor(mock(EventPostProcessor.class)).build();
         verify(mockBuilder, times(1)).eventPostProcessor(any(EventPostProcessor.class));
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
 
@@ -227,7 +253,27 @@ public class BeelineBuilderTest {
         final Beeline beeline = builder.transport(mockTransport).build();
 
         verify(mockBuilder, times(1)).transport(mockTransport);
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
         verifyNoMoreInteractions(mockTransport);
+        completeNegativeVerification();
+    }
+
+    @Test
+    public void defaultDatasetClassic() {
+        final Beeline beeline = builder.build();
+
+        assertThat(beeline.getServiceName()).isEqualTo("unknown_service:java");
+        verify(mockBuilder, times(1)).dataSet("beeline-java");
+        completeNegativeVerification();
+    }
+
+    @Test
+    public void defaultDatasetNonClassic() {
+        final Beeline beeline = builder.writeKey("non-classic").build();
+
+        assertThat(beeline.getServiceName()).isEqualTo("unknown_service:java");
+        verify(mockBuilder, times(1)).writeKey("non-classic");
+        verify(mockBuilder, times(1)).dataSet("unknown_service");
         completeNegativeVerification();
     }
 

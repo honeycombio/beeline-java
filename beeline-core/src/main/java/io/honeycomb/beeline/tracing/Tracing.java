@@ -34,7 +34,11 @@ public final class Tracing {
      * @return an instance of Beeline.
      */
     public static Beeline createBeeline(final Tracer tracer, final SpanBuilderFactory factory) {
-        return new Beeline(tracer, factory);
+        return createBeeline(tracer, factory, null);
+    }
+
+    public static Beeline createBeeline(final Tracer tracer, final SpanBuilderFactory factory, String serviceName) {
+        return new Beeline(tracer, factory, serviceName);
     }
 
     /**

@@ -7,8 +7,7 @@ import io.honeycomb.beeline.tracing.sampling.DeterministicTraceSampler;
 import io.honeycomb.beeline.tracing.sampling.Sampling;
 import io.honeycomb.beeline.tracing.utils.TraceFieldConstants;
 import io.honeycomb.libhoney.utils.Assert;
-
-import java.util.ArrayList;
+import io.honeycomb.libhoney.utils.ObjectUtils;
 
 /**
  * The Beeline class is the main/most-convenient point of interaction with traces in a Beeline-instrumented application.
@@ -70,13 +69,30 @@ import java.util.ArrayList;
 public class Beeline {
     private final Tracer tracer;
     private final SpanBuilderFactory factory;
+    private final String serviceName;
+
+    public static final String defaultServiceName = "unknown_service";
+    public static final String defualtProcessName = "java";
 
     public Beeline(final Tracer tracer, final SpanBuilderFactory factory) {
+        this(tracer, factory, null);
+    }
+
+    public Beeline(final Tracer tracer, final SpanBuilderFactory factory, final String serviceName) {
         Assert.notNull(tracer, "Validation failed: tracer must not be null or empty");
         Assert.notNull(factory, "Validation failed: factory must not be null or empty");
 
         this.tracer = tracer;
         this.factory = factory;
+        this.serviceName = resolveServiceName(serviceName);
+    }
+
+    public static String resolveServiceName(String serviceName) {
+        if (ObjectUtils.isNullOrEmpty(serviceName)) {
+            // TODO: figure out how to get exe / jar name as suffix
+            return String.join(":", defaultServiceName, defualtProcessName);
+        }
+        return serviceName;
     }
 
     /**
@@ -153,6 +169,10 @@ public class Beeline {
 		}
     }
 
+    public Span startTrace(final String spanName, final PropagationContext parentContext) {
+        return startTrace(spanName, parentContext, serviceName);
+    }
+
     /**
      * A convenience method that starts a trace.
      * <p>
@@ -194,6 +214,10 @@ public class Beeline {
 
     public SpanBuilderFactory getSpanBuilderFactory() {
         return factory;
+    }
+
+    public String getServiceName() {
+        return serviceName;
     }
 
     /**

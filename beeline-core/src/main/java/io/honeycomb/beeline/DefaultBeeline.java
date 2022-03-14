@@ -9,6 +9,7 @@ import io.honeycomb.beeline.tracing.SpanBuilderFactory;
 import io.honeycomb.beeline.tracing.SpanPostProcessor;
 import io.honeycomb.beeline.tracing.Tracer;
 import io.honeycomb.beeline.tracing.Tracing;
+import io.honeycomb.beeline.tracing.propagation.PropagationContext;
 import io.honeycomb.beeline.tracing.sampling.Sampling;
 import io.honeycomb.libhoney.HoneyClient;
 import io.honeycomb.libhoney.TransportOptions;
@@ -27,7 +28,6 @@ public class DefaultBeeline {
     private SpanBuilderFactory factory;
     private Tracer tracer;
     private Beeline beeline;
-    private String serviceName;
 
     private DefaultBeeline(String dataset, String serviceName, String writeKey,  URI apiHost, TransportOptions transportOptions) {
         Builder builder = LibHoney.options().setDataset(dataset).setWriteKey(writeKey);
@@ -44,15 +44,13 @@ public class DefaultBeeline {
         final SpanPostProcessor processor = Tracing.createSpanProcessor(client, Sampling.alwaysSampler());
         this.factory = Tracing.createSpanBuilderFactory(processor, Sampling.alwaysSampler());
         this.tracer = Tracing.createTracer(this.factory);
-        this.beeline = Tracing.createBeeline(this.tracer, this.factory);
-        this.serviceName = serviceName;
+        this.beeline = Tracing.createBeeline(this.tracer, this.factory, serviceName);
     }
 
     public DefaultBeeline(final BeelineBuilder builder, final String serviceName) {
-        this.beeline = builder.build();
+        this.beeline = builder.serviceName(serviceName).build();
         this.factory = beeline.getSpanBuilderFactory();
         this.tracer = beeline.getTracer();
-        this.serviceName = serviceName;
     }
 
     public synchronized static DefaultBeeline getInstance(final String dataset, final String serviceName, final String writeKey) {
@@ -88,14 +86,7 @@ public class DefaultBeeline {
      */
     public Span startSpan(final String spanName) {
         if (this.beeline.getActiveSpan().isNoop()) {
-            // start a new trace if no active trace
-            final Span span = factory.createBuilder()
-            .setSpanName(spanName)
-            .setServiceName(serviceName)
-            .build();
-            tracer.startTrace(span);
-
-            return span;
+            return beeline.startTrace(spanName, PropagationContext.emptyContext());
         }
         return this.beeline.startChildSpan(spanName);
     }
