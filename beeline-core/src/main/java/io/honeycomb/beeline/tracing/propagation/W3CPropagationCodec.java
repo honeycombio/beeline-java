@@ -115,8 +115,7 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
             return PropagationContext.emptyContext();
         }
 
-        // try to parse dataset and other trace fields from tracestate header
-        String dataset = null;
+        // try to parse trace fields from tracestate header
         Map<String, String> fields = null;
         String encodedState = headers.get(W3C_TRACESTATE_HEADER);
         if (encodedState != null) {
@@ -134,7 +133,7 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
                     for (String kvp : decodedState.split(TRACESTATE_VENDOR_SEPARATOR)) {
                         String[] parts = kvp.split(TRACESTATE_VALUE_SEPARATOR);
                         if (parts[0].equals(DATASET_STRING)) {
-                            // don't add dataset
+                            // don't use dataset
                         } else {
                             if (fields == null) {
                                 fields = new HashMap<>();
@@ -146,7 +145,7 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
             }
         }
 
-        return new PropagationContext(segments[1], segments[2], dataset, fields);
+        return new PropagationContext(segments[1], segments[2], null, fields);
     }
 
     /**
@@ -175,8 +174,8 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
 
         final String traceParent = String.join(SEGMENT_SEPARATOR, DEFAULT_VERSION, context.getTraceId(), context.getSpanId(), SAMPLED_TRACEFLAGS);
 
-        // If no dataset or tracefields, just return trace parent header
-        if (context.getDataset() == null && context.getTraceFields().isEmpty()) {
+        // If no tracefields, just return trace parent header
+        if (context.getTraceFields().isEmpty()) {
             return Optional.of(
                 Collections.singletonMap(W3C_TRACEPARENT_HEADER, traceParent)
             );

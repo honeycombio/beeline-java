@@ -88,6 +88,8 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
      * <p>
      * Trace_id and parent_id are required to create a non-empty Propagation context, while dataset and context are
      * treated as optional.
+     * 
+     * NOTE: This codec no longer encodes or decodes dataset from the trace header.
      *
      * @param encodedTrace to decode into a {@link PropagationContext}.
      * @return extracted context - "empty" context if encodedTrace value has an invalid format or is null.
@@ -114,7 +116,6 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
         }
         String traceId = null;
         String parentSpanId = null;
-        String dataset = null;
         Map<String, Object> traceFields = null;
         for (final String keyValue : payloadEntries) {
             final String[] keyAndValue = SPLIT_KV.split(keyValue, 2);
@@ -140,7 +141,7 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
             LOG.warn("Invalid honeycomb trace header - missing IDs: {}", encodedTrace);
             return PropagationContext.emptyContext();
         }
-        return new PropagationContext(traceId, parentSpanId, dataset, traceFields);
+        return new PropagationContext(traceId, parentSpanId, null, traceFields);
     }
 
     private String encodeContext(final Map<String, Object> traceFields) {
@@ -211,10 +212,6 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
             (contextAsB64 == null ?
                 0 :
                 (payloadSepLength + CONTEXT_KEY.length() + kvSepLength + contextAsB64.length())
-            ) +
-            (context.getDataset() == null ?
-                0 :
-                (payloadSepLength + DATASET_KEY.length() + kvSepLength + context.getDataset().length())
             );
     }
 
