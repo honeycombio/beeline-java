@@ -173,7 +173,7 @@ public class W3CPropagationCodecTest {
         assertThat(context.getTraceId()).isEqualTo("4cbc8d50f02449e887e8bc2aa8020d26");
         assertThat(context.getSpanId()).isEqualTo("ace1ecab581fc069");
         assertThat(context.getTraceFields().size()).isEqualTo(0);
-        assertThat(context.getDataset()).isEqualTo("test-dataset");
+        assertThat(context.getDataset()).isNull();
     }
 
     @Test
@@ -207,7 +207,7 @@ public class W3CPropagationCodecTest {
         assertThat(context.getSpanId()).isEqualTo("ace1ecab581fc069");
         assertThat(context.getTraceFields().size()).isEqualTo(1);
         assertThat(context.getTraceFields().get("foo")).isEqualTo("bar");
-        assertThat(context.getDataset()).isEqualTo("test-dataset");
+        assertThat(context.getDataset()).isNull();
     }
 
     @Test
@@ -224,7 +224,7 @@ public class W3CPropagationCodecTest {
         assertThat(context.getSpanId()).isEqualTo("ace1ecab581fc069");
         assertThat(context.getTraceFields().size()).isEqualTo(1);
         assertThat(context.getTraceFields().get("foo")).isEqualTo("bar");
-        assertThat(context.getDataset()).isEqualTo("test-dataset");
+        assertThat(context.getDataset()).isNull();
     }
 
     // Encode
@@ -255,7 +255,6 @@ public class W3CPropagationCodecTest {
 
         final Map<String, String> headers = new HashMap<>();
         headers.put(W3CPropagationCodec.W3C_TRACEPARENT_HEADER, String.join("-", "00", traceId, spanId, "01"));
-        headers.put(W3CPropagationCodec.W3C_TRACESTATE_HEADER, "hny=ZGF0YXNldD10ZXN0LWRhdGFzZXQ=");
 
         final Map<String, String> encoded = codec.encode(new PropagationContext(traceId, spanId, dataset, null)).get();
         assertThat(encoded).isEqualTo(headers);
@@ -288,7 +287,7 @@ public class W3CPropagationCodecTest {
 
         final Map<String, String> headers = new HashMap<>();
         headers.put(W3CPropagationCodec.W3C_TRACEPARENT_HEADER, String.join("-", "00", traceId, spanId, "01"));
-        headers.put(W3CPropagationCodec.W3C_TRACESTATE_HEADER,  "hny=ZGF0YXNldD10ZXN0LWRhdGFzZXQsZm9vPWJhcixvbmU9dHdv");
+        headers.put(W3CPropagationCodec.W3C_TRACESTATE_HEADER,  "hny=Zm9vPWJhcixvbmU9dHdv");
 
         final Map<String, String> encoded = codec.encode(new PropagationContext(traceId, spanId, dataset, fields)).get();
         assertThat(encoded).isEqualTo(headers);
