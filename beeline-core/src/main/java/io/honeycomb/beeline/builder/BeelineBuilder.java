@@ -18,8 +18,10 @@ import io.honeycomb.libhoney.builders.HoneyClientBuilder;
 import io.honeycomb.libhoney.responses.ClientRejected.RejectionReason;
 import io.honeycomb.libhoney.transport.Transport;
 import io.honeycomb.libhoney.transport.batch.impl.HoneycombBatchConsumer;
+import io.honeycomb.libhoney.utils.ObjectUtils;
 
 import javax.net.ssl.SSLContext;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -30,6 +32,11 @@ public class BeelineBuilder {
     private SpanPostProcessor spanPostProcessor = null;
     private Tracer tracer = null;
 
+    private String writeKey = null;
+    private String dataset = null;
+    private String serviceName = null;
+
+    private static final String defualtDatasetClassic = "beeline-java";
 
     /**
      * Build new Beeline instance as configured by calling the various builder methods previous to this call.
@@ -45,10 +52,38 @@ public class BeelineBuilder {
      * @return new Beeline instance
      */
     public Beeline build() {
-        final HoneyClient client = clientBuilder.build();
-        return createBeeline(client);
+        serviceName = Beeline.resolveServiceName(serviceName);
+
+        if (ObjectUtils.isNullOrEmpty(writeKey)) {
+            System.err.println("empty API key");
+        } else {
+            clientBuilder.writeKey(writeKey);
+        }
+        
+        if (ObjectUtils.isNullOrEmpty(writeKey) || isClassic(writeKey)) {
+            if (ObjectUtils.isNullOrEmpty(dataset)) {
+                System.err.println("empty dataset");
+                clientBuilder.dataSet(defualtDatasetClassic);
+            } else {
+                clientBuilder.dataSet(dataset);
+            }
+        } else {
+            if (!ObjectUtils.isNullOrEmpty(dataset)) {
+                System.err.println("dataset should be empty - using service name instead");
+            }
+
+            // use service name as dataset, ignore process suffix if using default service name
+            clientBuilder.dataSet(
+                serviceName.startsWith(Beeline.defaultServiceName) ? Beeline.defaultServiceName : serviceName
+            );
+        }
+
+        return createBeeline(clientBuilder.build());
     }
 
+    private Boolean isClassic(String apiKey) {
+        return apiKey.length() == 32;
+    }
 
     @SuppressWarnings("unchecked")
     private Beeline createBeeline(final HoneyClient client) {
@@ -56,7 +91,7 @@ public class BeelineBuilder {
         final SpanPostProcessor postProcessor = spanPostProcessor != null ? spanPostProcessor : Tracing.createSpanProcessor(client, sampler);
         final SpanBuilderFactory factory = defaultFactory != null ? defaultFactory : Tracing.createSpanBuilderFactory(postProcessor, sampler);
         final Tracer tracer = this.tracer != null ? this.tracer : Tracing.createTracer(factory);
-        return Tracing.createBeeline(tracer, factory);
+        return Tracing.createBeeline(tracer, factory, serviceName);
     }
 
     private TraceSampler<?> selectSampler() {
@@ -127,7 +162,19 @@ public class BeelineBuilder {
      * Default: None
      */
     public BeelineBuilder dataSet(final String dataSet) {
-        clientBuilder.dataSet(dataSet);
+        this.dataset = dataSet.trim();
+        return this;
+    }
+
+    /**
+     * ServiceName is the name of the service or application that is creating events.
+     * <p>
+     * Default: {@code unknown_service:java}
+     * 
+     * @param serviceName to set.
+     */
+    public BeelineBuilder serviceName(final String serviceName) {
+        this.serviceName = serviceName.trim();
         return this;
     }
 
@@ -157,7 +204,7 @@ public class BeelineBuilder {
      * @see io.honeycomb.libhoney.Options.Builder#setWriteKey(java.lang.String)
      */
     public BeelineBuilder writeKey(final String writeKey) {
-        clientBuilder.writeKey(writeKey);
+        this.writeKey = writeKey.trim();
         return this;
     }
 

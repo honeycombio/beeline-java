@@ -1,5 +1,7 @@
 package io.honeycomb.beeline.tracing;
 
+import java.io.File;
+
 import io.honeycomb.beeline.tracing.propagation.HttpServerRequestAdapter;
 import io.honeycomb.beeline.tracing.propagation.Propagation;
 import io.honeycomb.beeline.tracing.propagation.PropagationContext;
@@ -7,8 +9,7 @@ import io.honeycomb.beeline.tracing.sampling.DeterministicTraceSampler;
 import io.honeycomb.beeline.tracing.sampling.Sampling;
 import io.honeycomb.beeline.tracing.utils.TraceFieldConstants;
 import io.honeycomb.libhoney.utils.Assert;
-
-import java.util.ArrayList;
+import io.honeycomb.libhoney.utils.ObjectUtils;
 
 /**
  * The Beeline class is the main/most-convenient point of interaction with traces in a Beeline-instrumented application.
@@ -70,13 +71,44 @@ import java.util.ArrayList;
 public class Beeline {
     private final Tracer tracer;
     private final SpanBuilderFactory factory;
+    private final String serviceName;
+
+    public static final String defaultServiceName = "unknown_service";
+    public static final String defualtProcessName = "java";
 
     public Beeline(final Tracer tracer, final SpanBuilderFactory factory) {
+        this(tracer, factory, null);
+    }
+
+    public Beeline(final Tracer tracer, final SpanBuilderFactory factory, final String serviceName) {
         Assert.notNull(tracer, "Validation failed: tracer must not be null or empty");
         Assert.notNull(factory, "Validation failed: factory must not be null or empty");
 
         this.tracer = tracer;
         this.factory = factory;
+        this.serviceName = resolveServiceName(serviceName);
+    }
+
+    public static String resolveServiceName(String serviceName) {
+        if (ObjectUtils.isNullOrEmpty(serviceName)) {
+            String processName;
+            try {
+                // tries to find the exe or jar path - Stack Overflow:
+                // https://stackoverflow.com/questions/28192194/how-to-get-the-path-and-name-of-the-current-running-jar
+                File dir = new File(Beeline.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+                StackTraceElement main = stack[stack.length - 1];
+                String mainClass = main.getClassName();
+                File f = new File(dir, mainClass);
+                processName = f.getName();
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                processName = defaultServiceName;
+            }
+            return String.join(":", defaultServiceName, processName);
+        }
+        return serviceName;
     }
 
     /**
@@ -171,6 +203,33 @@ public class Beeline {
      *
      * @param spanName the name of the span to create
      * @param parentContext the parent context containing inter-process tracing information
+     * @return the new current span
+     * @see Tracer#startTrace(Span)
+     * @see io.honeycomb.beeline.tracing.propagation.HttpServerPropagator#startPropagation(HttpServerRequestAdapter) for
+     * an existing solution for starting (and closing) traces for incoming requests to an HTTP server.
+     */
+    public Span startTrace(final String spanName, final PropagationContext parentContext) {
+        return startTrace(spanName, parentContext, serviceName);
+    }
+
+    /**
+     * A convenience method that starts a trace.
+     * <p>
+     * Typically this would be invoked when a service receives an external request, but before the request is
+     * processed by the service. For example in an HTTP Servlet filter before
+     * {@code javax.servlet.FilterChain#doFilter(ServletRequest, ServletResponse)}} is invoked.
+     * <p>
+     * The {@code parentContext} contains information that is needed to continue traces across process boundaries, e.g.
+     * whether the external service making the request was also traced. If the external service was also traced, the
+     * span returned by this method will:
+     * <p>
+     * - share the same trace ID <br>
+     * - be the child of the span that represents the call to this service
+     * <p>
+     * The returned span is also accessible via {@link #getActiveSpan()} because it becomes the current span.
+     *
+     * @param spanName the name of the span to create
+     * @param parentContext the parent context containing inter-process tracing information
      * @param serviceName the name of the service using this method
      * @return the new current span
      * @see Tracer#startTrace(Span)
@@ -194,6 +253,10 @@ public class Beeline {
 
     public SpanBuilderFactory getSpanBuilderFactory() {
         return factory;
+    }
+
+    public String getServiceName() {
+        return serviceName;
     }
 
     /**

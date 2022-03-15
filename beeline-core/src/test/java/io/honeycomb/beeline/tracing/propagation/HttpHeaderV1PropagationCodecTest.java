@@ -42,7 +42,7 @@ public class HttpHeaderV1PropagationCodecTest {
 
         assertThat(decode.getSpanId()).isEqualTo("abc");
         assertThat(decode.getTraceId()).isEqualTo("123");
-        assertThat(decode.getDataset()).isEqualTo("hellodataset");
+        assertThat(decode.getDataset()).isNull();
         assertThat(decode.getTraceFields()).containsExactly(entry("test", "value"));
     }
 
@@ -56,7 +56,7 @@ public class HttpHeaderV1PropagationCodecTest {
 
         assertThat(decode.getSpanId()).isEqualTo("abc");
         assertThat(decode.getTraceId()).isEqualTo("123");
-        assertThat(decode.getDataset()).isEqualTo("hellodataset");
+        assertThat(decode.getDataset()).isNull();
         assertThat(decode.getTraceFields()).containsExactly(entry("test", "value"));
     }
 
@@ -102,7 +102,7 @@ public class HttpHeaderV1PropagationCodecTest {
 
         final PropagationContext decode = codec.decode(Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, traceHeader));
 
-        assertThat(decode.getDataset()).isEqualTo("/hello world");
+        assertThat(decode.getDataset()).isNull();
     }
 
     @Test
@@ -278,7 +278,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final Map<String, String> encoded = codec.encode(new PropagationContext("abc", "123", "myDataset", Collections.singletonMap("key", "value"))).get();
 
         assertThat(encoded).isEqualTo(
-            Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,dataset=myDataset,context=" + Base64.encodeBase64String("{\"key\":\"value\"}".getBytes(UTF_8)))
+            Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,context=" + Base64.encodeBase64String("{\"key\":\"value\"}".getBytes(UTF_8)))
         );
     }
 
@@ -287,7 +287,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final Map<String, String> encoded = codec.encode(new PropagationContext("abc", "123", "/hello world", Collections.singletonMap("key", "value"))).get();
 
         assertThat(encoded).isEqualTo(
-            Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,dataset=%2Fhello+world,context=" + Base64.encodeBase64String("{\"key\":\"value\"}".getBytes(UTF_8)))
+            Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,context=" + Base64.encodeBase64String("{\"key\":\"value\"}".getBytes(UTF_8)))
         );
     }
 
@@ -306,7 +306,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final Map<String, String> encoded = codec.encode(new PropagationContext("abc", "123", "myDataset", Collections.emptyMap())).get();
 
         assertThat(encoded).isEqualTo(
-            Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,dataset=myDataset")
+            Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123")
         );
     }
 
@@ -315,7 +315,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final Map<String, String> encoded = codec.encode(new PropagationContext("abc", "123", "myDataset", Collections.singletonMap("key", Collections.singletonMap("nested-key", "value")))).get();
 
         assertThat(encoded).isEqualTo(
-            Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,dataset=myDataset,context=" + Base64.encodeBase64String("{\"key\":{\"nested-key\":\"value\"}}".getBytes(UTF_8)))
+            Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,context=" + Base64.encodeBase64String("{\"key\":{\"nested-key\":\"value\"}}".getBytes(UTF_8)))
         );
     }
 
@@ -324,7 +324,7 @@ public class HttpHeaderV1PropagationCodecTest {
         final Map<String, String> encoded = codec.encode(new PropagationContext("abc", "123", "myDataset", Collections.singletonMap("key", Collections.singletonMap("nested-key", new Unserializable())))).get();
 
         assertThat(encoded).isEqualTo(
-            Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123,dataset=myDataset")
+            Collections.singletonMap(HttpHeaderV1PropagationCodec.HONEYCOMB_TRACE_HEADER, "1;trace_id=abc,parent_id=123")
         );
     }
 

@@ -88,6 +88,8 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
      * <p>
      * Trace_id and parent_id are required to create a non-empty Propagation context, while dataset and context are
      * treated as optional.
+     * 
+     * NOTE: This codec no longer encodes or decodes dataset from the trace header.
      *
      * @param encodedTrace to decode into a {@link PropagationContext}.
      * @return extracted context - "empty" context if encodedTrace value has an invalid format or is null.
@@ -114,7 +116,6 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
         }
         String traceId = null;
         String parentSpanId = null;
-        String dataset = null;
         Map<String, Object> traceFields = null;
         for (final String keyValue : payloadEntries) {
             final String[] keyAndValue = SPLIT_KV.split(keyValue, 2);
@@ -126,7 +127,7 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
                     parentSpanId = keyAndValue[1];
                     break;
                 case DATASET_KEY:
-                    dataset = decodeDataset(keyAndValue[1]);
+                    // ignore dataset
                     break;
                 case CONTEXT_KEY:
                     traceFields = decodeFields(keyAndValue[1]);
@@ -140,7 +141,7 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
             LOG.warn("Invalid honeycomb trace header - missing IDs: {}", encodedTrace);
             return PropagationContext.emptyContext();
         }
-        return new PropagationContext(traceId, parentSpanId, dataset, traceFields);
+        return new PropagationContext(traceId, parentSpanId, null, traceFields);
     }
 
     private String encodeContext(final Map<String, Object> traceFields) {
@@ -211,10 +212,6 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
             (contextAsB64 == null ?
                 0 :
                 (payloadSepLength + CONTEXT_KEY.length() + kvSepLength + contextAsB64.length())
-            ) +
-            (context.getDataset() == null ?
-                0 :
-                (payloadSepLength + DATASET_KEY.length() + kvSepLength + context.getDataset().length())
             );
     }
 
@@ -225,32 +222,11 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
             .append(TRACE_CONTEXT_VERSION_ONE).append(VERSION_PAYLOAD_SEPARATOR)
             .append(TRACE_ID_KEY) .append(KV_SEPARATOR).append(context.getTraceId()).append(PAYLOAD_SEPARATOR)
             .append(PARENT_ID_KEY).append(KV_SEPARATOR).append(context.getSpanId());
-        final String dataset = context.getDataset();
-        if (dataset != null) {
-            final String encodedDataset = encodeDataset(dataset);
-            stringBuilder.append(PAYLOAD_SEPARATOR).append(DATASET_KEY).append(KV_SEPARATOR).append(encodedDataset);
-        }
         if (contextAsB64 != null) {
             stringBuilder.append(PAYLOAD_SEPARATOR).append(CONTEXT_KEY).append(KV_SEPARATOR).append(contextAsB64);
         }
         return stringBuilder;
         // @formatter:on
-    }
-
-    private String encodeDataset(final String dataset) {
-        try {
-            return URLEncoder.encode(dataset, StandardCharsets.UTF_8.name());
-        } catch (final UnsupportedEncodingException e) { // very unlikely to happen!
-            throw new IllegalStateException("UTF-8 no supported", e);
-        }
-    }
-
-    private String decodeDataset(final String dataset) {
-        try {
-            return URLDecoder.decode(dataset, StandardCharsets.UTF_8.name());
-        } catch (final UnsupportedEncodingException e) { // very unlikely to happen!
-            throw new IllegalStateException("UTF-8 no supported", e);
-        }
     }
 
     public static class DefaultJsonConverter
