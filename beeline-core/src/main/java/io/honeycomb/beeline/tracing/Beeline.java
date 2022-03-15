@@ -1,5 +1,7 @@
 package io.honeycomb.beeline.tracing;
 
+import java.io.File;
+
 import io.honeycomb.beeline.tracing.propagation.HttpServerRequestAdapter;
 import io.honeycomb.beeline.tracing.propagation.Propagation;
 import io.honeycomb.beeline.tracing.propagation.PropagationContext;
@@ -89,8 +91,22 @@ public class Beeline {
 
     public static String resolveServiceName(String serviceName) {
         if (ObjectUtils.isNullOrEmpty(serviceName)) {
-            // TODO: figure out how to get exe / jar name as suffix
-            return String.join(":", defaultServiceName, defualtProcessName);
+            String processName;
+            try {
+                // tries to find the exe or jar path - Stack Overflow:
+                // https://stackoverflow.com/questions/28192194/how-to-get-the-path-and-name-of-the-current-running-jar
+                File dir = new File(Beeline.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+                StackTraceElement main = stack[stack.length - 1];
+                String mainClass = main.getClassName();
+                File f = new File(dir, mainClass);
+                processName = f.getName();
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                processName = defaultServiceName;
+            }
+            return String.join(":", defaultServiceName, processName);
         }
         return serviceName;
     }

@@ -265,7 +265,7 @@ public class BeelineBuilderTest {
     public void noWriteKeyGetsDefaultClassicDataset() {
         final Beeline beeline = builder.build();
 
-        assertThat(beeline.getServiceName()).isEqualTo("unknown_service:java");
+        assertThat(beeline.getServiceName()).isEqualTo(Beeline.resolveServiceName(""));
         verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
@@ -274,7 +274,7 @@ public class BeelineBuilderTest {
     public void emptyWriteKeyGetsDefaultClassicDataset() {
         final Beeline beeline = builder.writeKey("").build();
 
-        assertThat(beeline.getServiceName()).isEqualTo("unknown_service:java");
+        assertThat(beeline.getServiceName()).isEqualTo(Beeline.resolveServiceName(""));
         verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
     }
@@ -283,7 +283,7 @@ public class BeelineBuilderTest {
     public void classicWriteKeyGetsDefaultClassicDataset() {
         final Beeline beeline = builder.writeKey(classicWriteKey).build();
 
-        assertThat(beeline.getServiceName()).isEqualTo("unknown_service:java");
+        assertThat(beeline.getServiceName()).isEqualTo(Beeline.resolveServiceName(""));
         verify(mockBuilder, times(1)).writeKey(classicWriteKey);
         verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
@@ -293,7 +293,7 @@ public class BeelineBuilderTest {
     public void modernWriteKeyGetsDefaultNonClassicDataset() {
         final Beeline beeline = builder.writeKey(nonClassicWriteKey).build();
 
-        assertThat(beeline.getServiceName()).isEqualTo("unknown_service:java");
+        assertThat(beeline.getServiceName()).isEqualTo(Beeline.resolveServiceName(""));
         verify(mockBuilder, times(1)).writeKey(nonClassicWriteKey);
         verify(mockBuilder, times(1)).dataSet("unknown_service");
         completeNegativeVerification();
@@ -320,7 +320,7 @@ public class BeelineBuilderTest {
             .serviceName("")
             .build();
 
-        assertThat(beeline.getServiceName()).isEqualTo("unknown_service:java");
+        assertThat(beeline.getServiceName()).startsWith(Beeline.resolveServiceName(""));
         verify(mockBuilder, times(1)).writeKey(classicWriteKey);
         verify(mockBuilder, times(1)).dataSet("beeline-java");
         completeNegativeVerification();
