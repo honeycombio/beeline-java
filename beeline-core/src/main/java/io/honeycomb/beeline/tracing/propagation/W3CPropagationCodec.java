@@ -134,7 +134,7 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
                     for (String kvp : decodedState.split(TRACESTATE_VENDOR_SEPARATOR)) {
                         String[] parts = kvp.split(TRACESTATE_VALUE_SEPARATOR);
                         if (parts[0].equals(DATASET_STRING)) {
-                            dataset = parts[1];
+                            // don't add dataset
                         } else {
                             if (fields == null) {
                                 fields = new HashMap<>();
@@ -184,12 +184,6 @@ public class W3CPropagationCodec implements PropagationCodec<Map<String, String>
 
         final boolean[] first = {true}; // trick for allowing scoped variables to be accessed inside lambda functions
         final StringBuilder builder = new StringBuilder();
-
-        // If not null, add dataset first
-        if (context.getDataset() != null && !context.getDataset().isEmpty()) {
-            builder.append(String.join(TRACESTATE_VALUE_SEPARATOR, DATASET_STRING, context.getDataset()));
-            first[0] = false;
-        }
 
         // Sort the fields by key and append
         context.getTraceFields().entrySet().stream()

@@ -126,7 +126,7 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
                     parentSpanId = keyAndValue[1];
                     break;
                 case DATASET_KEY:
-                    dataset = decodeDataset(keyAndValue[1]);
+                    // ignore dataset
                     break;
                 case CONTEXT_KEY:
                     traceFields = decodeFields(keyAndValue[1]);
@@ -225,32 +225,11 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
             .append(TRACE_CONTEXT_VERSION_ONE).append(VERSION_PAYLOAD_SEPARATOR)
             .append(TRACE_ID_KEY) .append(KV_SEPARATOR).append(context.getTraceId()).append(PAYLOAD_SEPARATOR)
             .append(PARENT_ID_KEY).append(KV_SEPARATOR).append(context.getSpanId());
-        final String dataset = context.getDataset();
-        if (dataset != null) {
-            final String encodedDataset = encodeDataset(dataset);
-            stringBuilder.append(PAYLOAD_SEPARATOR).append(DATASET_KEY).append(KV_SEPARATOR).append(encodedDataset);
-        }
         if (contextAsB64 != null) {
             stringBuilder.append(PAYLOAD_SEPARATOR).append(CONTEXT_KEY).append(KV_SEPARATOR).append(contextAsB64);
         }
         return stringBuilder;
         // @formatter:on
-    }
-
-    private String encodeDataset(final String dataset) {
-        try {
-            return URLEncoder.encode(dataset, StandardCharsets.UTF_8.name());
-        } catch (final UnsupportedEncodingException e) { // very unlikely to happen!
-            throw new IllegalStateException("UTF-8 no supported", e);
-        }
-    }
-
-    private String decodeDataset(final String dataset) {
-        try {
-            return URLDecoder.decode(dataset, StandardCharsets.UTF_8.name());
-        } catch (final UnsupportedEncodingException e) { // very unlikely to happen!
-            throw new IllegalStateException("UTF-8 no supported", e);
-        }
     }
 
     public static class DefaultJsonConverter
