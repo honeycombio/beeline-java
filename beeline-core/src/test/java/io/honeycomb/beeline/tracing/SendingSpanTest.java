@@ -247,6 +247,7 @@ public class SendingSpanTest {
         assertThat(event.getFields())
             .contains(
                 entry("service_name", "service1"),
+                entry("service.name", "service1"),
                 entry("name", "span1"),
                 entry("duration_ms", 700.0),
                 entry("trace.span_id", "$$$"),
@@ -271,6 +272,7 @@ public class SendingSpanTest {
         assertThat(event.getFields())
             .contains(
                 entry("service_name", "service1"),
+                entry("service.name", "service1"),
                 entry("name", "span1"),
                 entry("duration_ms", 700.0),
                 entry("trace.span_id", "$$$"),
@@ -291,6 +293,7 @@ public class SendingSpanTest {
         final ResolvedEvent event = captureSubmittedEvent(mockTransport);
 
         assertThat(event.getFields()).containsEntry("service_name", "ricotta");
+        assertThat(event.getFields()).containsEntry("service.name", "ricotta");
     }
 
     @Test

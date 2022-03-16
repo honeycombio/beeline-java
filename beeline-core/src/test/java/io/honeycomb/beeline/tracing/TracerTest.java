@@ -96,6 +96,7 @@ public class TracerTest {
 
         assertThatEventHasFields(of(
             "service_name", "serviceA",
+            "service.name", "serviceA",
             "name", "span1")
         );
     }
@@ -108,6 +109,7 @@ public class TracerTest {
 
         assertThatEventHasFields(of(
             "service_name", "serviceA",
+            "service.name", "serviceA",
             "name", "span1")
         );
     }
@@ -128,11 +130,13 @@ public class TracerTest {
         assertThat(capturedEvent.getWriteKey()).isEqualTo("testWriteKey");
         assertThat(eventFields).containsAllEntriesOf(of(
             "service_name", "serviceA",
+            "service.name", "serviceA",
             "name", "span1",
             "trace.span_id", rootSpan.getSpanId(),
             "trace.trace_id", rootSpan.getTraceId()
         ));
         assertThat(eventFields).containsEntry("service_name", "serviceA");
+        assertThat(eventFields).containsEntry("service.name", "serviceA");
         assertThat(eventFields).containsEntry("name", "span1");
         assertThat(eventFields).containsEntry("trace.span_id", rootSpan.getSpanId());
         assertThat(eventFields).containsEntry("trace.trace_id", rootSpan.getTraceId());
@@ -164,6 +168,7 @@ public class TracerTest {
         ));
         assertThat(eventFields).containsKey("duration_ms");
         assertThat(eventFields).doesNotContainKeys("meta.dirty_context", "meta.sent_by_parent");
+        assertThat(eventFields).containsEntry("service.name", "serviceA");
     }
 
     @Test
@@ -475,6 +480,7 @@ public class TracerTest {
 
         assertThatEventHasFields(of(
             "service_name", "serviceA",
+            "service.name", "serviceA",
             "name", "spanB")
         );
         assertThat(detachedSpan.getSpanName()).isEqualTo("detachedSpan");
@@ -488,6 +494,7 @@ public class TracerTest {
 
         assertThatEventHasFields(of(
             "service_name", "serviceA",
+            "service.name", "serviceA",
             "name", "detachedSpan")
         );
     }

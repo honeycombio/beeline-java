@@ -56,6 +56,7 @@ public class SpanPostProcessorTest {
         verify(event).setDataset("myDataset");
         verify(event).setTimestamp(anyLong());
         verify(event).addField("service_name", "serviceName");
+        verify(event).addField("service.name", "serviceName");
         verify(event).addField("name", "spanName");
         verify(event).addField("trace.span_id", "spanId");
         verify(event).addField("trace.trace_id", "traceId");
