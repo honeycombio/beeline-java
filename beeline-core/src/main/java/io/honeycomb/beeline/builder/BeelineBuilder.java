@@ -82,7 +82,7 @@ public class BeelineBuilder {
                                     : serviceName.trim());
         }
 
-        if (serviceName.trim() != serviceName) {
+        if (!serviceName.trim().equals(serviceName)) {
             System.err.println("extra whitespace in service name");
         }
 
