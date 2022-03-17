@@ -300,21 +300,49 @@ public class BeelineBuilderTest {
     }
 
     @Test
-    public void writeKeyDatasetAndServiceNameAreTrimmedOfWhiteSpace() {
+    public void writeKeyAndDatasetAreTrimmedOfWhiteSpace() {
         final Beeline beeline = builder
             .writeKey(" " + classicWriteKey + " ")
             .dataSet(" my-dataset ")
             .serviceName(" my-service ")
             .build();
 
-        assertThat(beeline.getServiceName()).isEqualTo("my-service");
+        assertThat(beeline.getServiceName()).isEqualTo(" my-service ");
         verify(mockBuilder, times(1)).writeKey(classicWriteKey);
         verify(mockBuilder, times(1)).dataSet("my-dataset");
         completeNegativeVerification();
     }
 
     @Test
-    public void emptyServiceNameGetsDefaultServiceName() {
+    public void whitespaceServiceNameIsNotTrimmedOfWhitespace() {
+        final Beeline beeline = builder
+            .writeKey(classicWriteKey)
+            .dataSet("my-dataset")
+            .serviceName(" my-service ")
+            .build();
+
+        assertThat(beeline.getServiceName()).isEqualTo(" my-service ");
+        verify(mockBuilder, times(1)).writeKey(classicWriteKey);
+        verify(mockBuilder, times(1)).dataSet("my-dataset");
+        completeNegativeVerification();
+    }
+
+    @Test
+    public void whitespaceServiceNameIsTrimmedForDataset() {
+        final Beeline beeline = builder
+            .writeKey(nonClassicWriteKey)
+            .dataSet("my-dataset")
+            .serviceName(" my-service ")
+            .build();
+
+        assertThat(beeline.getServiceName()).isEqualTo(" my-service ");
+        verify(mockBuilder, times(1)).writeKey(nonClassicWriteKey);
+        verify(mockBuilder, times(1)).dataSet("my-service");
+        completeNegativeVerification();
+    }
+
+    @Test
+    public void emptyServiceNameGetsDefaultServiceNameClassic() {
         final Beeline beeline = builder
             .writeKey(classicWriteKey)
             .serviceName("")
@@ -323,6 +351,32 @@ public class BeelineBuilderTest {
         assertThat(beeline.getServiceName()).startsWith(Beeline.resolveServiceName(""));
         verify(mockBuilder, times(1)).writeKey(classicWriteKey);
         verify(mockBuilder, times(1)).dataSet("beeline-java");
+        completeNegativeVerification();
+    }
+
+    @Test
+    public void emptyServiceNameGetsDefaultServiceNameNonClassic() {
+        final Beeline beeline = builder
+            .writeKey(nonClassicWriteKey)
+            .serviceName("")
+            .build();
+
+        assertThat(beeline.getServiceName()).startsWith(Beeline.resolveServiceName("unknown_service"));
+        verify(mockBuilder, times(1)).writeKey(nonClassicWriteKey);
+        verify(mockBuilder, times(1)).dataSet("unknown_service");
+        completeNegativeVerification();
+    }
+
+    @Test
+    public void whitespaceOnlyServiceNameGetsDefaultDatasetNonClassic() {
+        final Beeline beeline = builder
+            .writeKey(nonClassicWriteKey)
+            .serviceName("  ")
+            .build();
+
+        assertThat(beeline.getServiceName()).startsWith(Beeline.resolveServiceName("  "));
+        verify(mockBuilder, times(1)).writeKey(nonClassicWriteKey);
+        verify(mockBuilder, times(1)).dataSet("unknown_service");
         completeNegativeVerification();
     }
 
