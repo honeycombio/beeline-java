@@ -64,6 +64,7 @@ public class SpanPostProcessor {
         event
             .addField(TraceFieldConstants.SPAN_NAME_FIELD, span.getSpanName())
             .addField(TraceFieldConstants.SERVICE_NAME_FIELD, span.getServiceName())
+            .addField(TraceFieldConstants.SERVICE_DOT_NAME_FIELD, span.getServiceName())
             .addField(TraceFieldConstants.SPAN_ID_FIELD, span.getSpanId())
             .addField(TraceFieldConstants.TRACE_ID_FIELD, span.getTraceId());
     }

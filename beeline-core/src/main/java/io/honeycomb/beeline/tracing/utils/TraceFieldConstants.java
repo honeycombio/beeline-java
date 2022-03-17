@@ -23,6 +23,8 @@ public final class TraceFieldConstants {
     public static final String TYPE_FIELD                   = "type";
     /** Name of the application being instrumented. */
     public static final String SERVICE_NAME_FIELD           = "service_name";
+    /** Name of the application being instrumented. */
+    public static final String SERVICE_DOT_NAME_FIELD       = "service.name";
     /** Name of the operation the span covers. */
     public static final String SPAN_NAME_FIELD              = "name";
     /** Duration the operation took, in milliseconds (as a double). */
