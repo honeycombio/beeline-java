@@ -1,5 +1,11 @@
 # Beeline Changelog
 
+## [1.7.1] - 2022-03-18
+
+### Fixed
+
+-  fix circular dependency for spring boot 2.6.x (#190) (#191) | [@giorgimode](https://github.com/giorgimode)
+
 ## [1.7.0] - 2021-12-23
 
 ### Improvements
