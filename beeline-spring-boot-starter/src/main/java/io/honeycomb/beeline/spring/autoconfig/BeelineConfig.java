@@ -42,6 +42,7 @@ import org.springframework.context.annotation.Lazy;
 public class BeelineConfig {
     private static final String BEELINE_USER_AGENT_PREFIX = "beeline/";
 
+    @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
     private BeelineProperties properties;
 
@@ -82,8 +83,8 @@ public class BeelineConfig {
         }
 
         // map static and dynamic fields
-        metaFieldProvider.getStaticFields().forEach((key, value) -> builder.addGlobalField(key, value));
-        metaFieldProvider.getDynamicFields().forEach((key, value) -> builder.addGlobalDynamicFields(key, value));
+        metaFieldProvider.getStaticFields().forEach(builder::addGlobalField);
+        metaFieldProvider.getDynamicFields().forEach(builder::addGlobalDynamicFields);
 
         // if we have a proxy hostname
         if (!beelineProperties.getProxyHostname().isEmpty()) {
