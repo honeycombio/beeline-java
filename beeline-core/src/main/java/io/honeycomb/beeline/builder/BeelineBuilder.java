@@ -59,7 +59,7 @@ public class BeelineBuilder {
         } else {
             clientBuilder.writeKey(writeKey);
         }
-        
+
         if (ObjectUtils.isNullOrEmpty(writeKey) || isClassic(writeKey)) {
             if (ObjectUtils.isNullOrEmpty(dataset)) {
                 System.err.println("empty dataset");
@@ -72,10 +72,18 @@ public class BeelineBuilder {
                 System.err.println("dataset should be empty - using service name instead");
             }
 
-            // use service name as dataset, ignore process suffix if using default service name
+            // use trimmed service name as dataset
+            // if trimmed service name is prefixed with unknown_service
+            // or is empty string, set dataset to unknown_service
             clientBuilder.dataSet(
-                serviceName.startsWith(Beeline.defaultServiceName) ? Beeline.defaultServiceName : serviceName
-            );
+                    serviceName.trim().startsWith(Beeline.defaultServiceName)
+                            || ObjectUtils.isNullOrEmpty(serviceName.trim())
+                                    ? Beeline.defaultServiceName
+                                    : serviceName.trim());
+        }
+
+        if (!serviceName.trim().equals(serviceName)) {
+            System.err.println("extra whitespace in service name");
         }
 
         return createBeeline(clientBuilder.build());
@@ -170,11 +178,11 @@ public class BeelineBuilder {
      * ServiceName is the name of the service or application that is creating events.
      * <p>
      * Default: {@code unknown_service:java}
-     * 
+     *
      * @param serviceName to set.
      */
     public BeelineBuilder serviceName(final String serviceName) {
-        this.serviceName = serviceName.trim();
+        this.serviceName = serviceName;
         return this;
     }
 
