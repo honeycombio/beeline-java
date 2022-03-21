@@ -7,7 +7,7 @@
     <name>Beeline Java (Parent)</name>
     <artifactId>beeline-parent</artifactId>
     <groupId>io.honeycomb.beeline</groupId>
-    <version>1.7.1</version>
+    <version>2.0.0</version>
     <packaging>pom</packaging>
 
     <description>Parent POM for the Honeycomb Beeline for Java</description>

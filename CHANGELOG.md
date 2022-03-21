@@ -1,5 +1,28 @@
 # Beeline Changelog
 
+## [2.0.0] - 2022-03-21
+
+### !!! Breaking Changes !!!
+
+The beeline will no longer propagate `dataset` configuration across distributed traces. To ensure distributed traces continue to send data to the appropriate dataset either:
+1. Configure a `dataset` in every instrumented application (e.g. using the `honeycomb.beeline.dataset` property). This is likely already the case for most users.
+2. Alternatively, configure a [custom trace propagation hook](https://docs.honeycomb.io/getting-data-in/beeline/java/#custom-trace-propagation-hook) to inject dataset in the outgoing request header, and a [custom trace parser hook](https://docs.honeycomb.io/getting-data-in/beeline/java/#custom-trace-parser-hook) to extract dataset from the incoming request header.
+
+### Enhancements
+
+- Add support for Environment & Services (#187) | [@MikeGoldsmith](https://github.com/MikeGoldsmith)
+- add service.name field in addition to service_name (#188) | [@JamieDanielson](https://github.com/JamieDanielson)
+- fix: only trim service name for dataset (#189) | [@JamieDanielson](https://github.com/JamieDanielson)
+
+### Maintenance
+
+- Bump maven-jxr-plugin from 2.5 to 3.1.1 (#126) | [dependabot](https://github.com/dependabot)
+- gh: add re-triage workflow (#174) | [@vreynolds](https://github.com/vreynolds)
+- Bump mockito-core from 4.1.0 to 4.2.0 (#177) | [dependabot](https://github.com/dependabot)
+- update releasing.md for current temporary issue (#178) | [@JamieDanielson](https://github.com/JamieDanielson)
+- update maven orb to handle multi-module project (#179) | [@JamieDanielson](https://github.com/JamieDanielson)
+- merge releases-1.x.x into main (#193) | [@vreynolds](https://github.com/vreynolds)
+
 ## [1.7.1] - 2022-03-18
 
 ### Fixed
