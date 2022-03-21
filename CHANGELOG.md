@@ -5,7 +5,7 @@
 ### !!! Breaking Changes !!!
 
 The beeline will no longer propagate `dataset` configuration across distributed traces. To ensure distributed traces continue to send data to the appropriate dataset either:
-1. Configure a `dataset` in every instrumented application (e.g. using the `honeycomb.beeline.dataset` property). This is likely already the case for most users.
+1. [Recommended] Configure a `dataset` in every instrumented application (e.g. using the `honeycomb.beeline.dataset` property). Most users configure their applications this way already, so you may not need to do anything.
 2. Alternatively, configure a [custom trace propagation hook](https://docs.honeycomb.io/getting-data-in/beeline/java/#custom-trace-propagation-hook) to inject dataset in the outgoing request header, and a [custom trace parser hook](https://docs.honeycomb.io/getting-data-in/beeline/java/#custom-trace-parser-hook) to extract dataset from the incoming request header.
 
 ### Enhancements
