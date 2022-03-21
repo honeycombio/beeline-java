@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.honeycomb.beeline</groupId>
         <artifactId>beeline-parent</artifactId>
-        <version>1.7.1</version>
+        <version>2.0.0</version>
     </parent>
 
     <name>Beeline Java (Core)</name>
