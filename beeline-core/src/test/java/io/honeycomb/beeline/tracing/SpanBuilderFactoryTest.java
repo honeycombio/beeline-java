@@ -249,7 +249,7 @@ public class SpanBuilderFactoryTest {
     }
 
     @Test
-    public void GIVEN_aTracerSpan_WHEN_isRootIsFalse_EXPECT_isRootToBeTrue() {
+    public void GIVEN_aTracerSpan_WHEN_isRootIsFalse_EXPECT_isRootToBeFalse() {
         final Span testSpan = getTestSpan();
         final TracerSpan tracerSpan = new TracerSpan(testSpan, mock(Tracer.class));
 

@@ -271,7 +271,7 @@ public class Span implements AutoCloseable {
 
     /**
      * Sets whether the span is a root span within the current process. Root spans are created either by starting
-     * a new trace, or when a span is created using a propgated trace context.
+     * a new trace, or when a span is created using a propagated trace context.
      * @return this Span.
      */
     public Span setRoot() {
@@ -280,7 +280,7 @@ public class Span implements AutoCloseable {
     }
 
     /**
-     * @return am boolean to indicate whether this span is a root span or not.
+     * @return a boolean to indicate whether this span is a root span or not.
      */
     public boolean isRoot() {
         return isRoot;
