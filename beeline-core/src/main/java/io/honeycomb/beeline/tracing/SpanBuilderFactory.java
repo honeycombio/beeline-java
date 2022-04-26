@@ -166,6 +166,7 @@ public class SpanBuilderFactory {
         @SuppressWarnings("InstanceVariableMayNotBeInitialized")
         private String spanId;
         private PropagationContext parentContext = PropagationContext.emptyContext();
+        private boolean isRoot = false;
 
         public SpanBuilder(final SpanPostProcessor processor,
                            final ClockProvider clock,
@@ -210,6 +211,11 @@ public class SpanBuilderFactory {
 
         public SpanBuilder setSpanId(final String spanId) {
             this.spanId = spanId;
+            return this;
+        }
+
+        public SpanBuilder setRoot() {
+            this.isRoot = true;
             return this;
         }
 
@@ -281,6 +287,9 @@ public class SpanBuilderFactory {
                 processor,
                 clock,
                 sampleRate);
+            if (this.isRoot) {
+                span.setRoot();
+            }
             if (timestamp != null) {
                 span.markStart(timestamp, startTime);
             }

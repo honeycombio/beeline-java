@@ -357,6 +357,44 @@ public class SendingSpanTest {
         verify(clock, times(1)).getWallTime(); // once for initial setup
     }
 
+    @Test
+    public void GIVEN_anInitialisedSpan_WHEN_isRootIsTrueAndNoParentSpanID_EXPECT_metaSpanTypeToBeRoot() {
+        clock = mock(ClockProvider.class);
+        final PropagationContext context = new PropagationContext("abc", null, null, traceFields);
+        final SendingSpan span = new SendingSpan("span1", "service1", "$$$",  fields, context, processor, clock, 1);
+
+        span.setRoot();
+
+        assertThat(span.isRoot()).isEqualTo(true);
+
+        span.close();
+        final ResolvedEvent event = captureSubmittedEvent(mockTransport);
+
+        assertThat(event.getFields())
+            .contains(
+                entry("meta.span_type", "root")
+            );
+    }
+
+    @Test
+    public void GIVEN_anInitialisedSpan_WHEN_isRootIsTrueAndParentSpanID_EXPECT_metaSpanTypeToBeSubRoot() {
+        clock = mock(ClockProvider.class);
+        final PropagationContext context = new PropagationContext("abc", "123", null, traceFields);
+        final SendingSpan span = new SendingSpan("span1", "service1", "$$$",  fields, context, processor, clock, 1);
+
+        span.setRoot();
+
+        assertThat(span.isRoot()).isEqualTo(true);
+
+        span.close();
+        final ResolvedEvent event = captureSubmittedEvent(mockTransport);
+
+        assertThat(event.getFields())
+            .contains(
+                entry("meta.span_type", "subroot")
+            );
+    }
+
     private Transport mockTransport() {
         mockTransport = mock(Transport.class);
         client = new HoneyClient(LibHoney.options()

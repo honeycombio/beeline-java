@@ -95,6 +95,8 @@ public class Span implements AutoCloseable {
      */
     private boolean closed;
 
+    private boolean isRoot = false;
+
     /**
      * Constructor that initialises the base Span data.
      * It also calls {@link #markStart} immediately, which may be reset by client code by calling it any other point.
@@ -265,6 +267,15 @@ public class Span implements AutoCloseable {
 
         this.durationMs = duration;
         return this;
+    }
+
+    public Span setRoot() {
+        this.isRoot = true;
+        return this;
+    }
+
+    public boolean isRoot() {
+        return isRoot;
     }
 
     public String getParentSpanId() {
