@@ -4,6 +4,8 @@ import io.honeycomb.beeline.tracing.propagation.PropagationContext;
 import io.honeycomb.libhoney.Event;
 import io.honeycomb.libhoney.transport.batch.ClockProvider;
 import io.honeycomb.libhoney.utils.Assert;
+import io.honeycomb.libhoney.utils.ObjectUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +25,10 @@ import java.util.Map;
  */
 public class SendingSpan extends Span {
     private static final Logger LOG = LoggerFactory.getLogger(SendingSpan.class);
+
+    private static final String META_SPAN_TYPE_FIELD = "meta.span_type";
+    private static final String META_SPAN_TYPE_ROOT = "root";
+    private static final String META_SPAN_TYPE_SUBROOT = "subroot";
 
     private final SpanPostProcessor processor;
     /**
@@ -63,6 +69,14 @@ public class SendingSpan extends Span {
         if (finalSamplingRate <= 0) {
             return;
         }
+
+        if (this.isRoot()) {
+            addField(
+                META_SPAN_TYPE_FIELD,
+                ObjectUtils.isNullOrEmpty(this.getParentSpanId()) ? META_SPAN_TYPE_ROOT : META_SPAN_TYPE_SUBROOT
+            );
+        }
+
         final Event event = processor.generateEvent(this);
         event.setSampleRate(finalSamplingRate);
         event.sendPresampled();

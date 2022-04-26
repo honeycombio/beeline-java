@@ -95,6 +95,8 @@ public class Span implements AutoCloseable {
      */
     private boolean closed;
 
+    private boolean isRoot = false;
+
     /**
      * Constructor that initialises the base Span data.
      * It also calls {@link #markStart} immediately, which may be reset by client code by calling it any other point.
@@ -267,6 +269,23 @@ public class Span implements AutoCloseable {
         return this;
     }
 
+    /**
+     * Sets whether the span is a root span within the current process. Root spans are created either by starting
+     * a new trace, or when a span is created using a propagated trace context.
+     * @return this Span.
+     */
+    public Span setRoot() {
+        this.isRoot = true;
+        return this;
+    }
+
+    /**
+     * @return a boolean to indicate whether this span is a root span or not.
+     */
+    public boolean isRoot() {
+        return isRoot;
+    }
+
     public String getParentSpanId() {
         return parentSpanId;
     }
@@ -396,6 +415,7 @@ public class Span implements AutoCloseable {
                ", spanName='" + getSpanName() + '\'' +
                ", serviceName='" + getServiceName() + '\'' +
                ", parentSpanId='" + getParentSpanId() + '\'' +
+               ", isRoot='" + isRoot() + '\'' +
                ", traceId='" + getTraceId() + '\'' +
                ", spanId='" + getSpanId() + '\'' +
                ", traceFields=" + getTraceFields() +

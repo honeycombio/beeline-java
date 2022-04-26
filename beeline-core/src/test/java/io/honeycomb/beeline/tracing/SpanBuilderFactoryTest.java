@@ -249,6 +249,26 @@ public class SpanBuilderFactoryTest {
     }
 
     @Test
+    public void GIVEN_aTracerSpan_WHEN_isRootIsFalse_EXPECT_isRootToBeFalse() {
+        final Span testSpan = getTestSpan();
+        final TracerSpan tracerSpan = new TracerSpan(testSpan, mock(Tracer.class));
+
+        final Span childSpan = factory.createBuilderFromParent(tracerSpan).setSpanName("new-span").build();
+
+        assertThat(childSpan.isRoot() == false);
+    }
+
+    @Test
+    public void GIVEN_aTracerSpan_WHEN_isRootIsTrue_EXPECT_isRootToBeTrue() {
+        final Span testSpan = getTestSpan();
+        final TracerSpan tracerSpan = new TracerSpan(testSpan, mock(Tracer.class));
+
+        final Span childSpan = factory.createBuilderFromParent(tracerSpan).setSpanName("new-span").setRoot().build();
+
+        assertThat(childSpan.isRoot() == true);
+    }
+
+    @Test
     public void GIVEN_aTracerSpan_WHEN_creatingACopyFromATracerSpan_EXPECT_attributesToBePresentOnCopyInstance() {
         final Span testSpan = getTestSpan();
         final TracerSpan tracerSpan = new TracerSpan(testSpan, mock(Tracer.class));

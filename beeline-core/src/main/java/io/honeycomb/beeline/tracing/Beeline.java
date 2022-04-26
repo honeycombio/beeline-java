@@ -243,6 +243,7 @@ public class Beeline {
                 .setSpanName(spanName)
                 .setServiceName(serviceName)
                 .setParentContext(parentContext)
+                .setRoot()
                 .build()
         );
     }
