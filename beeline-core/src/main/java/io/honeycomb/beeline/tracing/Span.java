@@ -407,6 +407,7 @@ public class Span implements AutoCloseable {
                ", spanName='" + getSpanName() + '\'' +
                ", serviceName='" + getServiceName() + '\'' +
                ", parentSpanId='" + getParentSpanId() + '\'' +
+               ", isRoot='" + isRoot() + '\'' +
                ", traceId='" + getTraceId() + '\'' +
                ", spanId='" + getSpanId() + '\'' +
                ", traceFields=" + getTraceFields() +
