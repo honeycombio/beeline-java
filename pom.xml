@@ -90,7 +90,7 @@
         <xrefPluginVersion>3.2.0</xrefPluginVersion>
         <mavenWrapperPluginVersion>0.7.7</mavenWrapperPluginVersion>
         <pmdPluginVersion>3.16.0</pmdPluginVersion>
-        <pmdCoreVersion>6.41.0</pmdCoreVersion>
+        <pmdCoreVersion>6.45.0</pmdCoreVersion>
         <spotbugsVersion>4.2.2</spotbugsVersion>
         <shadeVersion>3.1.0</shadeVersion>
         <surefireVersion>2.22.2</surefireVersion>
