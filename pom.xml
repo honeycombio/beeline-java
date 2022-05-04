@@ -77,7 +77,7 @@
 
         <!-- TEST dependency versions  -->
         <junitVersion>4.13.2</junitVersion>
-        <mockitoVersion>4.4.0</mockitoVersion>
+        <mockitoVersion>4.5.1</mockitoVersion>
         <assertjVersion>3.22.0</assertjVersion>
         <wiremockVersion>2.27.2</wiremockVersion>
         <restAssuredVersion>5.0.1</restAssuredVersion>
@@ -131,6 +131,11 @@
             <artifactId>mockito-core</artifactId>
             <version>${mockitoVersion}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.12.10</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
