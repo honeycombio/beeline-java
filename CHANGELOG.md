@@ -1,5 +1,32 @@
 # Beeline Changelog
 
+## [2.1.0] - 2022-05-04
+
+### Enhancements
+
+- Add meta.span_type to root/subroot spans (#203) | [@MikeGoldsmith](https://github.com/MikeGoldsmith)
+
+### Maintenance
+
+- add basic example using DefaultBeeline (#197) | [@JamieDanielson](https://github.com/JamieDanielson)
+- Bump javax.servlet-api from 3.1.0 to 4.0.1 (#114)
+- Bump mockito-core from 4.4.0 to 4.5.1 (#209)
+- Bump rest-assured from 4.4.0 to 5.0.1 (#215)
+- Bump nexus-staging-maven-plugin from 1.6.8 to 1.6.13 (#214)
+- Bump pmdCoreVersion from 6.41.0 to 6.45.0 (#212)
+- Bump maven-pmd-plugin from 3.15.0 to 3.16.0 (#213)
+- Bump maven-jxr-plugin from 3.1.1 to 3.2.0 (#211)
+- Bump maven-javadoc-plugin from 3.3.1 to 3.4.0 (#210)
+- Bump libhoney-java from 1.3.1 to 1.5.0 (#208)
+- Bump slf4j-simple from 1.7.32 to 1.7.36 (#207)
+- Bump maven-jar-plugin from 3.2.0 to 3.2.2 (#206)
+- Bump maven-project-info-reports-plugin from 2.9 to 3.3.0 (#204)
+- Bump assertj-core from 3.21.0 to 3.22.0 (#205)
+- Bump httpclient from 4.5.9 to 4.5.13 (#200)
+- Bump maven-compiler-plugin from 3.8.1 to 3.10.1 (#194)
+- Bump httpclient from 4.5.9 to 4.5.13 in /examples (#198)
+- Bump mockito-core from 4.2.0 to 4.4.0 (#195)
+
 ## [2.0.0] - 2022-03-21
 
 ### !!! Breaking Changes !!!
