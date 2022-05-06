@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.util.logging.Logger;
 
-import com.zaxxer.hikari.*;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -58,8 +58,8 @@ public class DataSourceProxyBeanPostProcessorTest {
     }
 
     @Test
-    public void GIVEN_HaikikiDataset_Expect_objectIsSame() {
-        final DataSource dataSource = mock(HikariDataSource.class);
+    public void GIVEN_LiquibaseDataset_Expect_objectIsSame() {
+        final Object dataSource = mock(LiquibaseDataSource.class);
         final Object o = processor.postProcessAfterInitialization(dataSource, "name");
         assertThat(o).isSameAs(dataSource);
     }
