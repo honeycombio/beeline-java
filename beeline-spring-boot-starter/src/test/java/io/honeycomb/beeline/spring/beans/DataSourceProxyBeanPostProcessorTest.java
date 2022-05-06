@@ -12,6 +12,8 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.util.logging.Logger;
 
+import com.zaxxer.hikari.*;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -53,6 +55,13 @@ public class DataSourceProxyBeanPostProcessorTest {
         final DataSource dataSource = mock(CustomDataSource.class);
         final Object o = processor.postProcessAfterInitialization(dataSource, "name");
         assertThat(o).isInstanceOf(ProxyDataSource.class);
+    }
+
+    @Test
+    public void GIVEN_HaikikiDataset_Expect_objectIsSame() {
+        final DataSource dataSource = mock(HikariDataSource.class);
+        final Object o = processor.postProcessAfterInitialization(dataSource, "name");
+        assertThat(o).isSameAs(dataSource);
     }
 
     private static class CustomDataSource implements DataSource {
