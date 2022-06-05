@@ -78,7 +78,7 @@
         <!-- TEST dependency versions  -->
         <junitVersion>4.13.2</junitVersion>
         <mockitoVersion>4.6.0</mockitoVersion>
-        <assertjVersion>3.22.0</assertjVersion>
+        <assertjVersion>3.23.1</assertjVersion>
         <wiremockVersion>2.27.2</wiremockVersion>
         <restAssuredVersion>5.0.1</restAssuredVersion>
 
