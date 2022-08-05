@@ -77,14 +77,14 @@
 
         <!-- TEST dependency versions  -->
         <junitVersion>4.13.2</junitVersion>
-        <mockitoVersion>4.6.0</mockitoVersion>
+        <mockitoVersion>4.6.1</mockitoVersion>
         <assertjVersion>3.23.1</assertjVersion>
         <wiremockVersion>2.27.2</wiremockVersion>
         <restAssuredVersion>5.1.1</restAssuredVersion>
 
         <!-- Maven plugin versions  -->
         <compilerPluginVersion>3.10.1</compilerPluginVersion>
-        <reportsPluginVersion>3.3.0</reportsPluginVersion>
+        <reportsPluginVersion>3.4.0</reportsPluginVersion>
         <mavenSourcePluginVersion>3.2.1</mavenSourcePluginVersion>
         <javadocPluginVersion>3.4.0</javadocPluginVersion>
         <xrefPluginVersion>3.2.0</xrefPluginVersion>
