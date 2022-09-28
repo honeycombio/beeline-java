@@ -72,7 +72,7 @@
         <jdkVersion>1.8</jdkVersion>
 
         <!-- COMPILE dependency versions  -->
-        <libhoneyVersion>1.5.0</libhoneyVersion>
+        <libhoneyVersion>1.5.2</libhoneyVersion>
         <springBootVersion>2.1.1.RELEASE</springBootVersion>
 
         <!-- TEST dependency versions  -->
