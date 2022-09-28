@@ -27,7 +27,7 @@
       <dependency>
         <groupId>io.honeycomb.libhoney</groupId>
         <artifactId>libhoney-java</artifactId>
-        <version>1.5.0</version>
+        <version>${libhoneyVersion}</version>
       </dependency>
 
       <dependency>
