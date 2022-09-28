@@ -15,10 +15,6 @@
     <packaging>jar</packaging>
     <description>Spring Boot Sleuth Starter module to auto-configure Spring Boot Sleuth to send trace data via Honeycomb Beeline for Java</description>
 
-    <properties>
-        <beelineVersion>1.6.1</beelineVersion>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
