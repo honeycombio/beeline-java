@@ -18,11 +18,11 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>io.honeycomb.beeline</groupId>
-            <artifactId>beeline-core</artifactId>
-            <version>${beelineVersion}</version>
-        </dependency>
+      <dependency>
+          <groupId>io.honeycomb.beeline</groupId>
+          <artifactId>beeline-core</artifactId>
+          <version>${beelineVersion}</version>
+      </dependency>
 
       <dependency>
         <groupId>io.honeycomb.libhoney</groupId>
