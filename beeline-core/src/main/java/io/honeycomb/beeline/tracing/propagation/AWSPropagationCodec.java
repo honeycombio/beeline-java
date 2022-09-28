@@ -63,7 +63,7 @@ public class AWSPropagationCodec implements PropagationCodec<Map<String, String>
      * will be used.
      * </p>
      *
-     * @param encodedTrace to decode into a {@link PropagationContext}.
+     * @param headers to decode into a {@link PropagationContext}.
      * @return extracted context - "empty" context if encodedTrace value has an invalid format or is null.
      */
     @Override
