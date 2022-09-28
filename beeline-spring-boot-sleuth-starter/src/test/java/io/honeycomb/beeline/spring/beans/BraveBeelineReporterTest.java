@@ -71,7 +71,7 @@ public class BraveBeelineReporterTest {
 
         final ResolvedEvent captured = (ResolvedEvent) captor.getValue();
         Assert.assertEquals("testKey", captured.getWriteKey());
-        Assert.assertEquals("testSet", captured.getDataset());
+        Assert.assertEquals("unknown_service", captured.getDataset());
 
         final Map<String, Object> fields = captured.getFields();
         Assert.assertEquals("testspan", fields.get(TraceFieldConstants.SPAN_NAME_FIELD)); // note: zipkin span names are automatically lower-cased
