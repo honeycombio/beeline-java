@@ -319,7 +319,7 @@ public class BeelineBuilder {
      * This configuration differs from {@link io.honeycomb.libhoney.TransportOptions.Builder#getMaxConnections()} in that a batch request may be pending
      * completion, but it may be still be waiting for an HTTP connection. This is the case in the default
      * {@link HoneycombBatchConsumer} where the
-     * {@link org.apache.http.nio.client.HttpAsyncClient} maintains an internal unbounded pending queue for
+     * {@link io.honeycomb.libhoney.shaded.org.apache.http.nio.client.HttpAsyncClient} maintains an internal unbounded pending queue for
      * requests that are waiting for a connection. This configuration effectively puts a bound on the total
      * number of batch requests being serviced by the HTTP client, regardless of whether they have
      * a connection or not.
@@ -341,7 +341,7 @@ public class BeelineBuilder {
      * Default: 200
      *
      * @param maxConnections maximum number of connections.
-     * @see org.apache.http.impl.nio.client.HttpAsyncClientBuilder#setMaxConnTotal(int)
+     * @see io.honeycomb.libhoney.shaded.org.apache.http.impl.nio.client.HttpAsyncClientBuilder#setMaxConnTotal(int)
      */
     public BeelineBuilder maxConnections(final int maxConnections) {
         clientBuilder.maxConnections(maxConnections);
@@ -356,7 +356,7 @@ public class BeelineBuilder {
      * Default: 100
      *
      * @param maxConnectionsPerApiHost pool size for per hostname
-     * @see org.apache.http.impl.nio.client.HttpAsyncClientBuilder#setMaxConnPerRoute(int)
+     * @see io.honeycomb.libhoney.shaded.org.apache.http.impl.nio.client.HttpAsyncClientBuilder#setMaxConnPerRoute(int)
      */
     public BeelineBuilder maxConnectionsPerApiHost(final int maxConnectionsPerApiHost) {
         clientBuilder.maxConnectionsPerApiHost(maxConnectionsPerApiHost);
@@ -369,7 +369,7 @@ public class BeelineBuilder {
      * Default: 0
      *
      * @param connectTimeout to set.
-     * @see org.apache.http.client.config.RequestConfig#getConnectTimeout()
+     * @see io.honeycomb.libhoney.shaded.org.apache.http.client.config.RequestConfig#getConnectTimeout()
      */
     public BeelineBuilder connectionTimeout(final int connectTimeout) {
         clientBuilder.connectionTimeout(connectTimeout);
@@ -388,7 +388,7 @@ public class BeelineBuilder {
      * Default: 0
      *
      * @param connectionRequestTimeout to set.
-     * @see org.apache.http.client.config.RequestConfig#getConnectionRequestTimeout()
+     * @see io.honeycomb.libhoney.shaded.org.apache.http.client.config.RequestConfig#getConnectionRequestTimeout()
      */
     public BeelineBuilder connectionRequestTimeout(final int connectionRequestTimeout) {
         clientBuilder.connectionRequestTimeout(connectionRequestTimeout);
@@ -401,7 +401,7 @@ public class BeelineBuilder {
      * Default: 3000
      *
      * @param socketTimeout to set.
-     * @see org.apache.http.client.config.RequestConfig#getSocketTimeout()
+     * @see io.honeycomb.libhoney.shaded.org.apache.http.client.config.RequestConfig#getSocketTimeout()
      */
     public BeelineBuilder socketTimeout(final int socketTimeout) {
         clientBuilder.socketTimeout(socketTimeout);
@@ -414,7 +414,7 @@ public class BeelineBuilder {
      * Default: 8192
      *
      * @param bufferSize to set.
-     * @see org.apache.http.config.ConnectionConfig.Builder#setBufferSize(int)
+     * @see io.honeycomb.libhoney.shaded.org.apache.http.config.ConnectionConfig.Builder#setBufferSize(int)
      */
     public BeelineBuilder bufferSize(final int bufferSize) {
         clientBuilder.bufferSize(bufferSize);
@@ -428,7 +428,7 @@ public class BeelineBuilder {
      *
      * @param ioThreadCount to set, must be between 1 and the system's number of CPU cores.
      * @see <a href="https://hc.apache.org/httpcomponents-core-ga/tutorial/html/nio.html">Apache http client NIO</a>
-     * @see org.apache.http.impl.nio.reactor.IOReactorConfig#getIoThreadCount()
+     * @see io.honeycomb.libhoney.shaded.org.apache.http.impl.nio.reactor.IOReactorConfig#getIoThreadCount()
      */
     public BeelineBuilder ioThreadCount(final int ioThreadCount) {
         clientBuilder.ioThreadCount(ioThreadCount);

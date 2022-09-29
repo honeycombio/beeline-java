@@ -62,7 +62,7 @@ public class W3CTraceIdProvider implements TraceIdProvider {
     /**
      * Validates the provided traceId.
      * Intended for internal use only.
-     * @param traceId
+     * @param traceId the trace ID to validate.
      * @throws IllegalArgumentException
      *         If the traceId is not valid.
      */
@@ -74,7 +74,7 @@ public class W3CTraceIdProvider implements TraceIdProvider {
 
     /**
      * Validates the provided traceId.
-     * @param spanId
+     * @param traceId the trace ID to validate.
      * @return boolean whether the traceId is valid or not.
      */
     public static Boolean isValidTraceId(String traceId) {
@@ -87,7 +87,7 @@ public class W3CTraceIdProvider implements TraceIdProvider {
     /**
      * Validates the provided spanId.
      * Intended for internal use only.
-     * @param traceId
+     * @param spanId the span ID to validate.
      * @throws IllegalArgumentException
      *         If the spanId is not valid.
      */
@@ -99,7 +99,7 @@ public class W3CTraceIdProvider implements TraceIdProvider {
 
     /**
      * Validates the provided spanId.
-     * @param spanId
+     * @param spanId the span ID to validate.
      * @return boolean whether the spanId is valid or not.
      */
     public static Boolean isValidSpanId(String spanId) {
