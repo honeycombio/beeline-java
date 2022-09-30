@@ -88,10 +88,10 @@ public class HttpHeaderV1PropagationCodec implements PropagationCodec<Map<String
      * <p>
      * Trace_id and parent_id are required to create a non-empty Propagation context, while dataset and context are
      * treated as optional.
-     * 
+     *
      * NOTE: This codec no longer encodes or decodes dataset from the trace header.
      *
-     * @param encodedTrace to decode into a {@link PropagationContext}.
+     * @param headers to decode into a {@link PropagationContext}.
      * @return extracted context - "empty" context if encodedTrace value has an invalid format or is null.
      */
     @SuppressWarnings({"OverlyComplexMethod", "OverlyLongMethod"})

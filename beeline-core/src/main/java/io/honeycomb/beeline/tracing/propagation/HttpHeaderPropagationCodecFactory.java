@@ -13,7 +13,7 @@ public class HttpHeaderPropagationCodecFactory {
      * Returns a {@link HttpHeaderPropagationCodecFactory} if no valid codec names
      * are provided.
      * </p>
-     * Returns a {@link CompositeHttpHeaderPropagtor} if more than one valid codec
+     * Returns a {@link CompositeHttpHeaderPropagator} if more than one valid codec
      * is provided.
      *
      * @param propagatorNames the named of the codecs to use
