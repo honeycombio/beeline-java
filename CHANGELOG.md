@@ -1,5 +1,31 @@
 # Beeline Changelog
 
+## [2.1.1] - 2022-09-30
+
+### Maintenance
+
+- Fix javadoc warnings (#247) | [@MikeGoldsmith](https://github.com/MikeGoldsmith)
+- Add Java 18 to CI matrix (#229) | [@vreynolds](https://github.com/vreynolds)
+- Bump libhoney-java from 1.5.0 to 1.5.3 (#248)
+- Bump maven-jxr-plugin from 3.2.0 to 3.3.0 (#245)
+- Bump mockito-core from 4.6.1 to 4.8.0 (#244)
+- Bump maven-javadoc-plugin from 3.4.0 to 3.4.1 (#243)
+- Bump slf4j-simple from 1.7.36 to 2.0.3 (#242)
+- Bump maven-pmd-plugin from 3.16.0 to 3.19.0 (#239)
+- Bump rest-assured from 5.1.1 to 5.2.0 (#240)
+- Bump byte-buddy from 1.12.10 to 1.12.17 (#238)
+- Bump maven-jar-plugin from 3.2.2 to 3.3.0 (#237)
+- Bump pmdCoreVersion from 6.47.0 to 6.49.0 (#236)
+- Bump maven-project-info-reports-plugin from 3.3.0 to 3.4.1 (#233)
+- Bump datasource-proxy from 1.7 to 1.8 (#225)
+- Bump mockito-core from 4.6.0 to 4.6.1 (#228)
+- Bump pmdCoreVersion from 6.46.0 to 6.47.0 (#224)
+- Bump rest-assured from 5.1.0 to 5.1.1 (#222)
+- Bump pmdCoreVersion from 6.45.0 to 6.46.0 (#218)
+- Bump rest-assured from 5.0.1 to 5.1.0 (#220)
+- Bump assertj-core from 3.22.0 to 3.23.1 (#221)
+- Bump mockito-core from 4.5.1 to 4.6.0 (#219)
+
 ## [2.1.0] - 2022-05-04
 
 ### Enhancements
