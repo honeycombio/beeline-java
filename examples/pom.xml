@@ -19,9 +19,9 @@
 
     <dependencies>
       <dependency>
-          <groupId>io.honeycomb.beeline</groupId>
-          <artifactId>beeline-core</artifactId>
-          <version>${beelineVersion}</version>
+        <groupId>io.honeycomb.beeline</groupId>
+        <artifactId>beeline-core</artifactId>
+        <version>${beelineVersion}</version>
       </dependency>
 
       <dependency>
