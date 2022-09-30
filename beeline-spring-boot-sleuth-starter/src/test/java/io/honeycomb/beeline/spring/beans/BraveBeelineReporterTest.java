@@ -58,7 +58,7 @@ public class BraveBeelineReporterTest {
         when(properties.getServiceName()).thenReturn("BraveBeelineReporterTest");
         when(mockTransport.submit(any())).thenReturn(true);
         final BeelineBuilder beelineBuilder = new BeelineBuilder();
-        beeline = spy(beelineBuilder.transport(mockTransport).writeKey("testKey").dataSet("testSet").build());
+        beeline = spy(beelineBuilder.transport(mockTransport).writeKey("testKey").dataSet("testSet").serviceName("testServiceName").build());
         reporter = new BraveBeelineReporter(beeline, properties);
         spanBuilder = Span.newBuilder().name("testSpan").traceId("abcdef0123").id(1234L).parentId(5678L).timestamp(SPAN_TIMESTAMP_NANOS);
     }
@@ -71,7 +71,7 @@ public class BraveBeelineReporterTest {
 
         final ResolvedEvent captured = (ResolvedEvent) captor.getValue();
         Assert.assertEquals("testKey", captured.getWriteKey());
-        Assert.assertEquals("testSet", captured.getDataset());
+        Assert.assertEquals("testServiceName", captured.getDataset());
 
         final Map<String, Object> fields = captured.getFields();
         Assert.assertEquals("testspan", fields.get(TraceFieldConstants.SPAN_NAME_FIELD)); // note: zipkin span names are automatically lower-cased

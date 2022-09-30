@@ -550,7 +550,7 @@ public class MockMvcTest {
     }
 
     @Test
-    public void WHEN_makingARequestWithHoneycombHeaderSpecifyingADataset_EXPECT_AllEventsToSendToDataset() throws Exception {
+    public void WHEN_makingARequestWithHoneycombHeaderSpecifyingADataset_EXPECT_AllEventsToIgnoreDatasetValueAndUseServiceName() throws Exception {
         final PropagationContext context = new PropagationContext("current-trace-1", "parent-span-1", "myDataset", Collections.singletonMap("trace-field", "abc"));
         final Map<String, String> headers = Propagation.honeycombHeaderV1().encode(context).get();
 
@@ -563,8 +563,8 @@ public class MockMvcTest {
         final ResolvedEvent aopSpan = eventFields.get(0);
         final ResolvedEvent requestSpan = eventFields.get(1);
 
-        assertThat(aopSpan.getDataset()).isEqualTo("myDataset");
-        assertThat(requestSpan.getDataset()).isEqualTo("myDataset");
+        assertThat(aopSpan.getDataset()).isEqualTo("testDataset");
+        assertThat(requestSpan.getDataset()).isEqualTo("testDataset");
     }
 
     @Test

@@ -36,7 +36,7 @@ public class DeterministicSamplerTest {
     public void testThatVariousSampleRatesAreWithinExpectedBounds() {
         final int[] testSampleRates = {2, 10, 20};
         final int numberOfRequestIDsToTest = 50000;
-        final double acceptableMarginOfError = 0.05;
+        final double acceptableMarginOfError = 0.1;
 
         for (int sampleRate : testSampleRates) {
             sampler = new DeterministicTraceSampler(sampleRate);
