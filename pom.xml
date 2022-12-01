@@ -74,7 +74,7 @@
 
         <!-- COMPILE dependency versions  -->
         <libhoneyVersion>1.5.3</libhoneyVersion>
-        <springBootVersion>2.1.1.RELEASE</springBootVersion>
+        <springBootVersion>3.0.0</springBootVersion>
 
         <!-- TEST dependency versions  -->
         <junitVersion>4.13.2</junitVersion>
