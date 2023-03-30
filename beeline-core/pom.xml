@@ -16,7 +16,7 @@
     <description>The core library of the Honeycomb Beeline for Java</description>
 
     <properties>
-        <slf4jVersion>2.0.3</slf4jVersion>
+        <slf4jVersion>2.0.7</slf4jVersion>
     </properties>
 
     <build>
