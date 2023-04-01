@@ -94,7 +94,7 @@
         <pmdCoreVersion>6.51.0</pmdCoreVersion>
         <spotbugsVersion>4.2.2</spotbugsVersion>
         <shadeVersion>3.1.0</shadeVersion>
-        <surefireVersion>2.22.2</surefireVersion>
+        <surefireVersion>3.0.0</surefireVersion>
     </properties>
 
     <dependencies>
