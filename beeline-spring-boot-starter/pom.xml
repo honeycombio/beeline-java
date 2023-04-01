@@ -62,7 +62,7 @@
         <dependency>
             <groupId>net.ttddyy</groupId>
             <artifactId>datasource-proxy</artifactId>
-            <version>1.8</version>
+            <version>1.8.1</version>
         </dependency>
 
         <!--Annotation processing -->
