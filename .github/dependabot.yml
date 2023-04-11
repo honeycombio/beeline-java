@@ -20,3 +20,6 @@ updates:
       # Mockito 5.x.x requires Java 11 min version
       - dependency-name: "org.mockito:mockito-*"
         update-types: [ "version-update:semver-major" ]
+      # Breaking changes in Spring Boot 3.x.x
+      - dependency-name: "org.springframework.boot*"
+        update-types: [ "version-update:semver-major" ]
