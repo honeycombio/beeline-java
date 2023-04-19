@@ -64,7 +64,13 @@
             <artifactId>datasource-proxy</artifactId>
             <version>1.8.1</version>
         </dependency>
-
+        
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.33</version>
+        </dependency>
+        
         <!--Annotation processing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
