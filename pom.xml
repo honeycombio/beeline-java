@@ -85,7 +85,7 @@
 
         <!-- Maven plugin versions  -->
         <compilerPluginVersion>3.11.0</compilerPluginVersion>
-        <reportsPluginVersion>3.4.1</reportsPluginVersion>
+        <reportsPluginVersion>3.4.5</reportsPluginVersion>
         <mavenSourcePluginVersion>3.3.0</mavenSourcePluginVersion>
         <javadocPluginVersion>3.4.1</javadocPluginVersion>
         <xrefPluginVersion>3.3.0</xrefPluginVersion>
