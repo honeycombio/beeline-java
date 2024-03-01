@@ -25,6 +25,8 @@ import javax.net.ssl.SSLContext;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static io.honeycomb.libhoney.Options.isClassic;
+
 public class BeelineBuilder {
     protected HoneyClientBuilder clientBuilder = new HoneyClientBuilder();
     private SpanBuilderFactory defaultFactory = null;
@@ -60,7 +62,7 @@ public class BeelineBuilder {
             clientBuilder.writeKey(writeKey);
         }
 
-        if (ObjectUtils.isNullOrEmpty(writeKey) || isClassic(writeKey)) {
+        if (isClassic(writeKey)) {
             if (ObjectUtils.isNullOrEmpty(dataset)) {
                 System.err.println("empty dataset");
                 clientBuilder.dataSet(defualtDatasetClassic);
@@ -87,10 +89,6 @@ public class BeelineBuilder {
         }
 
         return createBeeline(clientBuilder.build());
-    }
-
-    private Boolean isClassic(String apiKey) {
-        return apiKey.length() == 32;
     }
 
     @SuppressWarnings("unchecked")
