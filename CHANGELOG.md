@@ -1,5 +1,44 @@
 # Beeline Changelog
 
+## [2.2.0] - 2024-03-04
+
+### Enhancements
+
+- feat: support classic ingest keys (#311) | @cewkrupa
+
+### Maintenance
+
+- Give dependabot PRs better title (#264) | @JamieDanielson
+- Update validate PR title workflow (#259) | @pkanal
+- Validate PR title (#257) | @pkanal
+- Move nightly to weekly (#299) | @vreynolds
+- Update readme (#297) | @vreynolds
+- Add otel recommendation to readme (#288) | @pkanal
+- Update codeowners to pipeline-team (#310) | @JamieDanielson
+- Update codeowners to pipeline (#309) | @JamieDanielson
+- Ignore spring boot 3 upgrade (#283) | @vreynolds
+- Ignore mockito 5 updates (#273) | @vreynolds
+- Delete workflows for old board (#253) | @vreynolds
+- Add release file (#252) | @vreynolds
+- Add new project workflow (#251) | @vreynolds
+- Bump pmdCoreVersion from 6.49.0 to 6.51.0 (#254)
+- Bump maven-source-plugin from 3.2.1 to 3.3.0 (#296)
+- Bump maven-surefire-plugin from 2.22.2 to 3.1.2 (#298)
+- Bump maven-gpg-plugin from 3.0.1 to 3.1.0 (#295)
+- Bump maven-pmd-plugin from 3.20.0 to 3.21.0 (#293)
+- Bump pmdCoreVersion from 6.51.0 to 6.55.0 (#290)
+- Bump maven-compiler-plugin from 3.10.1 to 3.11.0 (#282)
+- Bump examples/httpclient from 4.5.13 to 4.5.14 (#292)
+- Bump maven-pmd-plugin from 3.19.0 to 3.20.0 (#291)
+- Bump datasource-proxy from 1.8 to 1.8.1 (#279)
+- Bump byte-buddy from 1.14.0 to 1.14.3 (#276)
+- Bump libhoney-java from 1.5.3 to 1.5.4 (#275)
+- Bump byte-buddy from 1.12.17 to 1.14.0 (#271)
+- Bump rest-assured from 5.2.0 to 5.3.0 (#280)
+- Bump assertj-core from 3.23.1 to 3.24.2 (#284)
+- Bump slf4j-simple from 2.0.3 to 2.0.7 (#277)
+- Bump httpclient5 from 5.1.3 to 5.2.1 (#274)
+
 ## [2.1.1] - 2022-09-30
 
 ### Maintenance
