@@ -1,6 +1,6 @@
 # Beeline Changelog
 
-## [2.2.0] - 2024-03-04
+## [2.2.0] - 2024-03-07
 
 ### Enhancements
 
