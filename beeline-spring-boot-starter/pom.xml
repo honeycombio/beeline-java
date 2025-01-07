@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.honeycomb.beeline</groupId>
         <artifactId>beeline-parent</artifactId>
-        <version>2.2.0</version>
+        <version>2.42.0</version>
     </parent>
 
     <name>Beeline Java (Spring Boot Starter)</name>

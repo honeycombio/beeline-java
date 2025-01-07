@@ -81,6 +81,8 @@ public class BeelineConfig {
                 // eat error for now
             }
         }
+        // TODO JAMIE make sure my changes get picked up
+        System.out.println("-------- hey girl");
 
         // map static and dynamic fields
         metaFieldProvider.getStaticFields().forEach(builder::addGlobalField);

@@ -3,13 +3,13 @@ target/
 out/
 *.log
 
-# Eclipse Core      
+# Eclipse Core
 .project
 .classpath
 .factorypath
 .settings/
 
-# JDT-specific (Eclipse Java Development Tools)     
+# JDT-specific (Eclipse Java Development Tools)
 .classpath
 
 pom.xml.tag
@@ -30,3 +30,5 @@ buildNumber.properties
 !/.idea/inspectionProfiles
 !/.idea/codeStyles
 .vscode
+
+application.properties
