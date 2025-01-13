@@ -38,7 +38,7 @@ public class BeelineBuilder {
     private String dataset = null;
     private String serviceName = null;
 
-    private static final String defualtDatasetClassic = "beeline-java";
+    private static final String defaultDatasetClassic = "beeline-java";
 
     /**
      * Build new Beeline instance as configured by calling the various builder methods previous to this call.
@@ -65,7 +65,7 @@ public class BeelineBuilder {
         if (isClassic(writeKey)) {
             if (ObjectUtils.isNullOrEmpty(dataset)) {
                 System.err.println("empty dataset");
-                clientBuilder.dataSet(defualtDatasetClassic);
+                clientBuilder.dataSet(defaultDatasetClassic);
             } else {
                 clientBuilder.dataSet(dataset);
             }
