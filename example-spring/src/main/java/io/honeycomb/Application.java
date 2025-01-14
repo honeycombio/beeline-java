@@ -1,4 +1,4 @@
-package io.honeycomb.beeline;
+package io.honeycomb;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

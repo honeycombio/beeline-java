@@ -1,4 +1,4 @@
-package src.main.java.io.honeycomb.beeline;
+package io.honeycomb;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
