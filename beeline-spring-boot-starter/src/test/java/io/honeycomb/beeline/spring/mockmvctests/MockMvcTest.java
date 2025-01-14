@@ -200,7 +200,7 @@ public class MockMvcTest {
 
         verify(transport).submit(eventCaptor.capture());
         final ResolvedEvent capturedEvent = eventCaptor.getValue();
-        assertThat(capturedEvent.getDataset()).isEqualTo("testDataset");
+        assertThat(capturedEvent.getDataset()).isEqualTo("testServiceName");
         assertThat(capturedEvent.getWriteKey()).isEqualTo("testWriteKey");
         assertThat(capturedEvent.getApiHost().toString()).isEqualTo("http://localhost:8089");
     }
@@ -211,7 +211,7 @@ public class MockMvcTest {
 
         final Map<String, Object> eventFields = captureEventData();
 
-        assertThat(eventFields).containsEntry("service_name", "IntegrationTestApp");
+        assertThat(eventFields).containsEntry("service_name", "testServiceName");
         assertThat(eventFields).containsEntry("name", "BasicGet");
         assertThat(eventFields).containsEntry("type", "http_server");
         assertThat((double) eventFields.get("duration_ms")).isGreaterThan(0);
@@ -563,12 +563,12 @@ public class MockMvcTest {
         final ResolvedEvent aopSpan = eventFields.get(0);
         final ResolvedEvent requestSpan = eventFields.get(1);
 
-        assertThat(aopSpan.getDataset()).isEqualTo("testDataset");
-        assertThat(requestSpan.getDataset()).isEqualTo("testDataset");
+        assertThat(aopSpan.getDataset()).isEqualTo("testServiceName");
+        assertThat(requestSpan.getDataset()).isEqualTo("testServiceName");
     }
 
     @Test
-    public void WHEN_makingARequestWithHoneycombHeaderNotSpecifyingAnyDataset_EXPECT_AllEventsToSendToConfiguredDataset() throws Exception {
+    public void WHEN_makingARequestWithHoneycombHeaderNotSpecifyingAnyDataset_EXPECT_AllEventsToSendToConfiguredServiceName() throws Exception {
         final PropagationContext context = new PropagationContext("current-trace-1", "parent-span-1", null, Collections.singletonMap("trace-field", "abc"));
         final Map<String, String> headers = Propagation.honeycombHeaderV1().encode(context).get();
 
@@ -581,8 +581,8 @@ public class MockMvcTest {
         final ResolvedEvent aopSpan = eventFields.get(0);
         final ResolvedEvent requestSpan = eventFields.get(1);
 
-        assertThat(aopSpan.getDataset()).isEqualTo("testDataset");
-        assertThat(requestSpan.getDataset()).isEqualTo("testDataset");
+        assertThat(aopSpan.getDataset()).isEqualTo("testServiceName");
+        assertThat(requestSpan.getDataset()).isEqualTo("testServiceName");
     }
 
     private List<ResolvedEvent> captureNoOfEvents(final int times) {
