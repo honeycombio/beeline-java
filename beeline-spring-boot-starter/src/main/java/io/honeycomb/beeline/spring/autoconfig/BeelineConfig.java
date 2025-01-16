@@ -83,8 +83,6 @@ public class BeelineConfig {
             if (ObjectUtils.isNullOrEmpty(dataset)) {
                 System.err.println("empty dataset");
                 dataset = defaultDatasetClassic;
-            } else {
-                dataset = dataset;
             }
         } else {
             if (!ObjectUtils.isNullOrEmpty(dataset)) {
