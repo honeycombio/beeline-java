@@ -201,7 +201,7 @@ public class MockMvcTest {
         verify(transport).submit(eventCaptor.capture());
         final ResolvedEvent capturedEvent = eventCaptor.getValue();
         assertThat(capturedEvent.getDataset()).isEqualTo("testServiceName");
-        assertThat(capturedEvent.getWriteKey()).isEqualTo("testWriteKey");
+        assertThat(capturedEvent.getWriteKey()).isEqualTo("d68f9ed1e96432ac1a3380"); // nonClassicWriteKey
         assertThat(capturedEvent.getApiHost().toString()).isEqualTo("http://localhost:8089");
     }
 
