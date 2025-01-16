@@ -74,7 +74,7 @@ public class Beeline {
     private final String serviceName;
 
     public static final String defaultServiceName = "unknown_service";
-    public static final String defualtProcessName = "java";
+    public static final String defaultProcessName = "java";
 
     public Beeline(final Tracer tracer, final SpanBuilderFactory factory) {
         this(tracer, factory, null);
