@@ -30,6 +30,7 @@
         <module>beeline-spring-boot-starter</module>
         <module>beeline-spring-boot-sleuth-starter</module>
         <module>examples</module>
+        <module>example-spring</module>
     </modules>
 
     <scm>
