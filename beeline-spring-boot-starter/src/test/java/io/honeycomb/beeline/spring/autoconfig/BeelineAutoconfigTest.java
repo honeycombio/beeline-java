@@ -116,7 +116,7 @@ public class BeelineAutoconfigTest {
                 "honeycomb.beeline.jdbc.enabled=false")
             .withPropertyValues("spring.application.name=TestApp")
 
-            .run(context -> assertThat(context.getBean(BeelineProperties.class).getServiceName()).isEqualTo("TestApp"));
+            .run(context -> assertThat(context.getBean(BeelineProperties.class).getServiceName()).isEqualTo("unknown_service:java"));
     }
 
     @Test
@@ -129,7 +129,7 @@ public class BeelineAutoconfigTest {
                 "honeycomb.beeline.jdbc.enabled=false")
             .withPropertyValues("spring.application.name=TestApp")
 
-            .run(context -> assertThat(context.getBean(BeelineProperties.class).getServiceName()).isEqualTo("TestApp"));
+            .run(context -> assertThat(context.getBean(BeelineProperties.class).getServiceName()).isEqualTo("unknown_service:java"));
     }
 
     @Test
