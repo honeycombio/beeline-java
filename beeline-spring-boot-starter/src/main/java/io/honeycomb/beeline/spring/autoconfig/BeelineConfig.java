@@ -48,8 +48,8 @@ public class BeelineConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    public Beeline defaultBeeline(final Tracer tracer, final SpanBuilderFactory factory) {
-        return Tracing.createBeeline(tracer, factory);
+    public Beeline defaultBeeline(final Tracer tracer, final SpanBuilderFactory factory, final BeelineProperties beelineProperties) {
+        return Tracing.createBeeline(tracer, factory, beelineProperties.getServiceName());
     }
 
     @Bean
@@ -69,7 +69,8 @@ public class BeelineConfig {
         // Spring will handle shutdown of the client, see javadoc of the Bean#destroyMethod annotation parameter
 
         final HoneyClientBuilder builder = new HoneyClientBuilder()
-            .dataSet(beelineProperties.getDataset())
+            // todo use dataset if classic
+            .dataSet(beelineProperties.getServiceName())
             .writeKey(beelineProperties.getWriteKey())
             .transport(transport);
 
