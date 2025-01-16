@@ -71,8 +71,8 @@ public class BeelineConfig {
                                                  final Optional<EventPostProcessor> maybePostProcessor) {
         // Spring will handle shutdown of the client, see javadoc of the Bean#destroyMethod annotation parameter
 
-        // if classic, then dataSet is beelineProperties.getDataSet()
-        // if nonclassic, then dataSet is beelineProperties.getServiceName()
+        // if classic, then dataset comes from configured dataset
+        // if nonclassic, then dataset comes from configured service name
         String dataset = beelineProperties.getDataset();
         String serviceName = beelineProperties.getServiceName();
         String writeKey = beelineProperties.getWriteKey();
@@ -105,7 +105,6 @@ public class BeelineConfig {
         }
 
         final HoneyClientBuilder builder = new HoneyClientBuilder()
-            // todo use dataset if classic
             .dataSet(dataset)
             .writeKey(writeKey)
             .transport(transport);

@@ -107,7 +107,7 @@ public class BeelineAutoconfigTest {
     }
 
     @Test
-    public void GIVEN_classicWriteKeyNoConfiguredServiceName_EXPECT_FallbackToSpringApplicationName() {
+    public void GIVEN_classicWriteKeyNoConfiguredServiceName_EXPECT_FallbackToUnknownService() {
         webApplicationContextRunner
             .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
             .withPropertyValues(
@@ -120,7 +120,7 @@ public class BeelineAutoconfigTest {
     }
 
     @Test
-    public void GIVEN_classicIngestKeyNoConfiguredServiceName_EXPECT_FallbackToSpringApplicationName() {
+    public void GIVEN_classicIngestKeyNoConfiguredServiceName_EXPECT_FallbackToUnknownService() {
         webApplicationContextRunner
             .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
             .withPropertyValues(
