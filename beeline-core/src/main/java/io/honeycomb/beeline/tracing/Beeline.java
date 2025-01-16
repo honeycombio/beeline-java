@@ -102,9 +102,12 @@ public class Beeline {
                 File f = new File(dir, mainClass);
                 processName = f.getName();
             } catch (RuntimeException e) {
-                throw e;
+                // the above code can throw an exception if the location is not found
+                // so catch that exception and fallback to default process name.
+                // Exception (next catch) does not include RuntimeException
+                processName = defaultProcessName;
             } catch (Exception e) {
-                processName = defaultServiceName;
+                processName = defaultProcessName;
             }
             return String.join(":", defaultServiceName, processName);
         }
