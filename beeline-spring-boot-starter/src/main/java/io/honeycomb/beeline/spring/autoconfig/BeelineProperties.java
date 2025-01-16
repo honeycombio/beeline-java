@@ -38,11 +38,11 @@ public class BeelineProperties {
     private URI apiHost;
     /**
      * A name to identify this service when tracing data is displayed within Honeycomb.
-     * If not set, this will try to fall back to using Spring's own "spring.application.name" property.
+     * If not set, this will fall back to {@code unknown_service:java}.
      */
     @NotEmpty(
-        message = "The Beeline requires a service name configured through this property or 'spring.application.name'")
-    @Value("${spring.application.name:}")
+        message = "The Beeline requires a service name to be configured. Using unknown_service:java as a fallback.")
+    @Value("unknown_service:java")
     private String serviceName;
     /**
      * When set to false, this will disable the beeline auto configuration, so it will not instrument your application.

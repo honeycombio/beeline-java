@@ -26,6 +26,7 @@ import io.honeycomb.libhoney.TransportOptions;
 import io.honeycomb.libhoney.builders.HoneyClientBuilder;
 import io.honeycomb.libhoney.transport.Transport;
 import io.honeycomb.libhoney.transport.impl.BatchingHttpTransport;
+import io.honeycomb.libhoney.utils.ObjectUtils;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,8 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 
+import static io.honeycomb.libhoney.Options.isClassic;
+
 public class BeelineConfig {
     private static final String BEELINE_USER_AGENT_PREFIX = "beeline/";
 
@@ -48,8 +51,8 @@ public class BeelineConfig {
 
     @Bean
     @ConditionalOnMissingBean
-    public Beeline defaultBeeline(final Tracer tracer, final SpanBuilderFactory factory) {
-        return Tracing.createBeeline(tracer, factory);
+    public Beeline defaultBeeline(final Tracer tracer, final SpanBuilderFactory factory, final BeelineProperties beelineProperties) {
+        return Tracing.createBeeline(tracer, factory, beelineProperties.getServiceName());
     }
 
     @Bean
@@ -68,9 +71,40 @@ public class BeelineConfig {
                                                  final Optional<EventPostProcessor> maybePostProcessor) {
         // Spring will handle shutdown of the client, see javadoc of the Bean#destroyMethod annotation parameter
 
+        // if classic, then dataset comes from configured dataset
+        // if nonclassic, then dataset comes from configured service name
+        String dataset = beelineProperties.getDataset();
+        String serviceName = beelineProperties.getServiceName();
+        String writeKey = beelineProperties.getWriteKey();
+
+        String defaultDatasetClassic = "beeline-java";
+
+        if (isClassic(writeKey)) {
+            if (ObjectUtils.isNullOrEmpty(dataset)) {
+                System.err.println("empty dataset");
+                dataset = defaultDatasetClassic;
+            }
+        } else {
+            if (!ObjectUtils.isNullOrEmpty(dataset)) {
+                System.err.println("dataset should be empty - using service name instead");
+            }
+
+            // use trimmed service name as dataset
+            // if trimmed service name is prefixed with unknown_service
+            // or is empty string, set dataset to unknown_service
+            dataset = serviceName.trim().startsWith(Beeline.defaultServiceName)
+                            || ObjectUtils.isNullOrEmpty(serviceName.trim())
+                                    ? Beeline.defaultServiceName
+                                    : serviceName.trim();
+        }
+
+        if (!serviceName.trim().equals(serviceName)) {
+            System.err.println("extra whitespace in service name");
+        }
+
         final HoneyClientBuilder builder = new HoneyClientBuilder()
-            .dataSet(beelineProperties.getDataset())
-            .writeKey(beelineProperties.getWriteKey())
+            .dataSet(dataset)
+            .writeKey(writeKey)
             .transport(transport);
 
         // set apiHost if not empty

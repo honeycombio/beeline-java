@@ -46,6 +46,11 @@ import static org.mockito.Mockito.mock;
  */
 public class BeelineAutoconfigTest {
 
+    private static final String classicWriteKey = "e38be416d0d68f9ed1e96432ac1a3380";
+    private static final String classicIngestKey = "hcaic_1234567890123456789012345678901234567890123456789012345678";
+    private static final String nonClassicWriteKey = "d68f9ed1e96432ac1a3380";
+    private static final String nonClassicIngestKey = "hcxik_01hqk4k20cjeh63wca8vva5stw70nft6m5n8wr8f5mjx3762s8269j50wc";
+
     private ApplicationContextRunner contextRunner = new ApplicationContextRunner();
     private WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner();
 
@@ -64,7 +69,7 @@ public class BeelineAutoconfigTest {
     );
 
     private final String[] defaultProps = {
-        "honeycomb.beeline.write-key=someKey",
+        "honeycomb.beeline.write-key=${nonClassicIngestKey}",
         "honeycomb.beeline.dataset=someData",
         "honeycomb.beeline.enabled=true",
         "honeycomb.beeline.service-name=someService"
@@ -102,16 +107,55 @@ public class BeelineAutoconfigTest {
     }
 
     @Test
-    public void GIVEN_noConfigureServiceName_EXPECT_FallbackToSpringApplicationName() {
+    public void GIVEN_classicWriteKeyNoConfiguredServiceName_EXPECT_FallbackToUnknownService() {
         webApplicationContextRunner
             .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
             .withPropertyValues(
-                "honeycomb.beeline.write-key=someKey",
+                "honeycomb.beeline.write-key=${classicWriteKey}",
                 "honeycomb.beeline.dataset=someData",
                 "honeycomb.beeline.jdbc.enabled=false")
             .withPropertyValues("spring.application.name=TestApp")
 
-            .run(context -> assertThat(context.getBean(BeelineProperties.class).getServiceName()).isEqualTo("TestApp"));
+            .run(context -> assertThat(context.getBean(BeelineProperties.class).getServiceName()).isEqualTo("unknown_service:java"));
+    }
+
+    @Test
+    public void GIVEN_classicIngestKeyNoConfiguredServiceName_EXPECT_FallbackToUnknownService() {
+        webApplicationContextRunner
+            .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
+            .withPropertyValues(
+                "honeycomb.beeline.write-key=${classicIngestKey}",
+                "honeycomb.beeline.dataset=someData",
+                "honeycomb.beeline.jdbc.enabled=false")
+            .withPropertyValues("spring.application.name=TestApp")
+
+            .run(context -> assertThat(context.getBean(BeelineProperties.class).getServiceName()).isEqualTo("unknown_service:java"));
+    }
+
+    @Test
+    public void GIVEN_nonClassicWriteKeyNoConfiguredServiceName_EXPECT_FallbackToUnknownService() {
+        webApplicationContextRunner
+            .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
+            .withPropertyValues(
+                "honeycomb.beeline.write-key=${nonClassicWriteKey}",
+                "honeycomb.beeline.dataset=someData",
+                "honeycomb.beeline.jdbc.enabled=false")
+            .withPropertyValues("spring.application.name=TestApp")
+
+            .run(context -> assertThat(context.getBean(BeelineProperties.class).getServiceName()).isEqualTo("unknown_service:java"));
+    }
+
+    @Test
+    public void GIVEN_nonClassicIngestKeyNoConfiguredServiceName_EXPECT_FallbackToUnknownService() {
+        webApplicationContextRunner
+            .withConfiguration(AutoConfigurations.of(BeelineAutoconfig.class))
+            .withPropertyValues(
+                "honeycomb.beeline.write-key=${nonClassicIngestKey}",
+                "honeycomb.beeline.dataset=someData",
+                "honeycomb.beeline.jdbc.enabled=false")
+            .withPropertyValues("spring.application.name=TestApp")
+
+            .run(context -> assertThat(context.getBean(BeelineProperties.class).getServiceName()).isEqualTo("unknown_service:java"));
     }
 
     @Test
