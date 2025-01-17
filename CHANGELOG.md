@@ -4,7 +4,7 @@
 
 ### Fixes
 
-- fix: set service name in spring boot starter (#317) | Jamie Danielson
+- fix: set service name in spring boot starter (#317) | @JamieDanielson
 
 **NOTE**: this is technically a **breaking change** for Spring applications instrumented with Beeline.
 
@@ -15,8 +15,8 @@
 
 - maint(deps): bump org.apache.maven.plugins:maven-javadoc-plugin from 3.4.1 to 3.11.2 (#319) | dependabot[bot]
 - maint(deps): bump net.bytebuddy:byte-buddy from 1.14.3 to 1.15.11 (#318) | dependabot[bot]
-- maint: remove and gitignore bin (#316) | Jamie Danielson
-- maint: Update README.md (#314) | Alex Boten
+- maint: remove and gitignore bin (#316) | @JamieDanielson
+- maint: Update README.md (#314) | @codeboten
 
 ## [2.2.0] - 2024-03-07
 
