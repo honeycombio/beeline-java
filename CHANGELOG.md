@@ -1,5 +1,23 @@
 # Beeline Changelog
 
+## [2.3.0] - 2025-01-17
+
+### Fixes
+
+- fix: set service name in spring boot starter (#317) | Jamie Danielson
+
+**NOTE**: this is technically a **breaking change** for Spring applications instrumented with Beeline.
+
+- If using a **Classic** key, and the `service.name` attribute was previously left empty and relied on `spring.application.name`, it will now have `unknown_service:java` for that attribute but will continue to send to the configured dataset. Set `honeycomb.beeline.dataset` for dataset in Honeycomb.
+- If using an **Environments & Services** key, data will be sent to the configured `service.name` attribute; if that is not set, it will be sent to `unknown_service:java` in Honeycomb. Set `honeycomb.beeline.service-name` for dataset in Honeycomb.
+
+### Maintenance
+
+- maint(deps): bump org.apache.maven.plugins:maven-javadoc-plugin from 3.4.1 to 3.11.2 (#319) | dependabot[bot]
+- maint(deps): bump net.bytebuddy:byte-buddy from 1.14.3 to 1.15.11 (#318) | dependabot[bot]
+- maint: remove and gitignore bin (#316) | Jamie Danielson
+- maint: Update README.md (#314) | Alex Boten
+
 ## [2.2.0] - 2024-03-07
 
 ### Enhancements
